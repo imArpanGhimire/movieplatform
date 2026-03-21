@@ -4,22 +4,26 @@ async function createmovie(req, res) {
 
 
     try {
-        const { title, genre, director, timespan } = req.body
+        const { title, genre, director, duration } = req.body
 
-        const currentuser = {
-            role: "maker"
+
+
+        if (!title || !director || !genre || !duration) {
+            return res.status(400).json({
+                message: "all fields are required"
+            })
         }
-
-        if (currentuser.role !== "maker") {
+        if (req.user.role !== "maker") {
             return res.status(403).json({
                 message: "only makers can create movies"
             })
         }
 
+
         const movie = await moviemodel.create({
             title,
             director,
-            genre, timespan
+            genre, duration
         })
 
         res.status(201).json({
@@ -28,12 +32,15 @@ async function createmovie(req, res) {
                 title,
                 director,
                 genre,
-                timespan
+                duration
             }
         })
     }
     catch (e) {
         console.log(e)
+        return res.status(500).json({
+            message: "internal server error"
+        })
     }
 
 }
@@ -57,7 +64,7 @@ async function getmovies(req, res) {
 
         if (!movies || movies.length === 0) {
             return res.status(404).json({
-                message: "movies doesnt exist"
+                message: "no movies found"
             })
         }
 
