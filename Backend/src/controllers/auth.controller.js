@@ -100,6 +100,13 @@ async function loginuser(req, res) {
     }
 }
 
+function logoutuser(req, res) {
+    res.clearCookie("token")
+
+    return res.status(200).json({
+        message: "logged out successfully"
+    })
+}
 
 async function getusers(req, res) {
     try {
@@ -122,4 +129,4 @@ async function getusers(req, res) {
     }
 }
 
-module.exports = { registeruser, getusers, loginuser }
+module.exports = { registeruser, getusers, loginuser, logoutuser }

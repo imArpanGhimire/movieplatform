@@ -4,7 +4,13 @@ const reviewmodel = require("../models/review.model")
 async function addreview(req, res) {
     try {
 
-        const { movieid, comment, rating, userid } = req.body
+        const { movieid, comment, rating } = req.body
+
+        if (!movieid || !comment || !rating) {
+            return res.status(400).json({
+                message: "movieid, comment and rating are required"
+            })
+        }
 
         const movie = await moviemodel.findById(movieid)
         if (!movie) {
@@ -14,7 +20,7 @@ async function addreview(req, res) {
             movie: movie._id,
             comment,
             rating,
-            user: userid
+            user: req.user.id
         })
 
         return res.status(201).json({
@@ -43,7 +49,7 @@ async function getreviews(req, res) {
             .populate("movie", "title -_id")
 
         if (!allreviews || allreviews.length === 0) {
-            return res.status(403).json({
+            return res.status(404).json({
                 message: "no reviews yet."
             })
         }

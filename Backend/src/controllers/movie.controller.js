@@ -26,14 +26,15 @@ async function createmovie(req, res) {
             genre, duration
         })
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "movie created successfully",
-            movie: {
-                title,
-                director,
-                genre,
-                duration
-            }
+            // movie: {
+            //     title,
+            //     director,
+            //     genre,
+            //     duration
+            // }
+            movie
         })
     }
     catch (e) {
