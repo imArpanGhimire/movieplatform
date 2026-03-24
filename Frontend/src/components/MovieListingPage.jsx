@@ -1,14 +1,25 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import MovieCard from "./MovieCard";
 
 const MovieListingPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-zinc-900">
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-800 border-b border-zinc-700">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-teal-500">FilmVault</h1>
-          <button className="px-4 py-2 text-slate-300 hover:bg-zinc-700 rounded transition-colors text-sm">
+          <h1
+            className="text-2xl font-bold text-teal-500 cursor-pointer"
+            onClick={() => navigate("/movies")}
+          >
+            FilmVault
+          </h1>
+          <button
+            onClick={() => navigate("/login")}
+            className="px-4 py-2 text-slate-300 hover:bg-zinc-700 rounded transition-colors text-sm"
+          >
             Logout
           </button>
         </div>
@@ -83,12 +94,11 @@ const MovieListingPage = () => {
 
         {/* Movies Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} onClick={() => navigate(`/movie/${i}`)}>
+              <MovieCard />
+            </div>
+          ))}
         </div>
 
         {/* Pagination */}
