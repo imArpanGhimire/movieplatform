@@ -4,22 +4,22 @@ const jwt = require("jsonwebtoken")
 
 async function registeruser(req, res) {
     try {
-        const { username, password, role = "user" } = req.body
+        const username = req.body.username?.trim().toLowerCase()
+        const { password, role = "user" } = req.body
+
         if (!username || !password) {
             return res.status(400).json({
                 message: "username and password are required"
             })
         }
-        const userExists = await usermodel.findOne({
-            username
-        })
+
+        const userExists = await usermodel.findOne({ username })
 
         if (userExists) {
             return res.status(409).json({
                 message: "another user with that name exists"
             })
         }
-
 
         const hash = await bcrypt.hash(password, 10)
 
@@ -32,22 +32,22 @@ async function registeruser(req, res) {
         const token = jwt.sign({
             id: user._id,
             role: user.role
-
         }, process.env.JWT_SECRET)
 
-        res.cookie("token", token)
-
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: false
+        })
 
         res.status(201).json({
             message: "user created.",
             user: {
                 username,
-
                 role
             }
         })
-    }
-    catch (e) {
+    } catch (e) {
         console.log(e)
         return res.status(500).json({
             message: "internal server error"
@@ -57,7 +57,12 @@ async function registeruser(req, res) {
 
 async function loginuser(req, res) {
     try {
-        const { username, password } = req.body
+        const username = req.body.username?.trim().toLowerCase()
+        const { password } = req.body
+
+        console.log("req.body:", req.body)
+        console.log("normalized username:", username)
+
         if (!username || !password) {
             return res.status(400).json({
                 message: "username and password are required"
@@ -65,6 +70,8 @@ async function loginuser(req, res) {
         }
 
         const user = await usermodel.findOne({ username })
+        console.log("user found in db:", user)
+
         if (!user) {
             return res.status(401).json({
                 message: "user doesn't exists with that details"
@@ -72,17 +79,20 @@ async function loginuser(req, res) {
         }
 
         const pswcheck = await bcrypt.compare(password, user.password)
+
         if (!pswcheck) {
             return res.status(401).json({
                 message: "password didnt match"
             })
         }
+
         const token = jwt.sign({
             id: user._id,
             role: user.role
-
         }, process.env.JWT_SECRET)
+
         res.cookie("token", token)
+
         return res.status(200).json({
             message: "user logged in successfully",
             user: {
@@ -91,8 +101,7 @@ async function loginuser(req, res) {
                 role: user.role
             }
         })
-    }
-    catch (e) {
+    } catch (e) {
         console.log(e)
         return res.status(500).json({
             message: "internal server error"
