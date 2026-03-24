@@ -18,7 +18,7 @@ const MovieListingPage = () => {
           </h1>
           <button
             onClick={() => navigate("/login")}
-            className="px-4 py-2 text-slate-300 hover:bg-zinc-700 rounded transition-colors text-sm"
+            className="px-4 py-2 text-slate-100 font-semibold hover:bg-red-700 bg-red-600 rounded-xl  transition-colors text-sm"
           >
             Logout
           </button>

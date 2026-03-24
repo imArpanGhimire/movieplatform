@@ -1,8 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+
+  const [success, setsucess] = useState("");
+  const [loading, setloading] = useState(false);
+  const [error, seterror] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+
+  function handlechange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  async function handleregister(e) {
+    e.preventDefault();
+    seterror("");
+
+    console.log("formData:", formData);
+    console.log("type of username:", typeof formData.username);
+    try {
+      const res = await api.post("/auth/register", {
+        username: formData.username.trim(),
+        password: formData.password,
+      });
+
+      console.log("registration success", res.data);
+      setsucess("user is registered");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    } catch (e) {
+      seterror(e.response?.data?.message || "kei error aayo la");
+      console.log(e);
+    } finally {
+      setloading(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center px-4">
@@ -14,62 +55,50 @@ const RegisterPage = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-zinc-800 border border-zinc-700 rounded-xl p-8 space-y-6">
-          {/* Username Input */}
+
+        <form
+          onSubmit={handleregister}
+          className="bg-zinc-800 border border-zinc-700 rounded-xl p-8 space-y-6"
+        >
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Username
             </label>
             <input
               type="text"
-              placeholder="john_doe"
+              name="username"
+              placeholder="Enter username"
+              value={formData.username}
+              onChange={handlechange}
               className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
             />
           </div>
 
-          {/* Email Input */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
-            />
-          </div>
-
-          {/* Password Input */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Password
             </label>
             <input
               type="password"
-              placeholder="••••••••"
+              name="password"
+              placeholder="•••••••••"
+              value={formData.password}
+              onChange={handlechange}
               className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
             />
           </div>
 
-          {/* Role Select */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Account Type
-            </label>
-            <select className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all">
-              <option>Reviewer</option>
-              <option>Filmmaker</option>
-            </select>
-          </div>
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {success && <p className="text-green-400 text-sm">{success}</p>}
 
-          {/* Register Button */}
           <button
-            onClick={() => navigate("/movies")}
-            className="w-full bg-teal-500 hover:bg-teal-600 text-zinc-900 font-semibold py-3 rounded-lg transition-all"
+            type="submit"
+            disabled={loading}
+            className="w-full bg-teal-500 hover:bg-teal-600 text-zinc-900 font-semibold py-3 rounded-lg transition-all disabled:opacity-60"
           >
-            Create Account
+            {loading ? "Creating..." : "Sign Up"}
           </button>
-        </div>
+        </form>
 
         {/* Sign In Link */}
         <div className="text-center mt-6">
