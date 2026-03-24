@@ -11,7 +11,7 @@ const LoginPage = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-teal-500 mb-2">FilmVault</h1>
           <p className="text-slate-400 text-sm">
-            Welcome back. Review the films you love.
+            Welcome back. Review the films you love!
           </p>
         </div>
 
