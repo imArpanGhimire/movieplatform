@@ -36,7 +36,7 @@ const LoginPage = () => {
             </label>
             <input
               type="password"
-              placeholder="••••••••"
+              placeholder="•••••••••"
               className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
             />
           </div>
