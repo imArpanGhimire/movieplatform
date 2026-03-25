@@ -1,9 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MovieCard from "./MovieCard";
+import api from "../api/axios";
 
 const MovieListingPage = () => {
   const navigate = useNavigate();
+
+  const [loading, setloading] = useState(true);
+  const [error, seterror] = useState("");
+  const [allmovies, setallmovies] = useState([]);
+
+  useEffect(() => {
+    async function getmovies() {
+      try {
+        const res = await api.get("/movie/getmovies");
+        setallmovies(res.data.movies);
+        console.log("the movies are", res.data.movies);
+      } catch (e) {
+        console.log(e);
+        seterror(e.response?.data?.message || "Failed to fetch movies");
+      } finally {
+        setloading(false);
+      }
+    }
+    getmovies();
+  }, []);
+
+  async function handlelogout() {
+    try {
+      await api.post("/auth/logout");
+      navigate("/login");
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-zinc-900">
@@ -17,7 +47,7 @@ const MovieListingPage = () => {
             FilmVault
           </h1>
           <button
-            onClick={() => navigate("/login")}
+            onClick={handlelogout}
             className="px-4 py-2 text-slate-100 font-semibold hover:bg-red-700 bg-red-600 rounded-xl  transition-colors text-sm"
           >
             Logout
@@ -87,19 +117,29 @@ const MovieListingPage = () => {
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-slate-400 text-sm">Showing 12 films</p>
-        </div>
+        {loading && <p className="text-slate-400">Loading movies...</p>}
+        {error && <p className="text-red-400">{error}</p>}
 
-        {/* Movies Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} onClick={() => navigate(`/movie/${i}`)}>
-              <MovieCard />
+        {!loading && !error && (
+          <>
+            <div className="mb-6">
+              <p className="text-slate-400 text-sm">
+                Showing {allmovies.length} films
+              </p>
             </div>
-          ))}
-        </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {allmovies.map((movie) => (
+                <div
+                  key={movie._id}
+                  onClick={() => navigate(`/movie/${movie._id}`)}
+                >
+                  <MovieCard movie={movie} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Pagination */}
         <div className="flex justify-center items-center gap-4">

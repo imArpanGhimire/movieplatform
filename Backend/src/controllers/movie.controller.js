@@ -53,8 +53,8 @@ async function getmovies(req, res) {
 
         const { genre, director, page = 1 } = req.query
 
-        const limit = 3
-        const skip = (page - 1) * limit
+        // const limit = 3
+        // const skip = (page - 1) * limit
 
         const filter = {}
         if (genre) filter.genre = genre
@@ -64,7 +64,9 @@ async function getmovies(req, res) {
         const movies = await moviemodel.find(filter
             // todo genre matra filter garne bela
             // genre ? { genre } : {}
-        ).skip(skip).limit(limit)
+        )
+
+        // .skip(skip).limit(limit)
 
         if (!movies || movies.length === 0) {
             return res.status(404).json({
