@@ -46,7 +46,6 @@ async function createmovie(req, res) {
 
 }
 
-
 async function getmovies(req, res) {
 
     try {
@@ -87,4 +86,31 @@ async function getmovies(req, res) {
     }
 }
 
-module.exports = { createmovie, getmovies }
+async function getmoviebyid(req, res) {
+    try {
+        const { id } = req.params
+
+        const movie = await moviemodel.findById(id)
+
+        if (!movie) {
+            return res.status(404).json({
+                message: "cant find that specific movie "
+            })
+        }
+
+        return res.status(200).json({
+            message: "movie found of that id",
+            movie
+        })
+    }
+    catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            message: "internal server error"
+        })
+    }
+}
+
+
+
+module.exports = { createmovie, getmovies, getmoviebyid }

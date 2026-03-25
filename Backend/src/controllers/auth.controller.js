@@ -60,8 +60,8 @@ async function loginuser(req, res) {
         const username = req.body.username?.trim().toLowerCase()
         const { password } = req.body
 
-        console.log("req.body:", req.body)
-        console.log("normalized username:", username)
+        // console.log("req.body:", req.body)
+        // console.log("normalized username:", username)
 
         if (!username || !password) {
             return res.status(400).json({

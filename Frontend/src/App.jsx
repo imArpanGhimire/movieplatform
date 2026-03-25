@@ -10,6 +10,7 @@ import RegisterPage from "./components/RegisterPage";
 import MovieListingPage from "./components/MovieListingPage";
 import ReviewSection from "./components/ReviewSection";
 import ProtectedRoute from "./protection/ProtectedRoute";
+import MovieDetailPage from "./components/MovieDetailPage";
 
 const App = () => {
   return (
@@ -25,7 +26,16 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/movie/:id" element={<ReviewSection />} />
+        {/* <Route path="/movie/:id" element={<ReviewSection />} /> */}
+        <Route
+          path="/movie/:id"
+          element={
+            <ProtectedRoute>
+              <MovieDetailPage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/" element={<Navigate to="/movies" />} />
       </Routes>
     </Router>
