@@ -9,6 +9,7 @@ import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import MovieListingPage from "./components/MovieListingPage";
 import ReviewSection from "./components/ReviewSection";
+import ProtectedRoute from "./protection/ProtectedRoute";
 
 const App = () => {
   return (
@@ -16,7 +17,14 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/movies" element={<MovieListingPage />} />
+        <Route
+          path="/movies"
+          element={
+            <ProtectedRoute>
+              <MovieListingPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/movie/:id" element={<ReviewSection />} />
         <Route path="/" element={<Navigate to="/movies" />} />
       </Routes>

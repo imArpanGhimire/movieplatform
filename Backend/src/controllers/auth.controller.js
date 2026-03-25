@@ -91,7 +91,11 @@ async function loginuser(req, res) {
             role: user.role
         }, process.env.JWT_SECRET)
 
-        res.cookie("token", token)
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: false
+        })
 
         return res.status(200).json({
             message: "user logged in successfully",
@@ -110,7 +114,11 @@ async function loginuser(req, res) {
 }
 
 function logoutuser(req, res) {
-    res.clearCookie("token")
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false
+    })
 
     return res.status(200).json({
         message: "logged out successfully"
@@ -138,4 +146,11 @@ async function getusers(req, res) {
     }
 }
 
-module.exports = { registeruser, getusers, loginuser, logoutuser }
+async function me(req, res) {
+    return res.status(200).json({
+        message: "user is logged in",
+        user: req.user
+    })
+}
+
+module.exports = { registeruser, getusers, loginuser, logoutuser, me }
