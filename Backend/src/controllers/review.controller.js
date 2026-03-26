@@ -45,12 +45,12 @@ async function getreviews(req, res) {
         if (movieid) filter.movie = movieid
 
 
-        const allreviews = await reviewmodel.find(filter, "-_id -__v").populate("user", "username -_id")
-            .populate("movie", "title -_id")
+        const allreviews = await reviewmodel.find(filter, "-_id -__v").populate("user", "username")
+            .populate("movie", "title")
 
         if (!allreviews || allreviews.length === 0) {
-            return res.status(404).json({
-                message: "no reviews yet."
+            return res.status(200).json({
+                message: "these are all the reviews as of now"
             })
         }
         return res.status(200).json({
