@@ -9,22 +9,33 @@ const MovieListingPage = () => {
   const [loading, setloading] = useState(true);
   const [error, seterror] = useState("");
   const [allmovies, setallmovies] = useState([]);
+  const [genre, setgenre] = useState("all");
+  const [director, setdirector] = useState("all");
+  const [title, settitle] = useState("all");
 
   useEffect(() => {
     async function getmovies() {
       try {
-        const res = await api.get("/movie/getmovies");
-        setallmovies(res.data.movies);
+        setloading(true);
+        seterror("");
+
+        const titleParam = title.trim() === "" ? "all" : title;
+        const res = await api.get(
+          `/movie/getmovies/${genre}/${director}/${titleParam}`,
+        );
+        setallmovies(res.data.movies || []);
         console.log("the movies are", res.data.movies);
       } catch (e) {
         console.log(e);
         seterror(e.response?.data?.message || "Failed to fetch movies");
+        setallmovies([]);
       } finally {
         setloading(false);
       }
     }
+
     getmovies();
-  }, []);
+  }, [genre, director, title]);
 
   async function handlelogout() {
     try {
@@ -33,6 +44,12 @@ const MovieListingPage = () => {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  function clearfilter() {
+    setgenre("all");
+    setdirector("all");
+    settitle("all");
   }
 
   return (
@@ -77,6 +94,8 @@ const MovieListingPage = () => {
               </label>
               <input
                 type="text"
+                value={title === "all" ? "" : title}
+                onChange={(e) => settitle(e.target.value)}
                 placeholder="Search..."
                 className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-all text-sm"
               />
@@ -87,12 +106,16 @@ const MovieListingPage = () => {
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Genre
               </label>
-              <select className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-all text-sm">
-                <option>All Genres</option>
-                <option>Sci-Fi</option>
-                <option>Crime</option>
-                <option>Thriller</option>
-                <option>Drama</option>
+              <select
+                value={genre}
+                onChange={(e) => setgenre(e.target.value)}
+                className="w-full   bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 text-slate-100"
+              >
+                <option value="all">All Genres</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Crime">Crime</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Drama">Drama</option>
               </select>
             </div>
 
@@ -102,6 +125,8 @@ const MovieListingPage = () => {
                 Director
               </label>
               <input
+                value={director === "all" ? "" : director}
+                onChange={(e) => setdirector(e.target.value || "all")}
                 type="text"
                 placeholder="Director name..."
                 className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-all text-sm"
@@ -110,7 +135,10 @@ const MovieListingPage = () => {
 
             {/* Clear Filters */}
             <div className="flex items-end">
-              <button className="w-full px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-slate-300 rounded-lg transition-all text-sm font-medium">
+              <button
+                onClick={clearfilter}
+                className="w-full px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-slate-300 rounded-lg transition-all text-sm font-medium"
+              >
                 Clear Filters
               </button>
             </div>

@@ -47,31 +47,25 @@ async function createmovie(req, res) {
 }
 
 async function getmovies(req, res) {
-
     try {
-
-        const { genre, director, page = 1 } = req.query
-
-        // const limit = 3
-        // const skip = (page - 1) * limit
+        const { genre, director, title } = req.params
 
         const filter = {}
-        if (genre) filter.genre = genre
-        if (director) filter.director = director
 
-
-        const movies = await moviemodel.find(filter
-            // todo genre matra filter garne bela
-            // genre ? { genre } : {}
-        )
-
-        // .skip(skip).limit(limit)
-
-        if (!movies || movies.length === 0) {
-            return res.status(404).json({
-                message: "no movies found"
-            })
+        if (genre !== "all") {
+            filter.genre = { $regex: genre, $options: "i" }  // Case-insensitive
         }
+        if (director !== "all") {
+            filter.director = { $regex: director, $options: "i" }  // Case-insensitive
+        }
+
+        if (title && title !== "all") {  // Add title filter
+            filter.title = { $regex: title, $options: "i" }
+        }
+        console.log("params:", req.params)
+        console.log("filter:", filter)
+
+        const movies = await moviemodel.find(filter)
 
         return res.status(200).json({
             message: "movies fetched successfully",
