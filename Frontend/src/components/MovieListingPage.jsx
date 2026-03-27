@@ -11,17 +11,27 @@ const MovieListingPage = () => {
   const [allmovies, setallmovies] = useState([]);
   const [genre, setgenre] = useState("all");
   const [director, setdirector] = useState("all");
-  const [title, settitle] = useState("all");
+  const [title, settitle] = useState("");
+  const [debouncedTitle, setdebouncedTitle] = useState("all");
 
+  // Debounce title input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setdebouncedTitle(title.trim() === "" ? "all" : title);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [title]);
+
+  // Fetch movies when debounced values change
   useEffect(() => {
     async function getmovies() {
       try {
         setloading(true);
         seterror("");
 
-        const titleParam = title.trim() === "" ? "all" : title;
         const res = await api.get(
-          `/movie/getmovies/${genre}/${director}/${titleParam}`,
+          `/movie/getmovies/${genre}/${director}/${debouncedTitle}`,
         );
         setallmovies(res.data.movies || []);
         console.log("the movies are", res.data.movies);
@@ -35,7 +45,7 @@ const MovieListingPage = () => {
     }
 
     getmovies();
-  }, [genre, director, title]);
+  }, [genre, director, debouncedTitle]);
 
   async function handlelogout() {
     try {
@@ -49,7 +59,7 @@ const MovieListingPage = () => {
   function clearfilter() {
     setgenre("all");
     setdirector("all");
-    settitle("all");
+    settitle("");
   }
 
   return (
@@ -94,7 +104,7 @@ const MovieListingPage = () => {
               </label>
               <input
                 type="text"
-                value={title === "all" ? "" : title}
+                value={title}
                 onChange={(e) => settitle(e.target.value)}
                 placeholder="Search..."
                 className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-all text-sm"
