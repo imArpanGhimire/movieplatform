@@ -18,7 +18,7 @@ const MovieListingPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setdebouncedTitle(title.trim() === "" ? "all" : title);
-    }, 400); // 500ms delay
+    }, 500); // 500ms delay
 
     return () => clearTimeout(timer);
   }, [title]);
