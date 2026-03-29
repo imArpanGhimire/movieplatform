@@ -44,7 +44,7 @@ const MovieListingPage = () => {
           `/movie/getmovies/${genre}/${debouncedDirector}/${debouncedTitle}`,
         );
         setallmovies(res.data.movies || []);
-        console.log("the movies are", res.data.movies);
+        // console.log("the movies are", res.data.movies);
       } catch (e) {
         console.log(e);
         seterror(e.response?.data?.message || "Failed to fetch movies");

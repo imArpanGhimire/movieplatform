@@ -6,8 +6,10 @@ const authmiddlewares = require("../middlewares/auth.middleware")
 
 router.post("/createmovie", authmiddlewares, moviecontroller.createmovie)
 router.get("/getmovies/:genre/:director/:title", authmiddlewares, moviecontroller.getmovies)
+router.get("/getmoviebyid/:id", authmiddlewares, moviecontroller.getmoviebyid)
 router.post("/addreview", authmiddlewares, reviewcontroller.addreview)
 router.get("/getreviews/:movieid", authmiddlewares, reviewcontroller.getreviews)
-router.get("/getmoviebyid/:id", authmiddlewares, moviecontroller.getmoviebyid)
+router.put("/review/:id", authmiddlewares, reviewcontroller.editreviews)
+router.delete("/review/:id", authmiddlewares, reviewcontroller.deletereviews)
 
 module.exports = router
