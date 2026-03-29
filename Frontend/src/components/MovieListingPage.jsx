@@ -13,15 +13,25 @@ const MovieListingPage = () => {
   const [director, setdirector] = useState("all");
   const [title, settitle] = useState("");
   const [debouncedTitle, setdebouncedTitle] = useState("all");
+  const [debouncedDirector, setdebouncedDirector] = useState("all");
 
   // Debounce title input
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const titletimer = setTimeout(() => {
       setdebouncedTitle(title.trim() === "" ? "all" : title);
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(titletimer);
   }, [title]);
+
+  // Debounce director input
+  useEffect(() => {
+    const directortimer = setTimeout(() => {
+      setdebouncedDirector(director.trim() === "" ? "all" : director);
+    }, 300);
+
+    return () => clearTimeout(directortimer);
+  }, [director]);
 
   // Fetch movies when debounced values change
   useEffect(() => {
@@ -31,7 +41,7 @@ const MovieListingPage = () => {
         seterror("");
 
         const res = await api.get(
-          `/movie/getmovies/${genre}/${director}/${debouncedTitle}`,
+          `/movie/getmovies/${genre}/${debouncedDirector}/${debouncedTitle}`,
         );
         setallmovies(res.data.movies || []);
         console.log("the movies are", res.data.movies);
@@ -45,7 +55,7 @@ const MovieListingPage = () => {
     }
 
     getmovies();
-  }, [genre, director, debouncedTitle]);
+  }, [genre, debouncedDirector, debouncedTitle]);
 
   async function handlelogout() {
     try {
