@@ -8,13 +8,15 @@ const ReviewSection = ({ movieId }) => {
   const [rating, setRating] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+
+  const [editingId, setEditingId] = useState(null);
+  const [editComment, setEditComment] = useState("");
+  const [editRating, setEditRating] = useState("");
 
   useEffect(() => {
     async function fetchReviews() {
       try {
         setLoading(true);
-        setError("");
 
         const res = await api.get(`/movie/getreviews/${movieId}`);
         setReviews(res.data.allreviews || []);
@@ -24,6 +26,7 @@ const ReviewSection = ({ movieId }) => {
           title: "Error",
           description: e.response?.data?.message || "failed to fetch reviews",
           position: "top-center",
+          duration: 2000,
         });
       } finally {
         setLoading(false);
@@ -43,13 +46,13 @@ const ReviewSection = ({ movieId }) => {
         title: "Error",
         description: "comments and ratings are required",
         position: "top-center",
+        duration: 2000,
       });
       return;
     }
 
     try {
       setSubmitting(true);
-      setError("");
 
       const res = await api.post("/movie/addreview", {
         movieid: movieId,
@@ -65,6 +68,7 @@ const ReviewSection = ({ movieId }) => {
         title: "Review Added",
         description: "Your review was posted successfully",
         position: "top-center",
+        duration: 2000,
       });
     } catch (e) {
       console.log(e);
@@ -72,9 +76,62 @@ const ReviewSection = ({ movieId }) => {
         title: "Error",
         description: e.response?.data?.message || "failed to add review",
         position: "top-center",
+        duration: 2000,
       });
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  function startEdit(review) {
+    setEditingId(review._id);
+    setEditComment(review.comment);
+    setEditRating(String(review.rating));
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditComment("");
+    setEditRating("");
+  }
+
+  async function updateReview(id) {
+    if (!editComment.trim() || !editRating) {
+      sileo.error({
+        title: "Error",
+        description: "comment and rating are required",
+        position: "top-center",
+        duration: 2000,
+      });
+      return;
+    }
+
+    try {
+      const res = await api.put(`/movie/review/${id}`, {
+        comment: editComment,
+        rating: editRating,
+      });
+
+      setReviews((prev) =>
+        prev.map((review) => (review._id === id ? res.data.review : review)),
+      );
+
+      cancelEdit();
+
+      sileo.success({
+        title: "Review Updated",
+        description: "Your review was updated successfully",
+        position: "top-center",
+        duration: 2000,
+      });
+    } catch (e) {
+      console.log(e);
+      sileo.error({
+        title: "Error",
+        description: e.response?.data?.message || "failed to update review",
+        position: "top-center",
+        duration: 2000,
+      });
     }
   }
 
@@ -85,9 +142,10 @@ const ReviewSection = ({ movieId }) => {
       setReviews((prev) => prev.filter((r) => r._id !== reviewid));
 
       sileo.success({
-        title: "Review deleted",
+        title: "Review Deleted",
         description: "Your review was deleted successfully",
         position: "top-center",
+        duration: 2000,
       });
     } catch (e) {
       console.log(e);
@@ -95,6 +153,7 @@ const ReviewSection = ({ movieId }) => {
         title: "Error",
         description: e.response?.data?.message || "failed to delete review",
         position: "top-center",
+        duration: 2000,
       });
     }
   }
@@ -119,12 +178,6 @@ const ReviewSection = ({ movieId }) => {
               anything that stood out.
             </p>
 
-            {error && (
-              <div className="mt-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                {error}
-              </div>
-            )}
-
             <form onSubmit={handlesubmit} className="mt-6 space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-300">
@@ -147,37 +200,27 @@ const ReviewSection = ({ movieId }) => {
 
                   <div className="mt-3 flex items-center gap-2 text-2xl">
                     <span
-                      className={`${
-                        Number(rating) >= 1 ? "text-amber-400" : "text-zinc-600"
-                      }`}
+                      className={`${Number(rating) >= 1 ? "text-amber-400" : "text-zinc-600"}`}
                     >
                       ★
                     </span>
                     <span
-                      className={`${
-                        Number(rating) >= 2 ? "text-amber-400" : "text-zinc-600"
-                      }`}
+                      className={`${Number(rating) >= 2 ? "text-amber-400" : "text-zinc-600"}`}
                     >
                       ★
                     </span>
                     <span
-                      className={`${
-                        Number(rating) >= 3 ? "text-amber-400" : "text-zinc-600"
-                      }`}
+                      className={`${Number(rating) >= 3 ? "text-amber-400" : "text-zinc-600"}`}
                     >
                       ★
                     </span>
                     <span
-                      className={`${
-                        Number(rating) >= 4 ? "text-amber-400" : "text-zinc-600"
-                      }`}
+                      className={`${Number(rating) >= 4 ? "text-amber-400" : "text-zinc-600"}`}
                     >
                       ★
                     </span>
                     <span
-                      className={`${
-                        Number(rating) >= 5 ? "text-amber-400" : "text-zinc-600"
-                      }`}
+                      className={`${Number(rating) >= 5 ? "text-amber-400" : "text-zinc-600"}`}
                     >
                       ★
                     </span>
@@ -283,7 +326,7 @@ const ReviewSection = ({ movieId }) => {
                             {review.user?.username || "Unknown User"}
                           </h3>
                           <p className="text-xs text-slate-500">
-                            Reviewer {index + 1}
+                            Viewer review #{index + 1}
                           </p>
                         </div>
                       </div>
@@ -291,47 +334,27 @@ const ReviewSection = ({ movieId }) => {
                       <div className="flex w-fit items-center gap-3 rounded-xl border border-amber-400/15 bg-amber-400/10 px-3 py-2">
                         <div className="flex items-center text-base">
                           <span
-                            className={`${
-                              Number(review.rating) >= 1
-                                ? "text-amber-400"
-                                : "text-zinc-600"
-                            }`}
+                            className={`${Number(review.rating) >= 1 ? "text-amber-400" : "text-zinc-600"}`}
                           >
                             ★
                           </span>
                           <span
-                            className={`${
-                              Number(review.rating) >= 2
-                                ? "text-amber-400"
-                                : "text-zinc-600"
-                            }`}
+                            className={`${Number(review.rating) >= 2 ? "text-amber-400" : "text-zinc-600"}`}
                           >
                             ★
                           </span>
                           <span
-                            className={`${
-                              Number(review.rating) >= 3
-                                ? "text-amber-400"
-                                : "text-zinc-600"
-                            }`}
+                            className={`${Number(review.rating) >= 3 ? "text-amber-400" : "text-zinc-600"}`}
                           >
                             ★
                           </span>
                           <span
-                            className={`${
-                              Number(review.rating) >= 4
-                                ? "text-amber-400"
-                                : "text-zinc-600"
-                            }`}
+                            className={`${Number(review.rating) >= 4 ? "text-amber-400" : "text-zinc-600"}`}
                           >
                             ★
                           </span>
                           <span
-                            className={`${
-                              Number(review.rating) >= 5
-                                ? "text-amber-400"
-                                : "text-zinc-600"
-                            }`}
+                            className={`${Number(review.rating) >= 5 ? "text-amber-400" : "text-zinc-600"}`}
                           >
                             ★
                           </span>
@@ -343,24 +366,79 @@ const ReviewSection = ({ movieId }) => {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl bg-black/20 p-4">
-                      <p className="text-[15px] leading-7 text-slate-300">
-                        {review.comment}
-                      </p>
-                    </div>
+                    {editingId === review._id ? (
+                      <div className="rounded-2xl bg-black/20 p-4 space-y-4">
+                        <div>
+                          <label className="mb-2 block text-sm font-medium text-slate-300">
+                            Edit Rating
+                          </label>
+                          <select
+                            value={editRating}
+                            onChange={(e) => setEditRating(e.target.value)}
+                            className="w-full rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white outline-none transition focus:border-teal-500"
+                          >
+                            <option value="">Select rating</option>
+                            <option value="1">1 - Poor</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="3">3 - Good</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="5">5 - Excellent</option>
+                          </select>
+                        </div>
 
-                    <div className="mt-4 flex gap-2">
-                      <button className="flex-1 rounded-lg bg-blue-500/20 py-2 text-sm text-blue-300 hover:bg-blue-500/30 font-medium">
-                        Edit
-                      </button>
+                        <div>
+                          <label className="mb-2 block text-sm font-medium text-slate-300">
+                            Edit Comment
+                          </label>
+                          <textarea
+                            value={editComment}
+                            onChange={(e) => setEditComment(e.target.value)}
+                            rows="4"
+                            className="w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-teal-500"
+                          />
+                        </div>
 
-                      <button
-                        onClick={() => deleteReview(review._id)}
-                        className="flex-1 rounded-lg bg-red-500/20 py-2 text-sm text-red-300 hover:bg-red-500/30 font-medium"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                        <div className="mt-4 flex gap-2">
+                          <button
+                            onClick={() => updateReview(review._id)}
+                            className="flex-1 rounded-lg bg-blue-500/20 py-2 text-sm text-blue-300 hover:bg-blue-500/30 font-medium"
+                          >
+                            Save
+                          </button>
+
+                          <button
+                            onClick={cancelEdit}
+                            className="flex-1 rounded-lg bg-zinc-700 py-2 text-sm text-white hover:bg-zinc-600 font-medium"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="rounded-2xl bg-black/20 p-4">
+                          <p className="text-sm leading-7 text-slate-300">
+                            {review.comment}
+                          </p>
+                        </div>
+
+                        <div className="mt-4 flex gap-2">
+                          <button
+                            onClick={() => startEdit(review)}
+                            className="flex-1 rounded-lg bg-blue-500/20 py-2 text-sm text-blue-300 hover:bg-blue-500/30 font-medium"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => deleteReview(review._id)}
+                            className="flex-1 rounded-lg bg-red-500/20 py-2 text-sm text-red-300 hover:bg-red-500/30 font-medium"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
