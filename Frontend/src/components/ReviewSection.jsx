@@ -111,7 +111,7 @@ const ReviewSection = ({ movieId }) => {
         comment: editComment,
         rating: editRating,
       });
-
+      // todo    yo ali majale bujhna baki xa
       setReviews((prev) =>
         prev.map((review) => (review._id === id ? res.data.review : review)),
       );
