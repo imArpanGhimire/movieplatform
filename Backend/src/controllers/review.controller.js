@@ -107,7 +107,6 @@ async function editreviews(req, res) {
     }
 }
 
-
 async function deletereviews(req, res) {
 
     try {
@@ -120,7 +119,7 @@ async function deletereviews(req, res) {
         }
 
         if (review.user.toString() !== req.user.id)
-            return res.status(403).json({ message: "Not authorized to delete" });
+            return res.status(403).json({ message: "You can't delete the reviews posted by others." });
 
 
         await reviewmodel.findByIdAndDelete(id)

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
+import { sileo } from "sileo";
 
 const ReviewSection = ({ movieId }) => {
   const [reviews, setReviews] = useState([]);
@@ -19,7 +20,11 @@ const ReviewSection = ({ movieId }) => {
         setReviews(res.data.allreviews || []);
       } catch (e) {
         console.log(e);
-        setError(e.response?.data?.message || "failed to fetch reviews");
+        sileo.error({
+          title: "Error",
+          description: e.response?.data?.message || "failed to fetch reviews",
+          position: "top-center",
+        });
       } finally {
         setLoading(false);
       }
@@ -34,7 +39,11 @@ const ReviewSection = ({ movieId }) => {
     e.preventDefault();
 
     if (!comment.trim() || !rating) {
-      setError("comment and rating are required");
+      sileo.error({
+        title: "Error",
+        description: "comments and ratings are required",
+        position: "top-center",
+      });
       return;
     }
 
@@ -48,14 +57,45 @@ const ReviewSection = ({ movieId }) => {
         rating,
       });
 
-      setReviews((prev) => [res.data.review, ...prev]);
+      setReviews((prev) => [...prev, res.data.review]);
       setComment("");
       setRating("");
+
+      sileo.success({
+        title: "Review Added",
+        description: "Your review was posted successfully",
+        position: "top-center",
+      });
     } catch (e) {
       console.log(e);
-      setError(e.response?.data?.message || "failed to add review");
+      sileo.error({
+        title: "Error",
+        description: e.response?.data?.message || "failed to add review",
+        position: "top-center",
+      });
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function deleteReview(reviewid) {
+    try {
+      await api.delete(`/movie/review/${reviewid}`);
+
+      setReviews((prev) => prev.filter((r) => r._id !== reviewid));
+
+      sileo.success({
+        title: "Review deleted",
+        description: "Your review was deleted successfully",
+        position: "top-center",
+      });
+    } catch (e) {
+      console.log(e);
+      sileo.error({
+        title: "Error",
+        description: e.response?.data?.message || "failed to delete review",
+        position: "top-center",
+      });
     }
   }
 
@@ -63,8 +103,8 @@ const ReviewSection = ({ movieId }) => {
     <section className="mt-14 max-w-5xl mx-auto px-4 sm:px-0">
       <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-8">
         <div className="self-start sticky top-24 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
-          {" "}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.05),transparent_30%)] pointer-events-none" />
+
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-300">
               Audience Voice
@@ -243,7 +283,7 @@ const ReviewSection = ({ movieId }) => {
                             {review.user?.username || "Unknown User"}
                           </h3>
                           <p className="text-xs text-slate-500">
-                            Viewer review #{index + 1}
+                            Reviewer {index + 1}
                           </p>
                         </div>
                       </div>
@@ -307,6 +347,19 @@ const ReviewSection = ({ movieId }) => {
                       <p className="text-[15px] leading-7 text-slate-300">
                         {review.comment}
                       </p>
+                    </div>
+
+                    <div className="mt-4 flex gap-2">
+                      <button className="flex-1 rounded-lg bg-blue-500/20 py-2 text-sm text-blue-300 hover:bg-blue-500/30 font-medium">
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => deleteReview(review._id)}
+                        className="flex-1 rounded-lg bg-red-500/20 py-2 text-sm text-red-300 hover:bg-red-500/30 font-medium"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>

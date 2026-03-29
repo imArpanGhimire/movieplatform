@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+[data-sileo-toast] {
+    text-align: center !important;
+}
+
+[data-sileo-toast] * {
+    text-align: center !important;
+    justify-content: center !important;
+}
