@@ -12,6 +12,7 @@ const MovieDetailPage = () => {
   const [loading, setloading] = useState(true);
   const [error, seterror] = useState("");
   const [movie, setmovie] = useState(null);
+  const [averageRating, setaverageRating] = useState(null);
 
   useEffect(() => {
     async function getmoviebyid() {
@@ -26,7 +27,17 @@ const MovieDetailPage = () => {
       }
     }
 
+    async function getaveragerating() {
+      try {
+        const res = await api.get(`/movie/getaveragerating/${id}`);
+        setaverageRating(res.data.averageRating);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
     getmoviebyid();
+    getaveragerating();
   }, [id]);
 
   if (loading) {
@@ -97,7 +108,7 @@ const MovieDetailPage = () => {
                   {movie.title}
                 </h1>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="bg-zinc-800/70 border border-zinc-700 rounded-2xl p-4">
                     <p className="text-zinc-400 text-sm mb-1">Director</p>
                     <p className="text-lg font-semibold text-white">
@@ -116,6 +127,13 @@ const MovieDetailPage = () => {
                     <p className="text-zinc-400 text-sm mb-1">Duration</p>
                     <p className="text-lg font-semibold text-white">
                       {movie.timespan} hr
+                    </p>
+                  </div>
+
+                  <div className="bg-zinc-800/70 border border-zinc-700 rounded-2xl p-4">
+                    <p className="text-zinc-400 text-sm mb-1">Avg Rating</p>
+                    <p className="text-lg font-semibold text-amber-300">
+                      {averageRating || "N/A"} / 5
                     </p>
                   </div>
                 </div>

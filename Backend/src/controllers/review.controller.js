@@ -134,4 +134,31 @@ async function deletereviews(req, res) {
     }
 }
 
-module.exports = { addreview, getreviews, editreviews, deletereviews }
+
+async function averagerating(req, res) {
+    try {
+        const { movieid } = req.params
+        const reviews = await reviewmodel.find({ movie: movieid })
+
+        if (reviews.length === 0) {
+            return res.status(200).json({
+                message: "No reviews yet",
+                averageRating: 0
+            });
+        }
+
+        const totalrating = reviews.reduce((sum, review) => sum + Number(review.rating), 0)
+        const averageratingvalue = (totalrating / reviews.length).toFixed(1)
+
+        return res.status(200).json({
+            message: "average rating fetched",
+            averageRating: averageratingvalue
+        })
+    }
+    catch (e) {
+        console.log(e);
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+module.exports = { addreview, getreviews, editreviews, deletereviews, averagerating }
