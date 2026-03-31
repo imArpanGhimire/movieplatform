@@ -336,6 +336,12 @@ const ReviewSection = ({ movieId }) => {
                           <div>
                             <h3 className="font-semibold text-white">
                               {review.user?.username || "Unknown User"}
+
+                              {review.isEdited && (
+                                <span className="ml-3 text-xs text-slate-500 italic">
+                                  Edited
+                                </span>
+                              )}
                             </h3>
                             <p className="text-xs text-slate-500">
                               Viewer review #{index + 1}
