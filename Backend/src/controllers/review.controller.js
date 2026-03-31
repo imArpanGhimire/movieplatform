@@ -25,7 +25,7 @@ async function addreview(req, res) {
 
         const populatedReview = await reviewmodel
             .findById(review._id)
-            .populate("user", "username")
+            .populate("user", "username _id")
             .populate("movie", "title")
 
 
@@ -50,7 +50,7 @@ async function getreviews(req, res) {
         const filter = {}
         if (movieid) filter.movie = movieid
 
-        const allreviews = await reviewmodel.find(filter).populate("user", "username")
+        const allreviews = await reviewmodel.find(filter).populate("user", "username _id")
             .populate("movie", "title")
 
         if (!allreviews || allreviews.length === 0) {
@@ -93,7 +93,7 @@ async function editreviews(req, res) {
         const updatedReview = await reviewmodel.findByIdAndUpdate(id,
             { rating, comment },
             { new: true }
-        ).populate("user", "username").populate("movie", "title");
+        ).populate("user", "username _id").populate("movie", "title");
 
 
         return res.status(200).json({

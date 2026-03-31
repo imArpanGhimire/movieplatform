@@ -434,24 +434,27 @@ const ReviewSection = ({ movieId }) => {
                             </p>
                           </div>
 
-                          <div className="mt-4 flex gap-2">
-                            <button
-                              onClick={() => startEdit(review)}
-                              className="flex-1 rounded-lg bg-blue-500/20 py-2 text-sm text-blue-300 hover:bg-blue-500/30 font-medium"
-                            >
-                              Edit
-                            </button>
+                          {currentuser?._id?.toString() ===
+                            review.user?._id?.toString() && (
+                            <div className="mt-4 flex gap-2">
+                              <button
+                                onClick={() => startEdit(review)}
+                                className="flex-1 rounded-lg bg-blue-500/20 py-2 text-sm text-blue-300 hover:bg-blue-500/30 font-medium"
+                              >
+                                Edit
+                              </button>
 
-                            <button
-                              onClick={() => {
-                                setshowModal(true);
-                                setreviewToDel(review._id);
-                              }}
-                              className="flex-1 rounded-lg bg-red-500/20 py-2 text-sm text-red-300 hover:bg-red-500/30 font-medium"
-                            >
-                              Delete
-                            </button>
-                          </div>
+                              <button
+                                onClick={() => {
+                                  setshowModal(true);
+                                  setreviewToDel(review._id);
+                                }}
+                                className="flex-1 rounded-lg bg-red-500/20 py-2 text-sm text-red-300 hover:bg-red-500/30 font-medium"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
                         </>
                       )}
                     </div>
