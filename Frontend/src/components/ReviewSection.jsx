@@ -16,6 +16,8 @@ const ReviewSection = ({ movieId }) => {
   const [showModal, setshowModal] = useState(false);
   const [reviewToDel, setreviewToDel] = useState(null);
 
+  const [currentuser, setcurrentuser] = useState(null);
+
   useEffect(() => {
     async function fetchReviews() {
       try {
@@ -153,6 +155,19 @@ const ReviewSection = ({ movieId }) => {
       });
     }
   }
+
+  useEffect(() => {
+    async function getcurrentuser() {
+      try {
+        const response = await api.get("/auth/me");
+        setcurrentuser(response.data.user);
+      } catch (e) {
+        console.log(e);
+        setcurrentuser(null);
+      }
+    }
+    getcurrentuser();
+  }, []);
 
   return (
     <>
