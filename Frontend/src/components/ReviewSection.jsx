@@ -26,7 +26,6 @@ const ReviewSection = ({ movieId }) => {
           title: "Error",
           description: e.response?.data?.message || "failed to fetch reviews",
           position: "top-center",
-          duration: 2000,
         });
       } finally {
         setLoading(false);
@@ -46,7 +45,6 @@ const ReviewSection = ({ movieId }) => {
         title: "Error",
         description: "comments and ratings are required",
         position: "top-center",
-        duration: 2000,
       });
       return;
     }
@@ -101,7 +99,6 @@ const ReviewSection = ({ movieId }) => {
         title: "Error",
         description: "comment and rating are required",
         position: "top-center",
-        duration: 2000,
       });
       return;
     }
@@ -122,7 +119,6 @@ const ReviewSection = ({ movieId }) => {
         title: "Review Updated",
         description: "Your review was updated successfully",
         position: "top-center",
-        duration: 2000,
       });
     } catch (e) {
       console.log(e);
@@ -130,7 +126,6 @@ const ReviewSection = ({ movieId }) => {
         title: "Error",
         description: e.response?.data?.message || "failed to update review",
         position: "top-center",
-        duration: 2000,
       });
     }
   }
@@ -145,7 +140,6 @@ const ReviewSection = ({ movieId }) => {
         title: "Review Deleted",
         description: "Your review was deleted successfully",
         position: "top-center",
-        duration: 2000,
       });
     } catch (e) {
       console.log(e);
@@ -153,7 +147,6 @@ const ReviewSection = ({ movieId }) => {
         title: "Error",
         description: e.response?.data?.message || "failed to delete review",
         position: "top-center",
-        duration: 2000,
       });
     }
   }
@@ -192,7 +185,7 @@ const ReviewSection = ({ movieId }) => {
                   >
                     <option value="">Select rating</option>
                     <option value="1">1 - Poor</option>
-                    <option value="2">2 - Fair</option>
+                    <option value="2">2 - Decent</option>
                     <option value="3">3 - Good</option>
                     <option value="4">4 - Very Good</option>
                     <option value="5">5 - Excellent</option>
