@@ -147,10 +147,24 @@ async function getusers(req, res) {
 }
 
 async function me(req, res) {
-    return res.status(200).json({
-        message: "user is logged in",
-        user: req.user
-    })
+    try {
+        const user = await usermodel.findById(req.user.id);
+
+        return res.status(200).json({
+            message: "user is logged in",
+            user: {
+                _id: user._id,
+                id: user._id,
+                username: user.username,
+                role: user.role
+            }
+        })
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({
+            message: "internal server error"
+        })
+    }
 }
 
 module.exports = { registeruser, getusers, loginuser, logoutuser, me }
