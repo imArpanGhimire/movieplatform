@@ -18,6 +18,8 @@ const ReviewSection = ({ movieId }) => {
 
   const [currentuser, setcurrentuser] = useState(null);
 
+  const [sortby, setsortby] = useState("newest");
+
   useEffect(() => {
     async function fetchReviews() {
       try {
@@ -179,6 +181,21 @@ const ReviewSection = ({ movieId }) => {
     });
   }
 
+  //todo   sort reviews
+  const sortreviews = [...reviews].sort((a, b) => {
+    if (sortby === "highest") {
+      return Number(b.rating) - Number(a.rating);
+    }
+    if (sortby === "lowest") {
+      return Number(a.rating) - Number(b.rating);
+    }
+
+    if (sortby === "oldest") {
+      return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+    }
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+  });
+
   return (
     <>
       <section className="mt-14 max-w-5xl mx-auto px-4 sm:px-0">
@@ -295,7 +312,7 @@ const ReviewSection = ({ movieId }) => {
                 </h2>
               </div>
 
-              <div className="inline-flex w-fit items-center gap-3 rounded-2xl border border-white/10 bg-zinc-800/80 px-4 py-3">
+              <div className="inline-flex w-fit items-center gap-3 rounded-2xl border border-white/10 bg-zinc-800/80 px-2 py-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-500/15 text-lg font-bold text-teal-300">
                   {reviews.length}
                 </div>
@@ -303,10 +320,23 @@ const ReviewSection = ({ movieId }) => {
                   <p className="text-sm font-medium text-slate-200">
                     Total responses
                   </p>
-                  <p className="text-xs text-slate-500">
-                    Live feedback from viewers
-                  </p>
+                  <p className="text-xs text-slate-500">Live feedback</p>
                 </div>
+              </div>
+
+              {/* sort  */}
+              {/* 🔥 NEW SORT DROPDOWN */}
+              <div className="flex items-center gap-2">
+                <select
+                  value={sortby}
+                  onChange={(e) => setsortby(e.target.value)}
+                  className="rounded-xl border border-white/10 bg-zinc-800 px-3 py-2 text-sm text-white outline-none focus:border-teal-500"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="highest">Highest </option>
+                  <option value="lowest">Lowest </option>
+                </select>
               </div>
             </div>
 
@@ -329,7 +359,7 @@ const ReviewSection = ({ movieId }) => {
               </div>
             ) : (
               <div className="space-y-5">
-                {reviews.map((review, index) => (
+                {sortreviews.map((review, index) => (
                   <div
                     key={review._id}
                     className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 p-5 transition hover:border-teal-500/30 hover:shadow-[0_12px_40px_rgba(20,184,166,0.08)]"
