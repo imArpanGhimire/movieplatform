@@ -20,20 +20,19 @@ const ReviewSection = ({ movieId }) => {
 
   const [sortby, setsortby] = useState("newest");
 
+  const [error, setError] = useState("");
+
   useEffect(() => {
     async function fetchReviews() {
       try {
         setLoading(true);
+        setError("");
 
         const res = await api.get(`/movie/getreviews/${movieId}`);
         setReviews(res.data.allreviews || []);
       } catch (e) {
         console.log(e);
-        sileo.error({
-          title: "Error",
-          description: e.response?.data?.message || "failed to fetch reviews",
-          position: "top-center",
-        });
+        setError(e.response?.data?.message || "Failed to fetch reviews");
       } finally {
         setLoading(false);
       }
@@ -48,16 +47,13 @@ const ReviewSection = ({ movieId }) => {
     e.preventDefault();
 
     if (!comment.trim() || !rating) {
-      sileo.error({
-        title: "Error",
-        description: "comments and ratings are required",
-        position: "top-center",
-      });
+      setError("Comments and ratings are required");
       return;
     }
 
     try {
       setSubmitting(true);
+      setError("");
 
       const res = await api.post("/movie/addreview", {
         movieid: movieId,
@@ -77,12 +73,7 @@ const ReviewSection = ({ movieId }) => {
       });
     } catch (e) {
       console.log(e);
-      sileo.error({
-        title: "Error",
-        description: e.response?.data?.message || "failed to add review",
-        position: "top-center",
-        duration: 2000,
-      });
+      setError(e.response?.data?.message || "Failed to add review");
     } finally {
       setSubmitting(false);
     }
@@ -92,30 +83,29 @@ const ReviewSection = ({ movieId }) => {
     setEditingId(review._id);
     setEditComment(review.comment);
     setEditRating(String(review.rating));
+    setError("");
   }
 
   function cancelEdit() {
     setEditingId(null);
     setEditComment("");
     setEditRating("");
+    setError("");
   }
 
   async function updateReview(id) {
     if (!editComment.trim() || !editRating) {
-      sileo.error({
-        title: "Error",
-        description: "comment and rating are required",
-        position: "top-center",
-      });
+      setError("Comment and rating are required");
       return;
     }
 
     try {
+      setError("");
       const res = await api.put(`/movie/review/${id}`, {
         comment: editComment,
         rating: editRating,
       });
-      // todo    yo ali majale bujhna baki xa
+
       setReviews((prev) =>
         prev.map((review) => (review._id === id ? res.data.review : review)),
       );
@@ -129,11 +119,7 @@ const ReviewSection = ({ movieId }) => {
       });
     } catch (e) {
       console.log(e);
-      sileo.error({
-        title: "Error",
-        description: e.response?.data?.message || "failed to update review",
-        position: "top-center",
-      });
+      setError(e.response?.data?.message || "Failed to update review");
     }
   }
 
@@ -150,11 +136,7 @@ const ReviewSection = ({ movieId }) => {
       });
     } catch (e) {
       console.log(e);
-      sileo.error({
-        title: "Error",
-        description: e.response?.data?.message || "failed to delete review",
-        position: "top-center",
-      });
+      setError(e.response?.data?.message || "Failed to delete review");
     }
   }
 
@@ -216,6 +198,12 @@ const ReviewSection = ({ movieId }) => {
                 Share what you felt about the movie — story, acting, visuals, or
                 anything that stood out.
               </p>
+
+              {error && (
+                <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3">
+                  <p className="text-sm text-red-300">{error}</p>
+                </div>
+              )}
 
               <form onSubmit={handlesubmit} className="mt-6 space-y-5">
                 <div>
@@ -425,6 +413,12 @@ const ReviewSection = ({ movieId }) => {
 
                       {editingId === review._id ? (
                         <div className="rounded-2xl bg-black/20 p-4 space-y-4">
+                          {error && (
+                            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2">
+                              <p className="text-xs text-red-300">{error}</p>
+                            </div>
+                          )}
+
                           <div>
                             <label className="mb-2 block text-sm font-medium text-slate-300">
                               Edit Rating
