@@ -24,8 +24,10 @@ const reviewschema = new mongoose.Schema({
     isEdited: {
         type: Boolean,
         default: false
-    }
-})
+    },
+},
+    { timestamps: true }
+)
 
 const reviewmodel = mongoose.model("review", reviewschema)
 

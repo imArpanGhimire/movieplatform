@@ -169,6 +169,16 @@ const ReviewSection = ({ movieId }) => {
     getcurrentuser();
   }, []);
 
+  function formattimestamp(dateString) {
+    if (!dateString) return "Older review";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
   return (
     <>
       <section className="mt-14 max-w-5xl mx-auto px-4 sm:px-0">
@@ -338,13 +348,14 @@ const ReviewSection = ({ movieId }) => {
                               {review.user?.username || "Unknown User"}
 
                               {review.isEdited && (
-                                <span className="ml-3 text-xs text-slate-500 italic">
-                                  Edited
+                                <span className="text-xs text-slate-400 italic ml-3">
+                                  Edited • {formattimestamp(review.updatedAt)}
                                 </span>
                               )}
                             </h3>
                             <p className="text-xs text-slate-500">
-                              Viewer review #{index + 1}
+                              {/* Viewer review #{index + 1} */}
+                              {formattimestamp(review.createdAt)}
                             </p>
                           </div>
                         </div>
