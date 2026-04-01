@@ -92,7 +92,7 @@ async function editreviews(req, res) {
 
         const updatedReview = await reviewmodel.findByIdAndUpdate(id,
             { rating, comment, isEdited: true },
-            { new: true }
+            { returnDocument: "after" }
         ).populate("user", "username _id").populate("movie", "title");
 
 
