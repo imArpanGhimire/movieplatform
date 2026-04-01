@@ -324,8 +324,6 @@ const ReviewSection = ({ movieId }) => {
                 </div>
               </div>
 
-              {/* sort  */}
-              {/* 🔥 NEW SORT DROPDOWN */}
               <div className="flex items-center gap-2">
                 <select
                   value={sortby}
