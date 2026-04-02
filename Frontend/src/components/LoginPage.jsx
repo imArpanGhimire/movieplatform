@@ -108,6 +108,18 @@ const LoginPage = () => {
             Create New Account
           </button>
         </form>
+
+        <div className="text-center mt-6">
+          <p className="text-slate-400 text-sm">
+            New here?{" "}
+            <button
+              onClick={() => navigate("/register")}
+              className="text-teal-500 hover:text-teal-400 font-medium transition-colors bg-none border-none cursor-pointer"
+            >
+              Sign up
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
