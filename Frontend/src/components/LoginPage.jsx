@@ -52,13 +52,6 @@ const LoginPage = () => {
           </p>
         </div>
 
-        <div className="mb-4 bg-zinc-800 border border-zinc-700 rounded-xl p-4">
-          <p className="text-sm text-slate-300 font-medium mb-1">Quick Note</p>
-          <p className="text-xs text-slate-400 leading-5">
-            Login with your account to explore movies, reviews, and ratings.
-          </p>
-        </div>
-
         <form
           onSubmit={handleLogin}
           className="bg-zinc-800 border border-zinc-700 rounded-xl p-8 space-y-6"
@@ -100,11 +93,25 @@ const LoginPage = () => {
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>
+
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-zinc-700"></div>
+            <span className="text-xs text-slate-500 uppercase">or</span>
+            <div className="flex-1 h-px bg-zinc-700"></div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate("/register")}
+            className="w-full border border-zinc-600 text-slate-200 hover:bg-zinc-700 py-3 rounded-lg transition-all"
+          >
+            Create New Account
+          </button>
         </form>
 
         <div className="text-center mt-6">
           <p className="text-slate-400 text-sm">
-            Don't have an account?{" "}
+            New here?{" "}
             <button
               onClick={() => navigate("/register")}
               className="text-teal-500 hover:text-teal-400 font-medium transition-colors bg-none border-none cursor-pointer"
