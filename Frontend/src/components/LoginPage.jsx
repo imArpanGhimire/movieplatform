@@ -12,7 +12,6 @@ const LoginPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // added
 
   function handleChange(e) {
     setFormData({
@@ -53,6 +52,13 @@ const LoginPage = () => {
           </p>
         </div>
 
+        <div className="mb-4 bg-zinc-800 border border-zinc-700 rounded-xl p-4">
+          <p className="text-sm text-slate-300 font-medium mb-1">Quick Note</p>
+          <p className="text-xs text-slate-400 leading-5">
+            Login with your account to explore movies, reviews, and ratings.
+          </p>
+        </div>
+
         <form
           onSubmit={handleLogin}
           className="bg-zinc-800 border border-zinc-700 rounded-xl p-8 space-y-6"
@@ -75,25 +81,14 @@ const LoginPage = () => {
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Password
             </label>
-
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"} // changed
-                name="password"
-                placeholder="•••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 pr-20 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
-              />
-
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-teal-400 hover:text-teal-300"
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
+            <input
+              type="password"
+              name="password"
+              placeholder="•••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+            />
           </div>
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
