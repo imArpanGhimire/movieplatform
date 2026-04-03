@@ -348,7 +348,7 @@ const ReviewSection = ({ movieId }) => {
                 {sortreviews.map((review, index) => (
                   <div
                     key={review._id}
-                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 p-5 transition hover:border-teal-500/30 hover:shadow-[0_12px_40px_rgba(20,184,166,0.08)]"
+                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 p-5 transition transform hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-[0_12px_40px_rgba(20,184,166,0.08)]"
                   >
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.10),transparent_30%)] opacity-0 transition group-hover:opacity-100" />
 
