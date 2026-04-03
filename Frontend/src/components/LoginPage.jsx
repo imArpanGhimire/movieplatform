@@ -109,7 +109,7 @@ const LoginPage = () => {
           </button>
         </form>
 
-        <div className="text-center mt-6">
+        {/* <div className="text-center mt-6">
           <p className="text-slate-400 text-sm">
             New here?{" "}
             <button
@@ -119,7 +119,7 @@ const LoginPage = () => {
               Sign Up
             </button>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
