@@ -46,8 +46,14 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-zinc-900 flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 h-72 w-72 rounded-full bg-teal-500/10 blur-3xl" />
+        <div className="absolute bottom-10 right-10 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-teal-500 mb-2">FilmVault</h1>
@@ -55,10 +61,9 @@ const RegisterPage = () => {
         </div>
 
         {/* Form Card */}
-
         <form
           onSubmit={handleregister}
-          className="bg-zinc-800 border border-zinc-700 rounded-xl p-8 space-y-6"
+          className="bg-zinc-800/80 backdrop-blur-md border border-zinc-700 rounded-2xl p-8 space-y-6 shadow-2xl"
         >
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -70,7 +75,7 @@ const RegisterPage = () => {
               placeholder="Enter username"
               value={formData.username}
               onChange={handlechange}
-              className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+              className="w-full bg-zinc-700 border border-zinc-600 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:scale-[1.01] transition-all duration-200"
             />
           </div>
 
@@ -84,17 +89,26 @@ const RegisterPage = () => {
               placeholder="•••••••••"
               value={formData.password}
               onChange={handlechange}
-              className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+              className="w-full bg-zinc-700 border border-zinc-600 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:scale-[1.01] transition-all duration-200"
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          {success && <p className="text-green-400 text-sm">{success}</p>}
+          {error && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+              <p className="text-red-300 text-sm">{error}</p>
+            </div>
+          )}
+
+          {success && (
+            <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3">
+              <p className="text-green-300 text-sm">{success}</p>
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-500 hover:bg-teal-600 text-zinc-900 font-semibold py-3 rounded-lg transition-all disabled:opacity-60"
+            className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-zinc-900 font-semibold py-3 rounded-xl transition-all duration-200 disabled:opacity-60 shadow-lg"
           >
             {loading ? "Creating..." : "Sign Up"}
           </button>
