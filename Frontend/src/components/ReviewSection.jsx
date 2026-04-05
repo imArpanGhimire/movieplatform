@@ -163,7 +163,6 @@ const ReviewSection = ({ movieId }) => {
     });
   }
 
-  //todo   sort reviews
   const sortreviews = [...reviews].sort((a, b) => {
     if (sortby === "highest") {
       return Number(b.rating) - Number(a.rating);
@@ -182,7 +181,7 @@ const ReviewSection = ({ movieId }) => {
     <>
       <section className="mt-14 max-w-5xl mx-auto px-4 sm:px-0">
         <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-8">
-          <div className="self-start sticky top-24 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+          <div className="self-start sticky top-24 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.45)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/20">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.05),transparent_30%)] pointer-events-none" />
 
             <div className="relative">
@@ -215,7 +214,7 @@ const ReviewSection = ({ movieId }) => {
                     <select
                       value={rating}
                       onChange={(e) => setRating(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white outline-none transition focus:border-teal-500"
+                      className="w-full rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-teal-500 focus:scale-[1.01]"
                     >
                       <option value="">Select rating</option>
                       <option value="1">1 - Poor</option>
@@ -266,7 +265,7 @@ const ReviewSection = ({ movieId }) => {
                       onChange={(e) => setComment(e.target.value)}
                       placeholder="What did you love or dislike about this movie?"
                       rows="6"
-                      className="w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-teal-500"
+                      className="w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all duration-200 focus:border-teal-500 focus:scale-[1.01]"
                     />
                     <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
                       <span>Be honest, short, and clear.</span>
@@ -316,7 +315,7 @@ const ReviewSection = ({ movieId }) => {
                 <select
                   value={sortby}
                   onChange={(e) => setsortby(e.target.value)}
-                  className="rounded-xl border border-white/10 bg-zinc-800 px-3 py-2 text-sm text-white outline-none focus:border-teal-500"
+                  className="rounded-xl border border-white/10 bg-zinc-800 px-3 py-2 text-sm text-white outline-none transition-all duration-200 focus:border-teal-500"
                 >
                   <option value="newest">Newest</option>
                   <option value="oldest">Oldest</option>
@@ -370,7 +369,6 @@ const ReviewSection = ({ movieId }) => {
                               )}
                             </h3>
                             <p className="text-xs text-slate-500">
-                              {/* Viewer review #{index + 1} */}
                               {formattimestamp(review.createdAt)}
                             </p>
                           </div>
@@ -426,7 +424,7 @@ const ReviewSection = ({ movieId }) => {
                             <select
                               value={editRating}
                               onChange={(e) => setEditRating(e.target.value)}
-                              className="w-full rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white outline-none transition focus:border-teal-500"
+                              className="w-full rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-teal-500 focus:scale-[1.01]"
                             >
                               <option value="">Select rating</option>
                               <option value="1">1 - Poor</option>
@@ -445,7 +443,7 @@ const ReviewSection = ({ movieId }) => {
                               value={editComment}
                               onChange={(e) => setEditComment(e.target.value)}
                               rows="4"
-                              className="w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-teal-500"
+                              className="w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800/80 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition-all duration-200 focus:border-teal-500 focus:scale-[1.01]"
                             />
                           </div>
 
@@ -468,7 +466,7 @@ const ReviewSection = ({ movieId }) => {
                       ) : (
                         <>
                           <div className="rounded-2xl bg-black/20 p-4">
-                            <p className="text-sm leading-7 text-slate-300">
+                            <p className="text-sm leading-7 text-slate-300 transition-colors duration-200 group-hover:text-slate-200">
                               {review.comment}
                             </p>
                           </div>
@@ -505,7 +503,7 @@ const ReviewSection = ({ movieId }) => {
         </div>
       </section>
 
-      {showModal && ( // NEW: render modal only when needed
+      {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="w-full max-w-xs rounded-2xl border border-white/10 bg-zinc-900 p-5 shadow-2xl">
             <h3 className="text-center text-base font-semibold text-white">
@@ -519,8 +517,8 @@ const ReviewSection = ({ movieId }) => {
             <div className="mt-5 flex gap-2">
               <button
                 onClick={() => {
-                  setshowModal(false); // NEW: close modal
-                  setreviewToDel(null); // NEW: clear selected id
+                  setshowModal(false);
+                  setreviewToDel(null);
                 }}
                 className="flex-1 rounded-xl bg-zinc-800 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
               >
@@ -529,9 +527,9 @@ const ReviewSection = ({ movieId }) => {
 
               <button
                 onClick={async () => {
-                  await deleteReview(reviewToDel); // NEW: actual delete happens here
-                  setshowModal(false); // NEW: close modal after delete
-                  setreviewToDel(null); // NEW: reset id
+                  await deleteReview(reviewToDel);
+                  setshowModal(false);
+                  setreviewToDel(null);
                 }}
                 className="flex-1 rounded-xl bg-red-500/20 py-2.5 text-sm font-medium text-red-300 hover:bg-red-500/30"
               >
