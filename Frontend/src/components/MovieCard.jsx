@@ -11,7 +11,7 @@ const MovieCard = ({ movie }) => {
         </p>
 
         {/* Softer overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/55 to-transparent opacity-0 group-hover:opacity-100 transition duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition duration-500" />
 
         {/* Centered content */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
