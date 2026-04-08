@@ -10,8 +10,11 @@ const MovieCard = ({ movie }) => {
           {movie.title?.charAt(0)}
         </p>
 
-        {/* Softer overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition duration-500" />
+        {/* NEW: base contrast layer */}
+        <div className="absolute inset-0 bg-black/10" />
+
+        {/* Improved overlay transition */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out" />
 
         {/* Centered content */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
