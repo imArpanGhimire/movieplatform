@@ -84,7 +84,7 @@ const MovieListingPage = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
           <h1
-            className="text-3xl font-black text-teal-400 cursor-pointer  duration-300"
+            className="text-3xl font-black text-teal-400 cursor-pointer  duration-300 font-swash"
             onClick={() => navigate("/movies")}
           >
             FilmVault
@@ -102,10 +102,10 @@ const MovieListingPage = () => {
       <div className="max-w-7xl mx-auto pt-28 relative z-10">
         {/* Header */}
         <div className="mb-16 animate-fadeInDown">
-          <p className="text-sm uppercase tracking-[0.25em] text-teal-400 mb-3">
+          <p className="text-sm uppercase tracking-[0.25em] text-teal-400 mb-3 font-swash">
             Discover Films
           </p>
-          <h1 className="text-6xl font-black leading-tight mb-4 text-white">
+          <h1 className="text-6xl font-black leading-tight mb-4 text-white font-swash">
             Cinematic Gems Await
           </h1>
           <p className="text-lg text-zinc-400 font-light">
