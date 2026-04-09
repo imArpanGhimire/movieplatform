@@ -108,7 +108,7 @@ const MovieListingPage = () => {
           <h1 className="text-6xl font-black leading-tight mb-4 text-white font-swash">
             Cinematic Gems Await
           </h1>
-          <p className="text-lg text-zinc-400 font-light">
+          <p className="text-lg text-zinc-400 font-swash">
             Explore a curated collection of films. Filter by genre, director, or
             title.
           </p>
