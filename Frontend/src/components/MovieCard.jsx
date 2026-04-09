@@ -6,7 +6,7 @@ const MovieCard = ({ movie }) => {
       {/* Poster */}
       <div className="relative h-80 bg-gradient-to-br from-teal-500 to-zinc-800 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-105">
         {/* Big letter */}
-        <p className="relative z-10 text-6xl font-bold text-slate-300 capitalize transition-all duration-500 group-hover:scale-105 group-hover:opacity-5 group-hover:blur-sm">
+        <p className="relative z-10  text-6xl font-swash text-slate-300 capitalize transition-all duration-500 group-hover:scale-105 group-hover:opacity-5 group-hover:blur-sm">
           {movie.title?.charAt(0)}
         </p>
 

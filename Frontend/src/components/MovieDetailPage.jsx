@@ -104,7 +104,7 @@ const MovieDetailPage = () => {
                   Movie Details
                 </p>
 
-                <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6 text-white">
+                <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6 text-white font-swash">
                   {movie.title}
                 </h1>
 
