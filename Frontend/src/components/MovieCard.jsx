@@ -2,7 +2,7 @@ import React from "react";
 
 const MovieCard = ({ movie }) => {
   return (
-    <div className="group capitalize relative cursor-pointer rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:border-teal-400">
+    <div className="group capitalize relative cursor-pointer rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800 hover:opacity-95 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:border-teal-400">
       {/* Poster */}
       <div className="relative h-80 bg-gradient-to-br from-teal-500 to-zinc-800 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-105 shadow-inner">
         {/* Big letter */}
