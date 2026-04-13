@@ -126,7 +126,7 @@ const MovieDetailPage = () => {
                   <div className="bg-zinc-800/70 border border-zinc-700 rounded-2xl p-4">
                     <p className="text-zinc-400 text-sm mb-1">Duration</p>
                     <p className="text-lg font-semibold text-white">
-                      {movie.timespan} hr
+                      {movie.duration} hr
                     </p>
                   </div>
 
@@ -147,7 +147,7 @@ const MovieDetailPage = () => {
                       {movie.genre}
                     </p>
                     <p className="text-zinc-400 mt-2 text-sm">
-                      {movie.timespan} hr runtime
+                      {movie.duration} hr runtime
                     </p>
                   </div>
                 </div>
