@@ -15,6 +15,7 @@ const ReviewSection = ({ movieId }) => {
 
   const [showModal, setshowModal] = useState(false);
   const [reviewToDel, setreviewToDel] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [currentuser, setcurrentuser] = useState(null);
 
@@ -319,8 +320,8 @@ const ReviewSection = ({ movieId }) => {
                 >
                   <option value="newest">Newest</option>
                   <option value="oldest">Oldest</option>
-                  <option value="highest">Highest </option>
-                  <option value="lowest">Lowest </option>
+                  <option value="highest">Highest</option>
+                  <option value="lowest">Lowest</option>
                 </select>
               </div>
             </div>
@@ -344,7 +345,7 @@ const ReviewSection = ({ movieId }) => {
               </div>
             ) : (
               <div className="space-y-5">
-                {sortreviews.map((review, index) => (
+                {sortreviews.map((review) => (
                   <div
                     key={review._id}
                     className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 p-5 transition transform hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-[0_12px_40px_rgba(20,184,166,0.08)]"
@@ -520,20 +521,27 @@ const ReviewSection = ({ movieId }) => {
                   setshowModal(false);
                   setreviewToDel(null);
                 }}
-                className="flex-1 rounded-xl bg-zinc-800 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+                disabled={deleting}
+                className="flex-1 rounded-xl bg-zinc-800 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Cancel
               </button>
 
               <button
                 onClick={async () => {
-                  await deleteReview(reviewToDel);
-                  setshowModal(false);
-                  setreviewToDel(null);
+                  try {
+                    setDeleting(true);
+                    await deleteReview(reviewToDel);
+                    setshowModal(false);
+                    setreviewToDel(null);
+                  } finally {
+                    setDeleting(false);
+                  }
                 }}
-                className="flex-1 rounded-xl bg-red-500/20 py-2.5 text-sm font-medium text-red-300 hover:bg-red-500/30"
+                disabled={deleting}
+                className="flex-1 rounded-xl bg-red-500/20 py-2.5 text-sm font-medium text-red-300 hover:bg-red-500/30 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Delete
+                {deleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
