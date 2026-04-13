@@ -8,6 +8,7 @@ const ReviewSection = ({ movieId }) => {
   const [rating, setRating] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
   const [editComment, setEditComment] = useState("");
@@ -101,7 +102,9 @@ const ReviewSection = ({ movieId }) => {
     }
 
     try {
+      setUpdating(true);
       setError("");
+
       const res = await api.put(`/movie/review/${id}`, {
         comment: editComment,
         rating: editRating,
@@ -121,6 +124,8 @@ const ReviewSection = ({ movieId }) => {
     } catch (e) {
       console.log(e);
       setError(e.response?.data?.message || "Failed to update review");
+    } finally {
+      setUpdating(false);
     }
   }
 
