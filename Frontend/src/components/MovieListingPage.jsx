@@ -231,11 +231,24 @@ const MovieListingPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20">
+              <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="text-6xl mb-4">🎬</div>
-                <p className="text-zinc-400 font-medium">
-                  No films match your filters
+
+                <h3 className="text-xl font-semibold text-white">
+                  No films found
+                </h3>
+
+                <p className="mt-2 text-zinc-400 max-w-md">
+                  No movies match your current filters. Try changing the title,
+                  genre, or director.
                 </p>
+
+                <button
+                  onClick={clearfilter}
+                  className="mt-5 rounded-xl bg-zinc-800 border border-zinc-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 transition-all"
+                >
+                  Clear Filters
+                </button>
               </div>
             )}
           </>
