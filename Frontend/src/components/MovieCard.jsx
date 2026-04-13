@@ -22,7 +22,9 @@ const MovieCard = ({ movie }) => {
             {movie.title}
           </h3>
 
-          <p className="mt-2 text-sm text-slate-200">{movie.duration} min</p>
+          <p className="mt-2 text-sm text-slate-200">
+            {movie.duration ? `${movie.duration} min` : "Runtime N/A"}
+          </p>
 
           <span className="mt-3 rounded-2xl bg-teal-500/20 px-3 py-1 text-xs font-medium text-teal-300 border border-teal-400/20 shadow-sm">
             {movie.genre}
