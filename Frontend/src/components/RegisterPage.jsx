@@ -23,9 +23,8 @@ const RegisterPage = () => {
   async function handleregister(e) {
     e.preventDefault();
     seterror("");
+    setloading(true);
 
-    console.log("formData:", formData);
-    console.log("type of username:", typeof formData.username);
     try {
       const res = await api.post("/auth/register", {
         username: formData.username.trim(),
@@ -33,18 +32,17 @@ const RegisterPage = () => {
       });
 
       console.log("registration success", res.data);
-      setsucess("user is registered");
+      setsucess("User registered successfully");
       setTimeout(() => {
         navigate("/");
       }, 1000);
     } catch (e) {
-      seterror(e.response?.data?.message || "kei error aayo la");
+      seterror(e.response?.data?.message || "Something went wrong");
       console.log(e);
     } finally {
       setloading(false);
     }
   }
-
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center px-4 relative overflow-hidden">
       {/* Background glow */}
