@@ -27,7 +27,7 @@ const MovieCard = ({ movie }) => {
           </p>
 
           <span className="mt-3 rounded-2xl bg-teal-500/20 px-3 py-1 text-xs font-medium text-teal-300 border border-teal-400/20 shadow-sm">
-            {movie.genre}
+            {movie.genre || "Unknown Genre"}
           </span>
         </div>
       </div>
