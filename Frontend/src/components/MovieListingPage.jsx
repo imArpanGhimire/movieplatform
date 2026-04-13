@@ -244,7 +244,7 @@ const MovieListingPage = () => {
         {/* Pagination */}
         {!loading && !error && allmovies.length > 0 && (
           <div className="flex justify-center items-center gap-3 mb-8 animate-fadeInUp">
-            <button className="px-6 py-2.5 bg-zinc-800/70 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 hover:border-zinc-600 transition-all duration-300 font-medium backdrop-blur-sm">
+            {/* <button className="px-6 py-2.5 bg-zinc-800/70 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 hover:border-zinc-600 transition-all duration-300 font-medium backdrop-blur-sm">
               ← Previous
             </button>
             <div className="flex gap-2">
@@ -260,7 +260,8 @@ const MovieListingPage = () => {
             </div>
             <button className="px-6 py-2.5 bg-zinc-800/70 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 hover:border-zinc-600 transition-all duration-300 font-medium backdrop-blur-sm">
               Next →
-            </button>
+            </button> */}
+            <p>more features coming soon...</p>
           </div>
         )}
       </div>
