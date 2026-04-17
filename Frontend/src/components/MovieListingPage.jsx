@@ -19,7 +19,7 @@ const MovieListingPage = () => {
   useEffect(() => {
     const titletimer = setTimeout(() => {
       setdebouncedTitle(title.trim() === "" ? "all" : title);
-    }, 300);
+    }, 350);
 
     return () => clearTimeout(titletimer);
   }, [title]);
