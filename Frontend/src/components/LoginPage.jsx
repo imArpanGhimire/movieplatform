@@ -105,7 +105,7 @@ const LoginPage = () => {
             onClick={() => navigate("/register")}
             className="w-full border border-zinc-600 text-slate-200 hover:bg-zinc-700 py-3 rounded-lg transition-all"
           >
-            Create New Account
+            Create a New Account
           </button>
         </form>
 
