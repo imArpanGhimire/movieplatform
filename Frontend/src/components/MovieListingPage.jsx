@@ -28,7 +28,7 @@ const MovieListingPage = () => {
   useEffect(() => {
     const directortimer = setTimeout(() => {
       setdebouncedDirector(director.trim() === "" ? "all" : director);
-    }, 300);
+    }, 350);
 
     return () => clearTimeout(directortimer);
   }, [director]);
