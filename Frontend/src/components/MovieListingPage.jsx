@@ -274,7 +274,7 @@ const MovieListingPage = () => {
             <button className="px-6 py-2.5 bg-zinc-800/70 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 hover:border-zinc-600 transition-all duration-300 font-medium backdrop-blur-sm">
               Next →
             </button> */}
-            <p className="capitalize">more features coming soon...</p>
+            <p className="capitalize">More features coming soon...</p>
           </div>
         )}
       </div>
