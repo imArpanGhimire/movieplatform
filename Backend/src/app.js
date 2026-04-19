@@ -2,6 +2,8 @@ const express = require("express")
 const app = express()
 const authroutes = require("./routes/auth.routes")
 const movieroutes = require("./routes/movie.routes")
+const likesroutes = require("./routes/likes.routes")
+
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
 
@@ -17,5 +19,6 @@ app.use(cookieParser())
 
 app.use("/api/auth", authroutes)
 app.use("/api/movie", movieroutes)
+app.use("/api/likes", likesroutes)
 
 module.exports = app
