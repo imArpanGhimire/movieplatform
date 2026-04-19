@@ -1,45 +1,18 @@
-const likemodel = require("../models/likeModel")
+const likemodel = require("../models/like.model")
 
-const togglelike = async (req, res) => {
+const liketoggle = async (req, res) => {
     try {
-        const { reviewId } = req.body
-        const userId = req.user.id
 
-        // check if already liked
+        const { reviewid } = req.body
+        const userid = req.user.id
+
         const existing = await likemodel.findOne({
-            review: reviewId,
-            user: userId
+            review: reviewid,
+            user: userid
         })
-
-        // if already liked → remove
-        if (existing) {
-            await likemodel.findByIdAndDelete(existing._id)
-
-            const count = await likemodel.countDocuments({ review: reviewId })
-
-            return res.json({
-                liked: false,
-                likesCount: count
-            })
-        }
-
-        // if not liked → add
-        await likemodel.create({
-            review: reviewId,
-            user: userId
-        })
-
-        const count = await likemodel.countDocuments({ review: reviewId })
-
-        res.json({
-            liked: true,
-            likesCount: count
-        })
-
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: "error in like" })
+        console.log(existing)
+    }
+    catch (e) {
+        console.log(e)
     }
 }
-
-module.exports = { togglelike }
