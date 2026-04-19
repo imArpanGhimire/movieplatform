@@ -19,6 +19,6 @@ app.use(cookieParser())
 
 app.use("/api/auth", authroutes)
 app.use("/api/movie", movieroutes)
-app.use("/api/likes", likesroutes)
+app.use("/api/toggle", likesroutes)
 
 module.exports = app
