@@ -25,7 +25,6 @@ const liketoggle = async (req, res) => {
     }
     catch (e) {
         console.log(e)
-        // Add error response
         res.status(500).json({ error: "Failed to toggle like" })
     }
 }
