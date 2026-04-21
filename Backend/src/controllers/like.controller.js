@@ -12,9 +12,7 @@ const liketoggle = async (req, res) => {
 
         console.log(existing)
 
-        // Add this response
         if (existing) {
-            // await likemodel.deleteOne({ _id: existing._id })
             await likemodel.findByIdAndDelete(existing._id)
             return res.json({ message: "Like removed" })
         } else {
