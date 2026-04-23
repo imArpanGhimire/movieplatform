@@ -1,13 +1,13 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
 
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("fv-theme") || "dark",
-  );
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("fv-theme") || "dark";
+  });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("fv-theme", theme);
   }, [theme]);
@@ -15,10 +15,9 @@ export function ThemeProvider({ children }) {
   function toggleTheme(e) {
     const newTheme = theme === "dark" ? "light" : "dark";
 
-    if (!document.startViewTransition) {
+    // fallback if view transition not supported
+    if (!document.startViewTransition || !e?.currentTarget) {
       setTheme(newTheme);
-      document.documentElement.setAttribute("data-theme", newTheme);
-      localStorage.setItem("fv-theme", newTheme);
       return;
     }
 
@@ -33,8 +32,6 @@ export function ThemeProvider({ children }) {
 
     const transition = document.startViewTransition(() => {
       setTheme(newTheme);
-      document.documentElement.setAttribute("data-theme", newTheme);
-      localStorage.setItem("fv-theme", newTheme);
     });
 
     transition.ready.then(() => {
@@ -46,8 +43,8 @@ export function ThemeProvider({ children }) {
           ],
         },
         {
-          duration: 700,
-          easing: "cubic-bezier(0.65, 0, 0.35, 1)",
+          duration: 600,
+          easing: "linear",
           pseudoElement: "::view-transition-new(root)",
         },
       );
