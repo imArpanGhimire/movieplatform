@@ -1,9 +1,9 @@
 const moviemodel = require("../models/movie.model")
 const reviewmodel = require("../models/review.model")
+const likemodel = require("../models/like.model")
 
 async function addreview(req, res) {
     try {
-
         const { movieid, comment, rating } = req.body
 
         if (!movieid || !comment || !rating) {
@@ -13,9 +13,13 @@ async function addreview(req, res) {
         }
 
         const movie = await moviemodel.findById(movieid)
+
         if (!movie) {
-            return res.status(404).json({ message: "Movie not found" })
+            return res.status(404).json({
+                message: "Movie not found"
+            })
         }
+
         const review = await reviewmodel.create({
             movie: movie._id,
             comment,
@@ -28,30 +32,37 @@ async function addreview(req, res) {
             .populate("user", "username _id")
             .populate("movie", "title")
 
-
         return res.status(201).json({
             message: "Review added successfully",
-            review: populatedReview
+            review: {
+                ...populatedReview.toObject(),
+                likesCount: 0,
+                likedByUser: false
+            }
         })
-
-
     }
-
     catch (e) {
         console.log(e)
-        return res.status(500).json({ message: "catch block ko error" })
+        return res.status(500).json({
+            message: "catch block ko error"
+        })
     }
 }
 
 async function getreviews(req, res) {
     try {
-
         const { movieid } = req.params
         const filter = {}
-        if (movieid) filter.movie = movieid
 
-        const allreviews = await reviewmodel.find(filter).populate("user", "username _id")
+        if (movieid) {
+            filter.movie = movieid
+        }
+
+        const allreviews = await reviewmodel
+            .find(filter)
+            .populate("user", "username _id")
             .populate("movie", "title")
+            .sort({ createdAt: -1 })
 
         if (!allreviews || allreviews.length === 0) {
             return res.status(200).json({
@@ -59,9 +70,29 @@ async function getreviews(req, res) {
                 allreviews: []
             })
         }
+
+        const reviewswithlikes = await Promise.all(
+            allreviews.map(async (review) => {
+                const likesCount = await likemodel.countDocuments({
+                    review: review._id
+                })
+
+                const existingLike = await likemodel.findOne({
+                    review: review._id,
+                    user: req.user.id
+                })
+
+                return {
+                    ...review.toObject(),
+                    likesCount,
+                    likedByUser: !!existingLike
+                }
+            })
+        )
+
         return res.status(200).json({
             message: "all reviews fetched",
-            allreviews
+            allreviews: reviewswithlikes
         })
     }
     catch (e) {
@@ -79,10 +110,11 @@ async function editreviews(req, res) {
 
         const review = await reviewmodel.findById(id)
 
-        if (!review)
+        if (!review) {
             return res.status(404).json({
                 message: "review not found"
             })
+        }
 
         if (req.user.id !== review.user.toString()) {
             return res.status(403).json({
@@ -90,50 +122,72 @@ async function editreviews(req, res) {
             })
         }
 
-        const updatedReview = await reviewmodel.findByIdAndUpdate(id,
+        const updatedReview = await reviewmodel.findByIdAndUpdate(
+            id,
             { rating, comment, isEdited: true },
             { returnDocument: "after" }
-        ).populate("user", "username _id").populate("movie", "title");
+        )
+            .populate("user", "username _id")
+            .populate("movie", "title")
 
+        const likesCount = await likemodel.countDocuments({
+            review: updatedReview._id
+        })
+
+        const existingLike = await likemodel.findOne({
+            review: updatedReview._id,
+            user: req.user.id
+        })
 
         return res.status(200).json({
             message: "Review updated successfully",
-            review: updatedReview
-        });
+            review: {
+                ...updatedReview.toObject(),
+                likesCount,
+                likedByUser: !!existingLike
+            }
+        })
     }
     catch (e) {
-        console.log(e);
-        return res.status(500).json({ message: "Server error" });
+        console.log(e)
+        return res.status(500).json({
+            message: "Server error"
+        })
     }
 }
 
 async function deletereviews(req, res) {
-
     try {
         const { id } = req.params
 
         const review = await reviewmodel.findById(id)
 
         if (!review) {
-            return res.status(404).json({ message: "Review not found" });
+            return res.status(404).json({
+                message: "Review not found"
+            })
         }
 
-        if (review.user.toString() !== req.user.id)
-            return res.status(403).json({ message: "You can't delete the reviews posted by others." });
+        if (review.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                message: "You can't delete the reviews posted by others."
+            })
+        }
 
-
+        await likemodel.deleteMany({ review: id })
         await reviewmodel.findByIdAndDelete(id)
-
 
         return res.status(200).json({
             message: "Review deleted successfully"
-        });
-    } catch (e) {
-        console.log(e);
-        return res.status(500).json({ message: "Server error" });
+        })
+    }
+    catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            message: "Server error"
+        })
     }
 }
-
 
 async function averagerating(req, res) {
     try {
@@ -144,7 +198,7 @@ async function averagerating(req, res) {
             return res.status(200).json({
                 message: "No reviews yet",
                 averageRating: 0
-            });
+            })
         }
 
         const totalrating = reviews.reduce((sum, review) => sum + Number(review.rating), 0)
@@ -156,9 +210,17 @@ async function averagerating(req, res) {
         })
     }
     catch (e) {
-        console.log(e);
-        return res.status(500).json({ message: "Server error" });
+        console.log(e)
+        return res.status(500).json({
+            message: "Server error"
+        })
     }
 }
 
-module.exports = { addreview, getreviews, editreviews, deletereviews, averagerating }
+module.exports = {
+    addreview,
+    getreviews,
+    editreviews,
+    deletereviews,
+    averagerating
+}
