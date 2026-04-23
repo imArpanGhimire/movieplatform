@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import { sileo } from "sileo";
 import { ThumbsUp } from "lucide-react";
+
 const ReviewSection = ({ movieId }) => {
   const [reviews, setReviews] = useState([]);
   const [comment, setComment] = useState("");
