@@ -377,9 +377,9 @@ const ReviewSection = ({ movieId }) => {
                 {sortreviews.map((review) => (
                   <div
                     key={review._id}
-                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-800 to-zinc-900 p-5 transition transform hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-[0_12px_40px_rgba(20,184,166,0.08)]"
+                    className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(135deg,rgba(39,39,42,0.95),rgba(17,24,39,0.92))] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/20 hover:shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
                   >
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.10),transparent_30%)] opacity-0 transition group-hover:opacity-100" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.12),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_30%)] opacity-0 transition duration-300 group-hover:opacity-100" />
 
                     <div className="relative">
                       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -495,61 +495,63 @@ const ReviewSection = ({ movieId }) => {
                         </div>
                       ) : (
                         <>
-                          <div className="rounded-2xl bg-black/20 p-4">
+                          <div className="rounded-2xl border border-white/5 bg-black/20 px-4 py-4">
                             <p className="text-sm leading-7 text-slate-300 transition-colors duration-200 group-hover:text-slate-200">
                               {review.comment}
                             </p>
                           </div>
 
-                          <div className="mt-4 flex items-center gap-3">
-                            <button
-                              onClick={() => handleLike(review._id)}
-                              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                                review.likedByUser
-                                  ? "border-teal-400/30 bg-teal-500/15 text-teal-300 hover:bg-teal-500/20"
-                                  : "border-white/10 bg-zinc-800 text-slate-300 hover:border-teal-500/20 hover:bg-zinc-700 hover:text-white"
-                              }`}
-                            >
-                              <ThumbsUp
-                                size={16}
-                                className={`transition ${
+                          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => handleLike(review._id)}
+                                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${
                                   review.likedByUser
-                                    ? "fill-teal-300 text-teal-300"
-                                    : "text-slate-400"
+                                    ? "border-teal-400/20 bg-teal-500/15 text-teal-300 hover:bg-teal-500/20"
+                                    : "border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
                                 }`}
-                              />
-                              <span>
-                                {review.likedByUser ? "Liked" : "Like"}
+                              >
+                                <ThumbsUp
+                                  size={15}
+                                  className={
+                                    review.likedByUser
+                                      ? "fill-teal-300 text-teal-300"
+                                      : "text-slate-400"
+                                  }
+                                />
+                                <span>
+                                  {review.likedByUser ? "Liked" : "Like"}
+                                </span>
+                              </button>
+
+                              <span className="text-sm text-slate-400">
+                                {review.likesCount || 0}{" "}
+                                {review.likesCount === 1 ? "like" : "likes"}
                               </span>
-                            </button>
-
-                            <p className="text-sm text-slate-400">
-                              {review.likesCount || 0}{" "}
-                              {review.likesCount === 1 ? "Like" : "Likes"}
-                            </p>
-                          </div>
-
-                          {currentuser?._id?.toString() ===
-                            review.user?._id?.toString() && (
-                            <div className="mt-4 flex gap-2">
-                              <button
-                                onClick={() => startEdit(review)}
-                                className="flex-1 rounded-lg bg-blue-500/20 py-2 text-sm text-blue-300 hover:bg-blue-500/30 font-medium"
-                              >
-                                Edit
-                              </button>
-
-                              <button
-                                onClick={() => {
-                                  setshowModal(true);
-                                  setreviewToDel(review._id);
-                                }}
-                                className="flex-1 rounded-lg bg-red-500/20 py-2 text-sm text-red-300 hover:bg-red-500/30 font-medium"
-                              >
-                                Delete
-                              </button>
                             </div>
-                          )}
+
+                            {currentuser?._id?.toString() ===
+                              review.user?._id?.toString() && (
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => startEdit(review)}
+                                  className="rounded-xl border border-blue-400/15 bg-blue-500/10 px-4 py-2 text-sm font-medium text-blue-300 transition hover:bg-blue-500/20"
+                                >
+                                  Edit
+                                </button>
+
+                                <button
+                                  onClick={() => {
+                                    setshowModal(true);
+                                    setreviewToDel(review._id);
+                                  }}
+                                  className="rounded-xl border border-red-400/15 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/20"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </>
                       )}
                     </div>
