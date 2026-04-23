@@ -8,6 +8,7 @@ import {
 import { Toaster } from "sileo";
 
 import { ThemeProvider } from "./context/ThemeContext";
+import ThemeToggleButton from "./components/ThemeToggleButton";
 
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
