@@ -8,13 +8,13 @@ import {
 import { Toaster } from "sileo";
 
 import { ThemeProvider } from "./context/ThemeContext";
-import ThemeToggleButton from "./components/ThemeToggleButton";
 
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import MovieListingPage from "./components/MovieListingPage";
 import ProtectedRoute from "./protection/ProtectedRoute";
 import MovieDetailPage from "./components/MovieDetailPage";
+import Navbar from "./components/Navbar";
 
 const App = () => {
   return (
@@ -32,9 +32,12 @@ const App = () => {
           position="top-center"
         />
 
+        <Navbar />
+
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+
           <Route
             path="/movies"
             element={
@@ -43,6 +46,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/movie/:id"
             element={
@@ -51,6 +55,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+
           <Route path="/" element={<Navigate to="/movies" />} />
         </Routes>
       </Router>

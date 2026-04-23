@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import MovieCard from "./MovieCard";
 import api from "../api/axios";
 import { useTheme } from "../context/ThemeContext";
-import { Sun, Moon } from "lucide-react";
 
 const MovieListingPage = () => {
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
 
   const [loading, setloading] = useState(true);
   const [error, seterror] = useState("");
@@ -52,15 +51,6 @@ const MovieListingPage = () => {
     getmovies();
   }, [genre, debouncedDirector, debouncedTitle]);
 
-  async function handlelogout() {
-    try {
-      await api.post("/auth/logout");
-      navigate("/login");
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   function clearfilter() {
     setgenre("all");
     setdirector("all");
@@ -75,7 +65,6 @@ const MovieListingPage = () => {
         color: "var(--color-text-primary)",
       }}
     >
-      {/* Background orbs — only visible in dark mode */}
       {theme === "dark" && (
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-96 h-96 bg-teal-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-pulse" />
@@ -83,67 +72,7 @@ const MovieListingPage = () => {
         </div>
       )}
 
-      {/* Navbar */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md"
-        style={{
-          backgroundColor: "var(--color-nav-bg)",
-          borderBottom: "1px solid var(--color-nav-border)",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-          <h1
-            className="text-3xl font-black cursor-pointer font-swash"
-            style={{ color: "var(--color-brand)" }}
-            onClick={() => navigate("/movies")}
-          >
-            FilmVault
-          </h1>
-
-          <div className="flex items-center gap-3">
-            {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200"
-              style={{
-                backgroundColor: "var(--color-bg-card)",
-                border: "1px solid var(--color-border)",
-                color: "var(--color-text-secondary)",
-              }}
-              title={
-                theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-
-            <button
-              onClick={handlelogout}
-              className="px-6 py-2.5 font-semibold rounded-lg text-sm transition-all duration-300"
-              style={{
-                background: "linear-gradient(to right, #dc2626, #b91c1c)",
-                color: "#fff",
-              }}
-              onMouseEnter={(e) =>
-                (e.target.style.background =
-                  "linear-gradient(to right, #b91c1c, #991b1b)")
-              }
-              onMouseLeave={(e) =>
-                (e.target.style.background =
-                  "linear-gradient(to right, #dc2626, #b91c1c)")
-              }
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto pt-28 relative z-10">
-        {/* Header */}
         <div className="mb-16 animate-fadeInDown">
           <p
             className="text-sm uppercase tracking-[0.25em] mb-3 font-swash"
@@ -166,7 +95,6 @@ const MovieListingPage = () => {
           </p>
         </div>
 
-        {/* Search & Filter */}
         <div
           className="backdrop-blur-md rounded-2xl p-8 mb-12 shadow-2xl transition-all duration-300 animate-fadeInUp"
           style={{
@@ -282,7 +210,6 @@ const MovieListingPage = () => {
           </div>
         </div>
 
-        {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="relative w-16 h-16 mb-4">
@@ -301,7 +228,6 @@ const MovieListingPage = () => {
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div
             className="rounded-2xl p-6 mb-8 animate-fadeInUp"
@@ -319,7 +245,6 @@ const MovieListingPage = () => {
           </div>
         )}
 
-        {/* Movies Grid */}
         {!loading && !error && (
           <>
             <div className="mb-8 flex items-center justify-between">
@@ -384,7 +309,6 @@ const MovieListingPage = () => {
           </>
         )}
 
-        {/* Pagination placeholder */}
         {!loading && !error && allmovies.length > 0 && (
           <div className="flex justify-center items-center gap-3 mb-8 animate-fadeInUp">
             <p
