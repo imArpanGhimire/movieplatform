@@ -183,8 +183,6 @@ const ReviewSection = ({ movieId }) => {
     return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
   });
 
-  // like feature
-
   async function handleLike(reviewId) {
     try {
       const res = await api.post("/toggle/likes", {
@@ -207,6 +205,7 @@ const ReviewSection = ({ movieId }) => {
       setError(e.response?.data?.message || "Failed to toggle like");
     }
   }
+
   return (
     <>
       <section className="mt-14 max-w-5xl mx-auto px-4 sm:px-0">
@@ -498,6 +497,34 @@ const ReviewSection = ({ movieId }) => {
                           <div className="rounded-2xl bg-black/20 p-4">
                             <p className="text-sm leading-7 text-slate-300 transition-colors duration-200 group-hover:text-slate-200">
                               {review.comment}
+                            </p>
+                          </div>
+
+                          <div className="mt-4 flex items-center gap-3">
+                            <button
+                              onClick={() => handleLike(review._id)}
+                              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                                review.likedByUser
+                                  ? "border-teal-400/30 bg-teal-500/15 text-teal-300 hover:bg-teal-500/20"
+                                  : "border-white/10 bg-zinc-800 text-slate-300 hover:border-teal-500/20 hover:bg-zinc-700 hover:text-white"
+                              }`}
+                            >
+                              <ThumbsUp
+                                size={16}
+                                className={`transition ${
+                                  review.likedByUser
+                                    ? "fill-teal-300 text-teal-300"
+                                    : "text-slate-400"
+                                }`}
+                              />
+                              <span>
+                                {review.likedByUser ? "Liked" : "Like"}
+                              </span>
+                            </button>
+
+                            <p className="text-sm text-slate-400">
+                              {review.likesCount || 0}{" "}
+                              {review.likesCount === 1 ? "Like" : "Likes"}
                             </p>
                           </div>
 
