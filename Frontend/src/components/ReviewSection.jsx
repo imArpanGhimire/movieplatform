@@ -183,6 +183,30 @@ const ReviewSection = ({ movieId }) => {
     return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
   });
 
+  // like feature
+
+  async function handleLike(reviewId) {
+    try {
+      const res = await api.post("/toggle/likes", {
+        reviewid: reviewId,
+      });
+
+      setReviews((prev) =>
+        prev.map((review) =>
+          review._id === reviewId
+            ? {
+                ...review,
+                likedByUser: res.data.liked,
+                likesCount: res.data.likesCount,
+              }
+            : review,
+        ),
+      );
+    } catch (e) {
+      console.log(e);
+      setError(e.response?.data?.message || "Failed to toggle like");
+    }
+  }
   return (
     <>
       <section className="mt-14 max-w-5xl mx-auto px-4 sm:px-0">
