@@ -32,7 +32,6 @@ const LoginPage = () => {
       });
 
       console.log("Login success:", res.data);
-
       navigate("/movies");
     } catch (err) {
       console.log(err);
@@ -43,21 +42,26 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-teal-500 mb-2">FilmVault</h1>
-          <p className="text-slate-400 text-sm">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg-base)] px-4 transition-colors duration-300">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-teal-500/10 blur-3xl" />
+        <div className="absolute bottom-10 right-10 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-4xl font-bold text-teal-500">FilmVault</h1>
+          <p className="text-sm text-[var(--color-text-secondary)]">
             Welcome back {formData.username}. Review the films you love!
           </p>
         </div>
 
         <form
           onSubmit={handleLogin}
-          className="bg-zinc-800 border border-zinc-700 rounded-xl p-8 space-y-6"
+          className="space-y-6 rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)]/90 p-8 shadow-2xl backdrop-blur-md transition-colors duration-300"
         >
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-[var(--color-text-secondary)]">
               Username
             </label>
             <input
@@ -66,12 +70,12 @@ const LoginPage = () => {
               placeholder="Enter your username"
               value={formData.username}
               onChange={handleChange}
-              className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+              className="w-full rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-input)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-placeholder)] outline-none transition-all duration-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-[var(--color-text-secondary)]">
               Password
             </label>
             <input
@@ -80,46 +84,40 @@ const LoginPage = () => {
               placeholder="•••••••••"
               value={formData.password}
               onChange={handleChange}
-              className="w-full bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+              className="w-full rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-input)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-placeholder)] outline-none transition-all duration-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && (
+            <div className="rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3">
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-500 hover:bg-teal-600 shadow-md hover:shadow-teal-500/20 text-zinc-900 font-semibold py-3 rounded-lg transition-all disabled:opacity-60"
+            className="w-full rounded-xl bg-teal-500 py-3 font-semibold text-zinc-900 shadow-md transition-all hover:bg-teal-600 hover:shadow-teal-500/20 disabled:opacity-60"
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-zinc-700"></div>
-            <span className="text-xs text-slate-500 uppercase">or</span>
-            <div className="flex-1 h-px bg-zinc-700"></div>
+            <div className="h-px flex-1 bg-[var(--color-border)]"></div>
+            <span className="text-xs uppercase text-[var(--color-text-muted)]">
+              or
+            </span>
+            <div className="h-px flex-1 bg-[var(--color-border)]"></div>
           </div>
 
           <button
             type="button"
             onClick={() => navigate("/register")}
-            className="w-full border border-zinc-600 text-slate-200 hover:bg-zinc-700 py-3 rounded-lg transition-all"
+            className="w-full rounded-xl border border-[color:var(--color-border-input)] py-3 text-[var(--color-text-primary)] transition-all hover:bg-[var(--color-bg-elevated)]"
           >
             Create a New Account
           </button>
         </form>
-
-        {/* <div className="text-center mt-6">
-          <p className="text-slate-400 text-sm">
-            New here?{" "}
-            <button
-              onClick={() => navigate("/register")}
-              className="text-teal-500 hover:text-teal-400 font-medium transition-colors bg-none border-none cursor-pointer"
-            >
-              Sign Up
-            </button>
-          </p>
-        </div> */}
       </div>
     </div>
   );
