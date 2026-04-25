@@ -43,7 +43,7 @@ export function ThemeProvider({ children }) {
           ],
         },
         {
-          duration: 600,
+          duration: 800,
           easing: "linear",
           pseudoElement: "::view-transition-new(root)",
         },
