@@ -35,7 +35,7 @@ const Navbar = () => {
   }
 
   return (
-    <header className="sticky top-0 z-[999] border-b border-[color:var(--color-border)] bg-[var(--color-nav-bg)] backdrop-blur-md">
+    <header className="sticky top-0 z-[999] border-b border-[color:var(--color-border)] bg-[var(--color-nav-bg)] backdrop-blur-lg">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <button
           onClick={() => navigate("/movies")}
