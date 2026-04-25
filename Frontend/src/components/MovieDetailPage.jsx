@@ -115,7 +115,7 @@ const MovieDetailPage = () => {
                     <p className="mb-1 text-sm text-[var(--color-text-muted)]">
                       Director
                     </p>
-                    <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+                    <p className="text-lg capitalize font-semibold text-[var(--color-text-primary)]">
                       {movie.director}
                     </p>
                   </div>
@@ -124,7 +124,7 @@ const MovieDetailPage = () => {
                     <p className="mb-1 text-sm text-[var(--color-text-muted)]">
                       Genre
                     </p>
-                    <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+                    <p className="text-lg capitalize font-semibold text-[var(--color-text-primary)]">
                       {movie.genre}
                     </p>
                   </div>
@@ -133,7 +133,7 @@ const MovieDetailPage = () => {
                     <p className="mb-1 text-sm text-[var(--color-text-muted)]">
                       Duration
                     </p>
-                    <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+                    <p className="text-lg capitalize font-semibold text-[var(--color-text-primary)]">
                       {movie.duration} hr
                     </p>
                   </div>
@@ -142,7 +142,7 @@ const MovieDetailPage = () => {
                     <p className="mb-1 text-sm text-[var(--color-text-muted)]">
                       Avg Rating
                     </p>
-                    <p className="text-lg font-semibold text-amber-500">
+                    <p className="text-lg capitalize font-semibold text-amber-500">
                       {averageRating || "N/A"} / 5
                     </p>
                   </div>
