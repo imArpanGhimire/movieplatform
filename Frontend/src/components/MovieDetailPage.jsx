@@ -155,7 +155,7 @@ const MovieDetailPage = () => {
                     <p className="mb-2 text-sm text-[var(--color-text-muted)]">
                       Featured
                     </p>
-                    <p className="text-2xl font-bold text-teal-500">
+                    <p className="text-2xl font-bold text-teal-500/80">
                       {movie.genre}
                     </p>
                     <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
