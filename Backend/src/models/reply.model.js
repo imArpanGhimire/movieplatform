@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const replySchema = new mongoose.Schema(
     {
@@ -21,4 +21,4 @@ const replySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.model("reply", replySchema);
+module.exports = mongoose.model("reply", replySchema);
