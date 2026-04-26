@@ -2,33 +2,61 @@ import React from "react";
 
 const MovieCard = ({ movie }) => {
   return (
-    <div className="group capitalize relative cursor-pointer rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800 hover:opacity-95 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl hover:border-teal-400">
-      {/* Poster */}
-      <div className="relative h-80 bg-gradient-to-br from-teal-500 to-zinc-800/7 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-105 shadow-inner">
-        {/* Big letter */}
-        <p className="relative z-10  text-6xl font-swash text-slate-300 capitalize transition-all duration-500 group-hover:scale-105 group-hover:opacity-5 group-hover:blur-sm">
-          {movie.title?.charAt(0)}
-        </p>
+    <div className="group relative cursor-pointer overflow-hidden rounded-2xl bg-zinc-900 transition-all duration-300">
+      {/* Poster area */}
+      <div className="relative h-72 overflow-hidden">
+        {movie.poster ? (
+          <img
+            src={movie.poster}
+            alt={movie.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          // Fallback when no poster
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-900/40 to-zinc-800">
+            <p className="font-swash text-6xl font-bold text-teal-400/60 capitalize">
+              {movie.title?.charAt(0)}
+            </p>
+          </div>
+        )}
 
-        {/* NEW: base contrast layer */}
-        <div className="absolute inset-0 bg-black/10" />
+        {/* Overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-        {/* Improved overlay transition */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out" />
-
-        {/* Centered content */}
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
-          <h3 className="text-xl font-bold tracking-wide text-slate-100 font-swash text-center leading-snug max-w-[90%] line-clamp-2">
+        {/* Hover content */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-end p-4 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+          <h3 className="font-swash text-center text-base font-bold leading-snug text-white line-clamp-2">
             {movie.title}
           </h3>
-
-          <p className="mt-2 text-sm text-slate-200">
-            {movie.duration ? `${movie.duration} min` : "Runtime N/A"}
+          <p className="mt-1 text-xs text-slate-300">
+            {movie.releaseYear || ""}
           </p>
+        </div>
+      </div>
 
-          <span className="mt-3 rounded-2xl bg-teal-500/20 px-3 py-1 text-xs font-medium text-teal-300 border border-teal-400/20 shadow-sm">
-            {movie.genre || "Unknown Genre"}
+      {/* Card footer */}
+      <div
+        className="px-4 py-3"
+        style={{ backgroundColor: "var(--color-bg-card)" }}
+      >
+        <p
+          className="truncate text-sm font-semibold"
+          style={{ color: "var(--color-text-primary)" }}
+        >
+          {movie.title}
+        </p>
+        <div className="mt-1 flex items-center justify-between">
+          <span
+            className="text-xs"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            {movie.releaseYear || "—"}
           </span>
+          {movie.genre && (
+            <span className="rounded-full bg-teal-500/10 px-2 py-0.5 text-xs font-medium text-teal-500 border border-teal-500/20">
+              {movie.genre}
+            </span>
+          )}
         </div>
       </div>
     </div>

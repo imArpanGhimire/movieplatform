@@ -70,7 +70,7 @@ async function loginuser(req, res) {
         }
 
         const user = await usermodel.findOne({ username })
-        console.log("user found in db:", user)
+        // console.log("user found in db:", user)
 
         if (!user) {
             return res.status(401).json({
