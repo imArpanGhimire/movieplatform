@@ -37,11 +37,54 @@ const MovieDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-base)] px-6">
-        <div className="rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-8 py-6 shadow-2xl">
-          <p className="animate-pulse text-lg text-[var(--color-text-secondary)]">
-            Loading movie...
-          </p>
+      <div className="min-h-screen bg-[var(--color-bg-base)] px-6 pb-10 animate-pulse">
+        {/* Backdrop skeleton */}
+        <div className="h-[340px] w-full bg-[var(--color-bg-card)] rounded-xl mb-6" />
+
+        <div className="mx-auto max-w-5xl">
+          {/* Back button skeleton */}
+          <div className="h-10 w-32 rounded-xl bg-[var(--color-bg-card)] mb-8" />
+
+          {/* Movie card skeleton */}
+          <div className="rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-8 md:p-10">
+            <div className="flex flex-col gap-8 md:flex-row">
+              {/* Poster skeleton */}
+              <div className="h-[260px] w-[180px] rounded-2xl bg-[var(--color-bg-input)]" />
+
+              {/* Content skeleton */}
+              <div className="flex-1 space-y-4">
+                <div className="h-4 w-32 rounded bg-[var(--color-bg-input)]" />
+                <div className="h-10 w-3/4 rounded bg-[var(--color-bg-input)]" />
+                <div className="h-4 w-24 rounded bg-[var(--color-bg-input)]" />
+
+                <div className="space-y-2 mt-4">
+                  <div className="h-3 w-full rounded bg-[var(--color-bg-input)]" />
+                  <div className="h-3 w-5/6 rounded bg-[var(--color-bg-input)]" />
+                  <div className="h-3 w-4/6 rounded bg-[var(--color-bg-input)]" />
+                </div>
+
+                {/* Stats skeleton */}
+                {/* <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mt-6">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="h-20 rounded-2xl bg-[var(--color-bg-input)]"
+                    />
+                  ))}
+                </div> */}
+              </div>
+            </div>
+          </div>
+
+          {/* Reviews skeleton */}
+          {/* <div className="mt-10 space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-24 rounded-2xl bg-[var(--color-bg-card)] border border-[color:var(--color-border)]"
+              />
+            ))}
+          </div> */}
         </div>
       </div>
     );
