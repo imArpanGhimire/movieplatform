@@ -1,0 +1,24 @@
+import mongoose from "mongoose";
+
+const replySchema = new mongoose.Schema(
+    {
+        review: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "review",
+            required: true,
+        },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+            required: true,
+        },
+        text: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+    },
+    { timestamps: true }
+);
+
+export default mongoose.model("reply", replySchema);
