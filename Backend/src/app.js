@@ -3,6 +3,7 @@ const app = express()
 const authroutes = require("./routes/auth.routes")
 const movieroutes = require("./routes/movie.routes")
 const likesroutes = require("./routes/likes.routes")
+const replyRoutes = require("./routes/reply.routes")
 
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
