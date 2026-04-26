@@ -62,8 +62,8 @@ async function getmovies(req, res) {
         if (title && title !== "all") {  // Add title filter
             filter.title = { $regex: title, $options: "i" }
         }
-        console.log("params:", req.params)
-        console.log("filter:", filter)
+        // console.log("params:", req.params)
+        // console.log("filter:", filter)
 
         const movies = await moviemodel.find(filter)
 
