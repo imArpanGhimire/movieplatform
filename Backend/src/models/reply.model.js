@@ -7,11 +7,19 @@ const replySchema = new mongoose.Schema(
             ref: "review",
             required: true,
         },
+
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
             required: true,
         },
+
+        parentReply: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "reply",
+            default: null,
+        },
+
         text: {
             type: String,
             required: true,
