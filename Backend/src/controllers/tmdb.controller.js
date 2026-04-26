@@ -1,48 +1,32 @@
 const moviemodel = require("../models/movie.model")
 
 const TMDB_BASE = "https://api.themoviedb.org/3"
-const TMDB_TOKEN = process.env.TMDB_TOKEN
 
-const tmdbHeaders = {
-    Authorization: `Bearer ${TMDB_TOKEN}`,
+const headers = {
+    Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
     "Content-Type": "application/json"
 }
 
-// ── Search TMDB ──────────────────────────────────────────────
 // GET /api/tmdb/search?query=inception
 async function searchtmdb(req, res) {
     try {
         const { query } = req.query
 
-        if (!query || query.trim() === "") {
+        if (!query) {
             return res.status(400).json({ message: "Query is required" })
         }
 
-        const response = await fetch(
-            `${TMDB_BASE}/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`,
-            { headers: tmdbHeaders }
-        )
-
+        const response = await fetch(`${TMDB_BASE}/search/movie?query=${encodeURIComponent(query)}&language=en-US`, { headers })
         const data = await response.json()
 
-        if (!response.ok) {
-            return res.status(response.status).json({ message: "TMDB search failed" })
-        }
-
-        // Shape the results — only send what we need to frontend
         const movies = data.results.slice(0, 12).map((m) => ({
             tmdbId: m.id,
             title: m.title,
             overview: m.overview,
-            poster: m.poster_path
-                ? `https://image.tmdb.org/t/p/w500${m.poster_path}`
-                : null,
-            backdrop: m.backdrop_path
-                ? `https://image.tmdb.org/t/p/w1280${m.backdrop_path}`
-                : null,
+            poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
+            backdrop: m.backdrop_path ? `https://image.tmdb.org/t/p/w1280${m.backdrop_path}` : null,
             releaseYear: m.release_date ? m.release_date.split("-")[0] : null,
-            language: m.original_language,
-            genre: null  // TMDB returns genre_ids not names in search — filled on detail fetch
+            language: m.original_language
         }))
 
         return res.status(200).json({ movies })
@@ -52,12 +36,8 @@ async function searchtmdb(req, res) {
     }
 }
 
-// ── Save or fetch a TMDB movie into your DB ──────────────────
-// POST /api/tmdb/save
-// Body: { tmdbId }
-// Call this when user opens a movie detail page
-// If already in DB, just return it. If not, fetch from TMDB and save it.
-async function saveormovie(req, res) {
+// POST /api/tmdb/save  body: { tmdbId }
+async function savemovie(req, res) {
     try {
         const { tmdbId } = req.body
 
@@ -65,52 +45,35 @@ async function saveormovie(req, res) {
             return res.status(400).json({ message: "tmdbId is required" })
         }
 
-        // Already in DB? Return it
+        // already in our db? just return it
         const existing = await moviemodel.findOne({ tmdbId })
         if (existing) {
             return res.status(200).json({ movie: existing })
         }
 
-        // Fetch full details from TMDB
-        const response = await fetch(`${TMDB_BASE}/movie/${tmdbId}?language=en-US`, {
-            headers: tmdbHeaders
-        })
+        // fetch movie details from tmdb
+        const movieRes = await fetch(`${TMDB_BASE}/movie/${tmdbId}?language=en-US`, { headers })
+        const movieData = await movieRes.json()
 
-        const data = await response.json()
-
-        if (!response.ok) {
-            return res.status(response.status).json({ message: "Failed to fetch movie from TMDB" })
-        }
-
-        // Get director from credits
-        const creditsRes = await fetch(`${TMDB_BASE}/movie/${tmdbId}/credits`, {
-            headers: tmdbHeaders
-        })
+        // fetch credits to get director name
+        const creditsRes = await fetch(`${TMDB_BASE}/movie/${tmdbId}/credits`, { headers })
         const creditsData = await creditsRes.json()
-        const director =
-            creditsData.crew?.find((p) => p.job === "Director")?.name || "Unknown"
 
-        // Map genre
-        const genre = data.genres?.[0]?.name || "Unknown"
-
-        // Duration in hours
-        const duration = data.runtime ? Math.round(data.runtime / 60 * 10) / 10 : 0
+        const director = creditsData.crew?.find((p) => p.job === "Director")?.name || "Unknown"
+        const genre = movieData.genres?.[0]?.name || "Unknown"
+        const duration = movieData.runtime ? Math.round((movieData.runtime / 60) * 10) / 10 : 0
 
         const newMovie = await moviemodel.create({
-            tmdbId: data.id,
-            title: data.title,
+            tmdbId: movieData.id,
+            title: movieData.title,
             director,
             genre,
             duration,
-            poster: data.poster_path
-                ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
-                : null,
-            backdrop: data.backdrop_path
-                ? `https://image.tmdb.org/t/p/w1280${data.backdrop_path}`
-                : null,
-            overview: data.overview || null,
-            releaseYear: data.release_date ? data.release_date.split("-")[0] : null,
-            language: data.original_language || null
+            poster: movieData.poster_path ? `https://image.tmdb.org/t/p/w500${movieData.poster_path}` : null,
+            backdrop: movieData.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movieData.backdrop_path}` : null,
+            overview: movieData.overview || null,
+            releaseYear: movieData.release_date ? movieData.release_date.split("-")[0] : null,
+            language: movieData.original_language || null
         })
 
         return res.status(201).json({ movie: newMovie })
@@ -120,4 +83,4 @@ async function saveormovie(req, res) {
     }
 }
 
-module.exports = { searchtmdb, saveormovie }
+module.exports = { searchtmdb, savemovie }
