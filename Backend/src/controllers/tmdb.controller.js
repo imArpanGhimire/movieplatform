@@ -131,4 +131,42 @@ async function savemovie(req, res) {
     }
 }
 
-module.exports = { searchtmdb, savemovie, searchByDirector }
+
+async function topRatedMovies(req, res) {
+    try {
+        const response = await fetch(
+            `${TMDB_BASE}/movie/top_rated?language=en-US&page=1`,
+            { headers }
+        );
+
+        const data = await response.json();
+
+        const movies = data.results.slice(0, 12).map((m) => ({
+            tmdbId: m.id,
+            title: m.title,
+            overview: m.overview,
+            poster: m.poster_path
+                ? `https://image.tmdb.org/t/p/w500${m.poster_path}`
+                : null,
+            backdrop: m.backdrop_path
+                ? `https://image.tmdb.org/t/p/w1280${m.backdrop_path}`
+                : null,
+            releaseYear: m.release_date
+                ? m.release_date.split("-")[0]
+                : null,
+            language: m.original_language,
+        }));
+
+        return res.status(200).json({ movies });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ message: "Failed to fetch top rated movies" });
+    }
+}
+
+module.exports = {
+    searchtmdb,
+    savemovie,
+    searchByDirector,
+    topRatedMovies,
+};
