@@ -5,12 +5,14 @@ const {
     searchtmdb,
     savemovie,
     searchByDirector,
-} = require("../controllers/tmdb.controller")
+    topRatedMovies,
+} = require("../controllers/tmdb.controller");
 
 const authmiddlewares = require("../middlewares/auth.middleware")
 
 router.get("/search", authmiddlewares, searchtmdb)
 router.get("/director", authmiddlewares, searchByDirector)
 router.post("/save", authmiddlewares, savemovie)
+router.get("/toprated", authmiddlewares, topRatedMovies);
 
 module.exports = router
