@@ -1,8 +1,34 @@
 const Reply = require("../models/reply.model");
 
+function buildReplyTree(replies) {
+    const replyMap = {};
+    const rootReplies = [];
+
+    replies.forEach((reply) => {
+        replyMap[reply._id] = {
+            ...reply.toObject(),
+            children: [],
+        };
+    });
+
+    replies.forEach((reply) => {
+        if (reply.parentReply) {
+            const parent = replyMap[reply.parentReply.toString()];
+
+            if (parent) {
+                parent.children.push(replyMap[reply._id]);
+            }
+        } else {
+            rootReplies.push(replyMap[reply._id]);
+        }
+    });
+
+    return rootReplies;
+}
+
 const addReply = async (req, res) => {
     try {
-        const { reviewId, text } = req.body;
+        const { reviewId, text, parentReply } = req.body;
 
         if (!reviewId || !text) {
             return res.status(400).json({
@@ -14,6 +40,7 @@ const addReply = async (req, res) => {
             review: reviewId,
             user: req.user.id,
             text,
+            parentReply: parentReply || null,
         });
 
         const populated = await Reply.findById(reply._id).populate(
@@ -36,7 +63,9 @@ const getReplies = async (req, res) => {
             .populate("user", "username")
             .sort({ createdAt: 1 });
 
-        return res.json(replies);
+        const nestedReplies = buildReplyTree(replies);
+
+        return res.json(nestedReplies);
     } catch (err) {
         console.log(err);
         return res.status(500).json({ message: "Failed to fetch replies" });
@@ -55,7 +84,9 @@ const deleteReply = async (req, res) => {
             return res.status(403).json({ message: "Not allowed" });
         }
 
-        await reply.deleteOne();
+        await Reply.deleteMany({
+            $or: [{ _id: reply._id }, { parentReply: reply._id }],
+        });
 
         return res.json({ message: "Deleted" });
     } catch (err) {
