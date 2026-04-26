@@ -1,6 +1,7 @@
 const moviemodel = require("../models/movie.model")
 const reviewmodel = require("../models/review.model")
 const likemodel = require("../models/like.model")
+const replymodel = require("../models/reply.model")
 
 async function addreview(req, res) {
     try {
@@ -176,6 +177,7 @@ async function deletereviews(req, res) {
 
         await likemodel.deleteMany({ review: id })
         await reviewmodel.findByIdAndDelete(id)
+        await replymodel.deleteMany({ review: id })
 
         return res.status(200).json({
             message: "Review deleted successfully"
