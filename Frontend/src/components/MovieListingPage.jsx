@@ -19,19 +19,53 @@ const MovieListingPage = () => {
   const [debouncedTitle, setdebouncedTitle] = useState("");
   const [debouncedDirector, setdebouncedDirector] = useState("");
 
+  const [hasRestored, setHasRestored] = useState(false);
+
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
+
   useEffect(() => {
-    const t = setTimeout(() => setdebouncedTitle(title.trim()), 400);
+    const savedTitle = sessionStorage.getItem("filmvault_title") || "";
+    const savedDirector = sessionStorage.getItem("filmvault_director") || "";
+    const savedMovies = sessionStorage.getItem("filmvault_movies");
+
+    settitle(savedTitle);
+    setdirector(savedDirector);
+    setdebouncedTitle(savedTitle);
+    setdebouncedDirector(savedDirector);
+
+    if (savedMovies) {
+      try {
+        setallmovies(JSON.parse(savedMovies));
+      } catch (e) {
+        console.log(e);
+        setallmovies([]);
+      }
+    }
+
+    setHasRestored(true);
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setdebouncedTitle(title.trim());
+    }, 400);
+
     return () => clearTimeout(t);
   }, [title]);
 
   useEffect(() => {
-    const t = setTimeout(() => setdebouncedDirector(director.trim()), 400);
+    const t = setTimeout(() => {
+      setdebouncedDirector(director.trim());
+    }, 400);
+
     return () => clearTimeout(t);
   }, [director]);
 
   const searchquery = debouncedTitle || debouncedDirector;
 
   useEffect(() => {
+    if (!hasRestored) return;
+
     async function searchmovies() {
       if (!searchquery) {
         setallmovies([]);
@@ -41,8 +75,6 @@ const MovieListingPage = () => {
       try {
         setloading(true);
         seterror("");
-
-        const query = debouncedTitle || debouncedDirector;
 
         const res = debouncedDirector
           ? await api.get(
@@ -63,41 +95,61 @@ const MovieListingPage = () => {
     }
 
     searchmovies();
-  }, [debouncedTitle, debouncedDirector, searchquery]);
+  }, [debouncedTitle, debouncedDirector, hasRestored]);
+
+  useEffect(() => {
+    if (!hasRestored) return;
+
+    sessionStorage.setItem("filmvault_title", title);
+    sessionStorage.setItem("filmvault_director", director);
+    sessionStorage.setItem("filmvault_movies", JSON.stringify(allmovies));
+  }, [title, director, allmovies, hasRestored]);
+
+  useEffect(() => {
+    async function fetchTopRated() {
+      try {
+        const res = await api.get("/tmdb/toprated");
+        setTopRatedMovies(res.data.movies || []);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    fetchTopRated();
+  }, []);
 
   function clearall() {
     settitle("");
     setdirector("");
+    setdebouncedTitle("");
+    setdebouncedDirector("");
     setallmovies([]);
+
+    sessionStorage.removeItem("filmvault_title");
+    sessionStorage.removeItem("filmvault_director");
+    sessionStorage.removeItem("filmvault_movies");
   }
 
   const hasSearch = debouncedTitle || debouncedDirector;
 
   return (
     <div
-      className="min-h-screen relative overflow-x-hidden"
+      className="relative min-h-screen overflow-x-hidden"
       style={{
         backgroundColor: "var(--color-bg-base)",
         color: "var(--color-text-primary)",
       }}
     >
       {theme === "dark" && (
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-teal-500/10 rounded-full filter blur-3xl" />
-          <div className="absolute bottom-40 right-10 w-[400px] h-[400px] bg-cyan-500/10 rounded-full filter blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-teal-400/5 rounded-full filter blur-3xl" />
+        <div className="pointer-events-none fixed inset-0 overflow-hidden">
+          <div className="absolute left-10 top-20 h-[500px] w-[500px] rounded-full bg-teal-500/10 blur-3xl" />
+          <div className="absolute bottom-40 right-10 h-[400px] w-[400px] rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute left-1/2 top-1/2 h-[300px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-400/5 blur-3xl" />
         </div>
       )}
 
-      <div className="relative px-6 pt-32 pb-20 text-center">
+      <div className="relative px-6 pb-20 pt-36  text-center">
         <div className="mx-auto max-w-3xl">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-500/10 px-4 py-1.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-400">
-              Powered by TMDB
-            </span>
-          </div>
-
           <h1
             className="font-swash text-5xl font-black leading-tight tracking-tight md:text-7xl"
             style={{ color: "var(--color-text-primary)" }}
@@ -145,7 +197,14 @@ const MovieListingPage = () => {
                   <input
                     type="text"
                     value={title}
-                    onChange={(e) => settitle(e.target.value)}
+                    onChange={(e) => {
+                      settitle(e.target.value);
+
+                      if (director) {
+                        setdirector("");
+                        setdebouncedDirector("");
+                      }
+                    }}
                     placeholder="e.g. Inception..."
                     className="w-full rounded-xl py-3 pl-10 pr-4 text-sm outline-none transition-all"
                     style={{
@@ -153,12 +212,12 @@ const MovieListingPage = () => {
                       border: "1px solid var(--color-border-input)",
                       color: "var(--color-text-primary)",
                     }}
-                    onFocus={(e) =>
-                      (e.target.style.borderColor = "var(--color-brand)")
-                    }
-                    onBlur={(e) =>
-                      (e.target.style.borderColor = "var(--color-border-input)")
-                    }
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--color-brand)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "var(--color-border-input)";
+                    }}
                   />
                 </div>
               </div>
@@ -174,7 +233,14 @@ const MovieListingPage = () => {
                 <input
                   type="text"
                   value={director}
-                  onChange={(e) => setdirector(e.target.value)}
+                  onChange={(e) => {
+                    setdirector(e.target.value);
+
+                    if (title) {
+                      settitle("");
+                      setdebouncedTitle("");
+                    }
+                  }}
                   placeholder="e.g. Christopher Nolan..."
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                   style={{
@@ -182,12 +248,12 @@ const MovieListingPage = () => {
                     border: "1px solid var(--color-border-input)",
                     color: "var(--color-text-primary)",
                   }}
-                  onFocus={(e) =>
-                    (e.target.style.borderColor = "var(--color-brand)")
-                  }
-                  onBlur={(e) =>
-                    (e.target.style.borderColor = "var(--color-border-input)")
-                  }
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "var(--color-brand)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "var(--color-border-input)";
+                  }}
                 />
               </div>
             </div>
@@ -210,6 +276,34 @@ const MovieListingPage = () => {
           </div>
         </div>
       </div>
+
+      {/* top rated ones  */}
+      {topRatedMovies.length > 0 && (
+        <div className="relative px-6 pb-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-6">
+              <p className="text-sm uppercase tracking-[0.25em] text-amber-500">
+                Top Rated
+              </p>
+              <h2 className="mt-2 text-3xl font-bold text-[var(--color-text-primary)]">
+                Greatest Movies
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {topRatedMovies.map((movie) => (
+                <div
+                  key={movie.tmdbId}
+                  onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
+                  className="cursor-pointer"
+                >
+                  <MovieCard movie={movie} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mx-auto max-w-7xl px-6 pb-20">
         {!loading && !error && !hasSearch && (
@@ -242,12 +336,12 @@ const MovieListingPage = () => {
 
         {loading && (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="relative h-14 w-14 mb-4">
+            <div className="relative mb-4 h-14 w-14">
               <div
                 className="absolute inset-0 rounded-full border-2"
                 style={{ borderColor: "var(--color-border)" }}
               />
-              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-teal-500 border-r-cyan-500 animate-spin" />
+              <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-r-cyan-500 border-t-teal-500" />
             </div>
 
             <p
@@ -303,7 +397,7 @@ const MovieListingPage = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="text-5xl mb-4">🔍</div>
+                <div className="mb-4 text-5xl">🔍</div>
 
                 <h3
                   className="text-lg font-semibold"
