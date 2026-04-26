@@ -1,8 +1,14 @@
-import Reply from "../models/reply.model.js";
+const Reply = require("../models/reply.model");
 
-export const addReply = async (req, res) => {
+const addReply = async (req, res) => {
     try {
         const { reviewId, text } = req.body;
+
+        if (!reviewId || !text) {
+            return res.status(400).json({
+                message: "Review ID and reply text are required",
+            });
+        }
 
         const reply = await Reply.create({
             review: reviewId,
@@ -15,13 +21,14 @@ export const addReply = async (req, res) => {
             "username"
         );
 
-        res.status(201).json(populated);
+        return res.status(201).json(populated);
     } catch (err) {
-        res.status(500).json({ message: "Failed to add reply" });
+        console.log(err);
+        return res.status(500).json({ message: "Failed to add reply" });
     }
 };
 
-export const getReplies = async (req, res) => {
+const getReplies = async (req, res) => {
     try {
         const { reviewId } = req.params;
 
@@ -29,15 +36,20 @@ export const getReplies = async (req, res) => {
             .populate("user", "username")
             .sort({ createdAt: 1 });
 
-        res.json(replies);
-    } catch {
-        res.status(500).json({ message: "Failed to fetch replies" });
+        return res.json(replies);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Failed to fetch replies" });
     }
 };
 
-export const deleteReply = async (req, res) => {
+const deleteReply = async (req, res) => {
     try {
         const reply = await Reply.findById(req.params.id);
+
+        if (!reply) {
+            return res.status(404).json({ message: "Reply not found" });
+        }
 
         if (reply.user.toString() !== req.user.id) {
             return res.status(403).json({ message: "Not allowed" });
@@ -45,8 +57,15 @@ export const deleteReply = async (req, res) => {
 
         await reply.deleteOne();
 
-        res.json({ message: "Deleted" });
-    } catch {
-        res.status(500).json({ message: "Failed" });
+        return res.json({ message: "Deleted" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Failed" });
     }
+};
+
+module.exports = {
+    addReply,
+    getReplies,
+    deleteReply,
 };

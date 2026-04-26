@@ -1,10 +1,11 @@
-import express from "express";
-import {
+const express = require("express");
+const {
     addReply,
     getReplies,
     deleteReply,
-} from "../controllers/reply.controller.js";
-import auth from "../middleware/auth.middleware.js";
+} = require("../controllers/reply.controller");
+
+const auth = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
@@ -12,4 +13,4 @@ router.post("/", auth, addReply);
 router.get("/:reviewId", auth, getReplies);
 router.delete("/:id", auth, deleteReply);
 
-export default router;
+module.exports = router;
