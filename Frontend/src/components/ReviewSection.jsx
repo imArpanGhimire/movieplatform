@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import { sileo } from "sileo";
 import { ThumbsUp } from "lucide-react";
+import ReplySection from "./ReplySection";
 
 const ReviewSection = ({ movieId }) => {
   const [reviews, setReviews] = useState([]);
@@ -496,6 +497,10 @@ const ReviewSection = ({ movieId }) => {
                               </div>
                             )}
                           </div>
+                          <ReplySection
+                            reviewId={review._id}
+                            currentuser={currentuser}
+                          />
                         </>
                       )}
                     </div>
