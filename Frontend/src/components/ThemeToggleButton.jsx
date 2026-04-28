@@ -8,7 +8,7 @@ const ThemeToggleButton = () => {
   return (
     <button
       onClick={(e) => toggleTheme(e)}
-      className="inline-flex items-center justify-center rounded-full border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-2.5 text-[var(--color-text-primary)] shadow-md transition-all duration-200 hover:scale-105 hover:border-teal-500/30 hover:text-teal-500"
+      className="inline-flex items-center justify-center rounded-full    p-2.5 text-[var(--color-text-primary)] shadow-md  duration-200   hover:text-teal-500/90"
       aria-label="Toggle theme"
       title="Toggle theme"
     >
