@@ -20,7 +20,6 @@ const MovieListingPage = () => {
   const [debouncedDirector, setdebouncedDirector] = useState("");
 
   const [hasRestored, setHasRestored] = useState(false);
-
   const [topRatedMovies, setTopRatedMovies] = useState([]);
 
   useEffect(() => {
@@ -62,6 +61,7 @@ const MovieListingPage = () => {
   }, [director]);
 
   const searchquery = debouncedTitle || debouncedDirector;
+  const hasSearch = debouncedTitle || debouncedDirector;
 
   useEffect(() => {
     if (!hasRestored) return;
@@ -95,7 +95,7 @@ const MovieListingPage = () => {
     }
 
     searchmovies();
-  }, [debouncedTitle, debouncedDirector, hasRestored]);
+  }, [debouncedTitle, debouncedDirector, hasRestored, searchquery]);
 
   useEffect(() => {
     if (!hasRestored) return;
@@ -130,7 +130,37 @@ const MovieListingPage = () => {
     sessionStorage.removeItem("filmvault_movies");
   }
 
-  const hasSearch = debouncedTitle || debouncedDirector;
+  function renderTopRatedMovies() {
+    if (topRatedMovies.length === 0) return null;
+
+    return (
+      <div className="relative px-6 pb-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-6">
+            <p className="text-sm uppercase tracking-[0.25em] text-amber-500">
+              Top Rated
+            </p>
+
+            <h2 className="mt-2 text-3xl font-bold text-[var(--color-text-primary)]">
+              Greatest Movies
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {topRatedMovies.map((movie) => (
+              <div
+                key={movie.tmdbId}
+                onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
+                className="cursor-pointer"
+              >
+                <MovieCard movie={movie} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -148,7 +178,7 @@ const MovieListingPage = () => {
         </div>
       )}
 
-      <div className="relative px-6 pb-20 pt-36  text-center">
+      <div className="relative px-6 pb-20 pt-36 text-center">
         <div className="mx-auto max-w-3xl">
           <h1
             className="font-swash text-5xl font-black leading-tight tracking-tight md:text-7xl"
@@ -277,63 +307,9 @@ const MovieListingPage = () => {
         </div>
       </div>
 
-      {/* top rated ones  */}
-      {topRatedMovies.length > 0 && (
-        <div className="relative px-6 pb-16">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-6">
-              <p className="text-sm uppercase tracking-[0.25em] text-amber-500">
-                Top Rated
-              </p>
-              <h2 className="mt-2 text-3xl font-bold text-[var(--color-text-primary)]">
-                Greatest Movies
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              {topRatedMovies.map((movie) => (
-                <div
-                  key={movie.tmdbId}
-                  onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
-                  className="cursor-pointer"
-                >
-                  <MovieCard movie={movie} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {!hasSearch && renderTopRatedMovies()}
 
       <div className="mx-auto max-w-7xl px-6 pb-20">
-        {!loading && !error && !hasSearch && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div
-              className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl text-3xl"
-              style={{
-                backgroundColor: "var(--color-bg-card)",
-                border: "1px solid var(--color-border)",
-              }}
-            >
-              🎬
-            </div>
-
-            <h3
-              className="text-xl font-semibold"
-              style={{ color: "var(--color-text-primary)" }}
-            >
-              Start searching to discover films
-            </h3>
-
-            <p
-              className="mt-2 max-w-sm text-sm"
-              style={{ color: "var(--color-text-secondary)" }}
-            >
-              Search by title or director to find your next favourite movie.
-            </p>
-          </div>
-        )}
-
         {loading && (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="relative mb-4 h-14 w-14">
@@ -368,6 +344,16 @@ const MovieListingPage = () => {
         {!loading && !error && hasSearch && (
           <>
             <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.25em] text-teal-500">
+                  Search Results
+                </p>
+
+                <h2 className="mt-2 text-3xl font-bold text-[var(--color-text-primary)]">
+                  Movies Found
+                </h2>
+              </div>
+
               <p
                 className="text-sm"
                 style={{ color: "var(--color-text-secondary)" }}
@@ -417,6 +403,8 @@ const MovieListingPage = () => {
           </>
         )}
       </div>
+
+      {hasSearch && renderTopRatedMovies()}
     </div>
   );
 };
