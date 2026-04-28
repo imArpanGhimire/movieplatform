@@ -331,7 +331,7 @@ const MovieListingPage = () => {
 
         {error && (
           <div
-            className="mx-auto max-w-md rounded-2xl p-5 text-center"
+            className="mx-auto max-w-md rounded-3xl p-5 text-center"
             style={{
               backgroundColor: "var(--color-bg-card)",
               border: "1px solid var(--color-error-border)",
