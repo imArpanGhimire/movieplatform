@@ -47,7 +47,7 @@ const MovieListingPage = () => {
   useEffect(() => {
     const t = setTimeout(() => {
       setdebouncedTitle(title.trim());
-    }, 400);
+    }, 700);
 
     return () => clearTimeout(t);
   }, [title]);
@@ -55,7 +55,7 @@ const MovieListingPage = () => {
   useEffect(() => {
     const t = setTimeout(() => {
       setdebouncedDirector(director.trim());
-    }, 400);
+    }, 700);
 
     return () => clearTimeout(t);
   }, [director]);
@@ -312,9 +312,9 @@ const MovieListingPage = () => {
       <div className="mx-auto max-w-7xl px-6 pb-20">
         {loading && (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="relative mb-4 h-15 w-14">
+            <div className="relative mb-4 h-14 w-14">
               <div
-                className="absolute inset-0 rounded-4xl border-2"
+                className="absolute inset-0 rounded-full border-2"
                 style={{ borderColor: "var(--color-border)" }}
               />
               <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-r-cyan-500 border-t-teal-500" />
@@ -331,7 +331,7 @@ const MovieListingPage = () => {
 
         {error && (
           <div
-            className="mx-auto max-w-md rounded-3xl p-5 text-center"
+            className="mx-auto max-w-md rounded-2xl p-5 text-center"
             style={{
               backgroundColor: "var(--color-bg-card)",
               border: "1px solid var(--color-error-border)",
