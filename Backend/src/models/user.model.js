@@ -1,25 +1,36 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        unique: true,
         required: true,
+        unique: true,
         lowercase: true,
-
     },
+
     password: {
         type: String,
-        required: true
+        required: true,
     },
+
     role: {
         type: String,
-        enum: ['user', 'maker'],
-        default: "user"
-    }
-})
+        enum: ["user", "maker"],
+        default: "user",
+    },
 
+    savedMovies: [
+        {
+            tmdbId: {
+                type: String,
+                required: true,
+            },
+            title: String,
+            poster: String,
+            releaseDate: String,
+            rating: Number,
+        },
+    ],
+});
 
-const usermodel = mongoose.model("user", userSchema)
-
-module.exports = usermodel
+module.exports = mongoose.model("User", userSchema);
