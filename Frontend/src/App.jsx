@@ -15,6 +15,7 @@ import RegisterPage from "./components/RegisterPage";
 import MovieListingPage from "./components/MovieListingPage";
 import MovieDetailPage from "./components/MovieDetailPage";
 import ProtectedRoute from "./protection/ProtectedRoute";
+import SavedMoviesPage from "./components/SavedMoviesPage";
 
 const App = () => {
   return (
@@ -44,6 +45,15 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <MovieDetailPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/saved"
+            element={
+              <ProtectedRoute>
+                <SavedMoviesPage />
               </ProtectedRoute>
             }
           />

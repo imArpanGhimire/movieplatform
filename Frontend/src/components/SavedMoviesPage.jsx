@@ -18,6 +18,9 @@ const SavedMoviesPage = () => {
     async function fetchSavedMovies() {
       try {
         const res = await api.get("/saved");
+
+        console.log("SAVED MOVIES 👉", res.data); // 🔥 ADD THIS
+
         setMovies(res.data.movies || []);
       } catch (e) {
         console.log(e);
