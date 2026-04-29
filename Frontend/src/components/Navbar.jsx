@@ -4,6 +4,7 @@ import api from "../api/axios";
 import { sileo } from "sileo";
 import ThemeToggleButton from "./ThemeToggleButton";
 import { useTheme } from "../context/ThemeContext";
+import { Bookmark } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
@@ -42,6 +43,8 @@ const Navbar = () => {
 
       navigate("/login");
     } catch (e) {
+      console.log(e);
+
       sileo.error({
         title: "Logout failed",
         description: e.response?.data?.message || "Something went wrong",
@@ -57,13 +60,12 @@ const Navbar = () => {
       }`}
     >
       <nav
-        className={`mx-auto flex max-w-7xl items-center justify-between rounded-3xl border px-5 py-3 backdrop-blur-xl transition-all   ${
+        className={`mx-auto flex max-w-7xl items-center justify-between rounded-3xl border px-5 py-3 backdrop-blur-xl transition-all duration-300 ${
           isDark
             ? "border-white/10 bg-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]"
-            : "border-white/40 bg-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
+            : "border-white/40 bg-white/40 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
         }`}
       >
-        {/* LOGO */}
         <button
           onClick={() => navigate("/movies")}
           className={`font-swash text-3xl font-black transition hover:opacity-80 ${
@@ -73,13 +75,24 @@ const Navbar = () => {
           FilmVault
         </button>
 
-        {/* RIGHT */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/saved")}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all hover:-translate-y-0.5 ${
+              isDark
+                ? "border-white/10 bg-white/10 text-teal-300 hover:bg-white/15"
+                : "border-white/50 bg-white/60 text-teal-600 hover:bg-white"
+            }`}
+            title="Saved Movies"
+          >
+            <Bookmark size={19} />
+          </button>
+
           <div
-            className={`rounded-xl  p-1 ${
+            className={`flex h-11 w-11 items-center justify-center rounded-full border ${
               isDark
                 ? "border-white/10 bg-white/10"
-                : "border-white/5 bg-white/5"
+                : "border-white/50 bg-white/60"
             }`}
           >
             <ThemeToggleButton />
