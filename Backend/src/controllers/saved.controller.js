@@ -2,52 +2,49 @@ const User = require("../models/user.model");
 
 async function saveMovie(req, res) {
     try {
-        const { tmdbId, title, poster, releaseDate, rating } = req.body;
+        const { tmdbId, title, poster } = req.body;
 
         if (!tmdbId || !title) {
-            return res.status(400).json({
-                message: "Movie id and title are required",
-            });
+            return res.status(400).json({ message: "Missing data" });
         }
 
         const user = await User.findById(req.user.id);
 
         if (!user) {
-            return res.status(404).json({
-                message: "User not found",
-            });
+            return res.status(404).json({ message: "User not found" });
         }
 
-        const alreadySaved = user.savedMovies.some(
-            (movie) => movie.tmdbId === String(tmdbId)
+        // ensure array exists
+        if (!Array.isArray(user.savedMovies)) {
+            user.savedMovies = [];
+        }
+
+        const exists = user.savedMovies.find(
+            (m) => String(m.tmdbId) === String(tmdbId)
         );
 
-        if (alreadySaved) {
-            return res.status(400).json({
-                message: "Movie already saved",
-            });
+        if (exists) {
+            return res.status(400).json({ message: "Already saved" });
         }
 
-        user.savedMovies.push({
+        const newMovie = {
             tmdbId: String(tmdbId),
-            title,
-            poster,
-            releaseDate,
-            rating,
-        });
+            title: title,
+            poster_path: poster || "",
+        };
+
+        user.savedMovies.push(newMovie);
 
         await user.save();
 
         return res.status(200).json({
-            message: "Movie saved successfully",
-            savedMovies: user.savedMovies,
+            message: "Saved successfully",
+            movies: user.savedMovies,
         });
-    } catch (e) {
-        console.log(e);
 
-        return res.status(500).json({
-            message: "Failed to save movie",
-        });
+    } catch (e) {
+        console.log("SAVE ERROR 👉", e);
+        return res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -56,20 +53,16 @@ async function getSavedMovies(req, res) {
         const user = await User.findById(req.user.id);
 
         if (!user) {
-            return res.status(404).json({
-                message: "User not found",
-            });
+            return res.status(404).json({ message: "User not found" });
         }
 
         return res.status(200).json({
-            movies: user.savedMovies,
+            movies: user.savedMovies || [],   // 🔥 safety
         });
-    } catch (e) {
-        console.log(e);
 
-        return res.status(500).json({
-            message: "Failed to get saved movies",
-        });
+    } catch (e) {
+        console.log("GET SAVED ERROR 👉", e);
+        return res.status(500).json({ message: "Failed to get saved movies" });
     }
 }
 
@@ -80,27 +73,23 @@ async function removeSavedMovie(req, res) {
         const user = await User.findById(req.user.id);
 
         if (!user) {
-            return res.status(404).json({
-                message: "User not found",
-            });
+            return res.status(404).json({ message: "User not found" });
         }
 
-        user.savedMovies = user.savedMovies.filter(
-            (movie) => movie.tmdbId !== String(tmdbId)
+        user.savedMovies = (user.savedMovies || []).filter(
+            (movie) => String(movie.tmdbId) !== String(tmdbId)
         );
 
         await user.save();
 
         return res.status(200).json({
-            message: "Movie removed from saved list",
-            savedMovies: user.savedMovies,
+            message: "Removed successfully",
+            movies: user.savedMovies,
         });
-    } catch (e) {
-        console.log(e);
 
-        return res.status(500).json({
-            message: "Failed to remove saved movie",
-        });
+    } catch (e) {
+        console.log("REMOVE ERROR 👉", e);
+        return res.status(500).json({ message: "Error removing movie" });
     }
 }
 
