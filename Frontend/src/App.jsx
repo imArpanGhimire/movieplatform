@@ -25,7 +25,7 @@ const App = () => {
         <Toaster
           position="top-center"
           options={{
-            fill: "rgba(14, 51, 93)", // 🔥 glass bg (NOT white)
+            fill: "rgba(14, 51, 93)",
             className:
               "mt-20 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl text-white",
 
