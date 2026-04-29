@@ -24,14 +24,17 @@ const App = () => {
         <Navbar />
         <Toaster
           position="top-center"
-          toastOptions={{
-            style: {
-              zIndex: 9999,
-              marginTop: "80px", // adjust based on navbar height
+          options={{
+            fill: "rgba(14, 51, 93)", // 🔥 glass bg (NOT white)
+            className:
+              "mt-20 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl text-white",
+
+            styles: {
+              title: "text-teal-300 font-semibold",
+              description: "text-slate-200",
             },
           }}
         />
-
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
 
