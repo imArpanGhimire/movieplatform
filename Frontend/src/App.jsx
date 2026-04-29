@@ -22,8 +22,15 @@ const App = () => {
     <ThemeProvider>
       <Router>
         <Navbar />
-
-        <Toaster position="top-center" />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              zIndex: 9999,
+              marginTop: "80px", // adjust based on navbar height
+            },
+          }}
+        />
 
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />

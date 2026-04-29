@@ -55,7 +55,7 @@ const Navbar = () => {
 
   return (
     <header
-      className={`fixed left-0 right-0 z-[999] px-4 transition-all duration-300 ${
+      className={`fixed left-0 right-0 z-[50] px-4 transition-all duration-300 ${
         scrolled ? "top-2" : "top-4"
       }`}
     >
