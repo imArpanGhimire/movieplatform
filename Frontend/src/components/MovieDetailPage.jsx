@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
 import ReviewSection from "../components/ReviewSection";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { Heart } from "lucide-react";
 import { sileo } from "sileo";
 
 const MovieDetailPage = () => {
@@ -14,6 +14,7 @@ const MovieDetailPage = () => {
   const [movie, setmovie] = useState(null);
   const [averageRating, setaverageRating] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     async function loadmovie() {
@@ -37,6 +38,15 @@ const MovieDetailPage = () => {
         );
 
         setSaved(isAlreadySaved);
+
+        const profileRes = await api.get("/auth/profile");
+        const likedMovies = profileRes.data.user.likedMovies || [];
+
+        const isAlreadyLiked = likedMovies.some(
+          (item) => String(item.tmdbId) === String(savedMovie.tmdbId),
+        );
+
+        setLiked(isAlreadyLiked);
       } catch (e) {
         console.log(e);
         seterror(e.response?.data?.message || "Failed to load movie");
@@ -51,9 +61,7 @@ const MovieDetailPage = () => {
   async function handleToggleSave() {
     try {
       if (saved) {
-        // 🔴 UNSAVE
         await api.delete(`/saved/${movie.tmdbId}`);
-
         setSaved(false);
 
         sileo.success({
@@ -62,7 +70,6 @@ const MovieDetailPage = () => {
           position: "top-center",
         });
       } else {
-        // 🟢 SAVE
         await api.post("/saved", {
           tmdbId: movie.tmdbId,
           title: movie.title,
@@ -87,6 +94,37 @@ const MovieDetailPage = () => {
       });
     }
   }
+
+  async function handleToggleLike() {
+    try {
+      const res = await api.post("/saved/like", {
+        tmdbId: movie.tmdbId,
+        title: movie.title,
+        poster: movie.poster,
+        releaseDate: movie.releaseYear,
+        rating: movie.rating || averageRating,
+      });
+
+      setLiked(res.data.liked);
+
+      sileo.success({
+        title: res.data.liked ? "Liked" : "Removed",
+        description: res.data.liked
+          ? "Movie added to liked movies"
+          : "Movie removed from liked movies",
+        position: "top-center",
+      });
+    } catch (e) {
+      console.log(e);
+
+      sileo.error({
+        title: "Error",
+        description: e.response?.data?.message || "Failed to update like",
+        position: "top-center",
+      });
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen animate-pulse bg-[var(--color-bg-base)] px-6 pb-10">
@@ -183,16 +221,30 @@ const MovieDetailPage = () => {
                   Movie Details
                 </p>
 
-                <button
-                  onClick={handleToggleSave}
-                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition ${
-                    saved
-                      ? "bg-red-500 hover:bg-red-600"
-                      : "bg-teal-500 hover:bg-teal-600"
-                  }`}
-                >
-                  {saved ? "Unsave" : "Save"}
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={handleToggleLike}
+                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition ${
+                      liked
+                        ? "bg-pink-500 hover:bg-pink-600"
+                        : "bg-white/10 hover:bg-pink-500/20"
+                    }`}
+                  >
+                    <Heart size={16} fill={liked ? "currentColor" : "none"} />
+                    {liked ? "Liked" : "Like"}
+                  </button>
+
+                  <button
+                    onClick={handleToggleSave}
+                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition ${
+                      saved
+                        ? "bg-red-500 hover:bg-red-600"
+                        : "bg-teal-500 hover:bg-teal-600"
+                    }`}
+                  >
+                    {saved ? "Unsave" : "Save"}
+                  </button>
+                </div>
               </div>
 
               <h1 className="mb-2 font-swash text-4xl font-bold leading-tight text-[var(--color-text-primary)] md:text-5xl">
