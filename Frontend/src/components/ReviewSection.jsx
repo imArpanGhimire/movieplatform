@@ -4,7 +4,7 @@ import { sileo } from "sileo";
 import { ThumbsUp } from "lucide-react";
 import ReplySection from "./ReplySection";
 
-const ReviewSection = ({ movieId }) => {
+const ReviewSection = ({ movieId, showAllReviews = false }) => {
   const [reviews, setReviews] = useState([]);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState("");
@@ -55,7 +55,7 @@ const ReviewSection = ({ movieId }) => {
         comment,
         rating,
       });
-      setReviews((prev) => [...prev, res.data.review]);
+      setReviews((prev) => [res.data.review, ...prev]);
       setComment("");
       setRating("");
       sileo.success({
@@ -338,174 +338,176 @@ const ReviewSection = ({ movieId }) => {
               </div>
             ) : (
               <div className="space-y-5">
-                {sortreviews.map((review) => (
-                  <div
-                    key={review._id}
-                    className="group relative overflow-hidden rounded-[28px] border border-[color:var(--color-border)] bg-[var(--color-bg-page)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(0,0,0,0.10)]"
-                  >
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.10),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.03),transparent_30%)] opacity-0 transition duration-300 group-hover:opacity-100" />
+                {sortreviews
+                  .slice(0, showAllReviews ? sortreviews.length : 2)
+                  .map((review) => (
+                    <div
+                      key={review._id}
+                      className="group relative overflow-hidden rounded-[28px] border border-[color:var(--color-border)] bg-[var(--color-bg-page)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(0,0,0,0.10)]"
+                    >
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.10),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.03),transparent_30%)] opacity-0 transition duration-300 group-hover:opacity-100" />
 
-                    <div className="relative">
-                      <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-5">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-teal-500/15 text-sm font-bold uppercase text-teal-500">
-                            {review.user?.username?.slice(0, 2) || "U"}
-                          </div>
-                          <div>
-                            <p className="leading-tight text-sm font-semibold text-[var(--color-text-primary)]">
-                              {review.user?.username || "Unknown User"}
-                              {review.isEdited && (
-                                <span className="ml-2 text-xs font-normal italic text-[var(--color-text-muted)]">
-                                  edited
-                                </span>
-                              )}
-                            </p>
-                            <p className="text-xs text-[var(--color-text-muted)]">
-                              {formattimestamp(review.createdAt)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-shrink-0 items-center gap-1.5 rounded-xl border border-amber-400/15 bg-amber-400/10 px-3 py-1.5">
-                          <div className="flex items-center text-sm">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <span
-                                key={star}
-                                className={
-                                  Number(review.rating) >= star
-                                    ? "text-amber-400"
-                                    : "text-[var(--color-text-muted)]"
-                                }
-                              >
-                                ★
-                              </span>
-                            ))}
-                          </div>
-                          <span className="text-xs font-semibold text-amber-500">
-                            {review.rating}/5
-                          </span>
-                        </div>
-                      </div>
-
-                      {editingId === review._id ? (
-                        <div className="mx-5 mb-5 space-y-4 rounded-2xl bg-[var(--color-bg-input)] p-4">
-                          {error && (
-                            <div className="rounded-lg border border-red-500/25 bg-red-500/10 p-2">
-                              <p className="text-xs text-red-400">{error}</p>
+                      <div className="relative">
+                        <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-5">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-teal-500/15 text-sm font-bold uppercase text-teal-500">
+                              {review.user?.username?.slice(0, 2) || "U"}
                             </div>
-                          )}
-
-                          <div>
-                            <label className="mb-2 block text-sm font-medium text-[var(--color-text-secondary)]">
-                              Edit Rating
-                            </label>
-                            <select
-                              value={editRating}
-                              onChange={(e) => setEditRating(e.target.value)}
-                              className="w-full rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-page)] px-4 py-3 text-[var(--color-text-primary)] outline-none transition-all duration-200 focus:border-teal-500"
-                            >
-                              <option value="">Select rating</option>
-                              <option value="1">1 - Poor</option>
-                              <option value="2">2 - Fair</option>
-                              <option value="3">3 - Good</option>
-                              <option value="4">4 - Very Good</option>
-                              <option value="5">5 - Excellent</option>
-                            </select>
+                            <div>
+                              <p className="leading-tight text-sm font-semibold text-[var(--color-text-primary)]">
+                                {review.user?.username || "Unknown User"}
+                                {review.isEdited && (
+                                  <span className="ml-2 text-xs font-normal italic text-[var(--color-text-muted)]">
+                                    edited
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs text-[var(--color-text-muted)]">
+                                {formattimestamp(review.createdAt)}
+                              </p>
+                            </div>
                           </div>
 
-                          <div>
-                            <label className="mb-2 block text-sm font-medium text-[var(--color-text-secondary)]">
-                              Edit Comment
-                            </label>
-                            <textarea
-                              value={editComment}
-                              onChange={(e) => setEditComment(e.target.value)}
-                              rows="4"
-                              className="w-full resize-none rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-page)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-placeholder)] outline-none transition-all duration-200 focus:border-teal-500"
-                            />
-                          </div>
-
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => updateReview(review._id)}
-                              disabled={updating}
-                              className="flex-1 rounded-xl bg-blue-500/15 py-2.5 text-sm font-medium text-blue-500 transition hover:bg-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                              {updating ? "Saving..." : "Save"}
-                            </button>
-                            <button
-                              onClick={cancelEdit}
-                              className="flex-1 rounded-xl bg-[var(--color-bg-elevated)] py-2.5 text-sm font-medium text-[var(--color-text-primary)] transition hover:opacity-90"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="px-5 pb-4">
-                            <p className="text-sm leading-7 text-[var(--color-text-secondary)] transition-colors duration-200 group-hover:text-[var(--color-text-primary)]">
-                              {review.comment}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between border-t border-[color:var(--color-border)] bg-[var(--color-bg-input)]/50 px-5 py-3">
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => handleLike(review._id)}
-                                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
-                                  review.likedByUser
-                                    ? "border-teal-400/30 bg-teal-500/10 text-teal-500"
-                                    : "border-[color:var(--color-border)] text-[var(--color-text-secondary)] hover:border-[color:var(--color-border-strong)] hover:text-[var(--color-text-primary)]"
-                                }`}
-                              >
-                                <ThumbsUp
-                                  size={13}
+                          <div className="flex flex-shrink-0 items-center gap-1.5 rounded-xl border border-amber-400/15 bg-amber-400/10 px-3 py-1.5">
+                            <div className="flex items-center text-sm">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                  key={star}
                                   className={
-                                    review.likedByUser
-                                      ? "fill-teal-500 text-teal-500"
-                                      : ""
+                                    Number(review.rating) >= star
+                                      ? "text-amber-400"
+                                      : "text-[var(--color-text-muted)]"
                                   }
-                                />
-                                {review.likedByUser ? "Liked" : "Like"}
-                              </button>
-
-                              <span className="text-xs text-[var(--color-text-muted)]">
-                                {review.likesCount || 0}{" "}
-                                {review.likesCount === 1 ? "like" : "likes"}
-                              </span>
+                                >
+                                  ★
+                                </span>
+                              ))}
                             </div>
+                            <span className="text-xs font-semibold text-amber-500">
+                              {review.rating}/5
+                            </span>
+                          </div>
+                        </div>
 
-                            {currentuser?._id?.toString() ===
-                              review.user?._id?.toString() && (
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => startEdit(review)}
-                                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-blue-500 transition hover:bg-blue-500/10"
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setshowModal(true);
-                                    setreviewToDel(review._id);
-                                  }}
-                                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-500 transition hover:bg-red-500/10"
-                                >
-                                  Delete
-                                </button>
+                        {editingId === review._id ? (
+                          <div className="mx-5 mb-5 space-y-4 rounded-2xl bg-[var(--color-bg-input)] p-4">
+                            {error && (
+                              <div className="rounded-lg border border-red-500/25 bg-red-500/10 p-2">
+                                <p className="text-xs text-red-400">{error}</p>
                               </div>
                             )}
+
+                            <div>
+                              <label className="mb-2 block text-sm font-medium text-[var(--color-text-secondary)]">
+                                Edit Rating
+                              </label>
+                              <select
+                                value={editRating}
+                                onChange={(e) => setEditRating(e.target.value)}
+                                className="w-full rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-page)] px-4 py-3 text-[var(--color-text-primary)] outline-none transition-all duration-200 focus:border-teal-500"
+                              >
+                                <option value="">Select rating</option>
+                                <option value="1">1 - Poor</option>
+                                <option value="2">2 - Fair</option>
+                                <option value="3">3 - Good</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="5">5 - Excellent</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="mb-2 block text-sm font-medium text-[var(--color-text-secondary)]">
+                                Edit Comment
+                              </label>
+                              <textarea
+                                value={editComment}
+                                onChange={(e) => setEditComment(e.target.value)}
+                                rows="4"
+                                className="w-full resize-none rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-page)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-placeholder)] outline-none transition-all duration-200 focus:border-teal-500"
+                              />
+                            </div>
+
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => updateReview(review._id)}
+                                disabled={updating}
+                                className="flex-1 rounded-xl bg-blue-500/15 py-2.5 text-sm font-medium text-blue-500 transition hover:bg-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                              >
+                                {updating ? "Saving..." : "Save"}
+                              </button>
+                              <button
+                                onClick={cancelEdit}
+                                className="flex-1 rounded-xl bg-[var(--color-bg-elevated)] py-2.5 text-sm font-medium text-[var(--color-text-primary)] transition hover:opacity-90"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           </div>
-                          <ReplySection
-                            reviewId={review._id}
-                            currentuser={currentuser}
-                          />
-                        </>
-                      )}
+                        ) : (
+                          <>
+                            <div className="px-5 pb-4">
+                              <p className="text-sm leading-7 text-[var(--color-text-secondary)] transition-colors duration-200 group-hover:text-[var(--color-text-primary)]">
+                                {review.comment}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center justify-between border-t border-[color:var(--color-border)] bg-[var(--color-bg-input)]/50 px-5 py-3">
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() => handleLike(review._id)}
+                                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
+                                    review.likedByUser
+                                      ? "border-teal-400/30 bg-teal-500/10 text-teal-500"
+                                      : "border-[color:var(--color-border)] text-[var(--color-text-secondary)] hover:border-[color:var(--color-border-strong)] hover:text-[var(--color-text-primary)]"
+                                  }`}
+                                >
+                                  <ThumbsUp
+                                    size={13}
+                                    className={
+                                      review.likedByUser
+                                        ? "fill-teal-500 text-teal-500"
+                                        : ""
+                                    }
+                                  />
+                                  {review.likedByUser ? "Liked" : "Like"}
+                                </button>
+
+                                <span className="text-xs text-[var(--color-text-muted)]">
+                                  {review.likesCount || 0}{" "}
+                                  {review.likesCount === 1 ? "like" : "likes"}
+                                </span>
+                              </div>
+
+                              {currentuser?._id?.toString() ===
+                                review.user?._id?.toString() && (
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => startEdit(review)}
+                                    className="rounded-lg px-3 py-1.5 text-xs font-medium text-blue-500 transition hover:bg-blue-500/10"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setshowModal(true);
+                                      setreviewToDel(review._id);
+                                    }}
+                                    className="rounded-lg px-3 py-1.5 text-xs font-medium text-red-500 transition hover:bg-red-500/10"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                            <ReplySection
+                              reviewId={review._id}
+                              currentuser={currentuser}
+                            />
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
           </div>
