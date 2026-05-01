@@ -17,6 +17,8 @@ import MovieDetailPage from "./components/MovieDetailPage";
 import ProtectedRoute from "./protection/ProtectedRoute";
 import SavedMoviesPage from "./components/SavedMoviesPage";
 
+import ProfilePage from "./components/ProfilePage";
+
 const App = () => {
   return (
     <ThemeProvider>
@@ -64,6 +66,15 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <SavedMoviesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
