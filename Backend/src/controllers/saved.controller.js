@@ -93,8 +93,56 @@ async function removeSavedMovie(req, res) {
     }
 }
 
+async function toggleLike(req, res) {
+    try {
+        const user = await User.findById(req.user.id);
+
+        const { tmdbId, title, poster, releaseDate, rating } = req.body;
+
+        const existing = user.likedMovies.find(
+            (m) => String(m.tmdbId) === String(tmdbId)
+        );
+
+        if (existing) {
+            // ❌ UNLIKE
+            user.likedMovies = user.likedMovies.filter(
+                (m) => String(m.tmdbId) !== String(tmdbId)
+            );
+
+            await user.save();
+
+            return res.status(200).json({
+                message: "Movie unliked",
+                liked: false,
+            });
+        } else {
+            // ❤️ LIKE
+            user.likedMovies.push({
+                tmdbId,
+                title,
+                poster,
+                releaseDate,
+                rating,
+            });
+
+            await user.save();
+
+            return res.status(200).json({
+                message: "Movie liked",
+                liked: true,
+            });
+        }
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({
+            message: "server error",
+        });
+    }
+}
+
 module.exports = {
     saveMovie,
     getSavedMovies,
     removeSavedMovie,
+    toggleLike
 };
