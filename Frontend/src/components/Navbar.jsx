@@ -56,12 +56,10 @@ const Navbar = () => {
 
   return (
     <header
-      className={`fixed left-0 right-0 z-[50] px-4 transition-all duration-300 ${
-        scrolled ? "top-2" : "top-4"
-      }`}
+      className={`fixed  left-0 right-0 z-[50] px-4 transition-all duration-300  `}
     >
       <nav
-        className={`mx-auto flex max-w-7xl items-center justify-between rounded-3xl border px-5 py-3 backdrop-blur-xl transition-all duration-300 ${
+        className={`mx-auto  flex max-w-7xl items-center justify-between rounded-b-4xl border px-5 py-3 backdrop-blur-xl transition-all duration-300 ${
           isDark
             ? "border-white/10 bg-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]"
             : "border-white/40 bg-white/40 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
