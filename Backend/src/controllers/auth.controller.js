@@ -167,4 +167,39 @@ async function me(req, res) {
     }
 }
 
-module.exports = { registeruser, getusers, loginuser, logoutuser, me }
+
+const reviewmodel = require("../models/review.model");
+
+async function getProfile(req, res) {
+    try {
+        const user = await usermodel.findById(req.user.id).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                message: "user not found",
+            });
+        }
+
+        const reviews = await reviewmodel
+            .find({ user: req.user.id })
+            .populate("movie", "title")
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            message: "profile fetched",
+            user,
+            reviews,
+            stats: {
+                totalReviews: reviews.length,
+                totalLikedMovies: user.likedMovies.length,
+            },
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({
+            message: "internal server error",
+        });
+    }
+}
+
+module.exports = { registeruser, getusers, loginuser, logoutuser, me, getProfile }
