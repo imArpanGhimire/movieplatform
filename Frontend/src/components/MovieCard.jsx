@@ -9,7 +9,7 @@ const MovieCard = ({ movie }) => {
           <img
             src={movie.poster}
             alt={movie.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 "
           />
         ) : (
           // Fallback when no poster
@@ -24,14 +24,6 @@ const MovieCard = ({ movie }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
         {/* Hover content */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-end p-4 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-          <h3 className="font-swash text-center text-base font-bold leading-snug text-white line-clamp-2">
-            {movie.title}
-          </h3>
-          <p className="mt-1 text-xs text-slate-300">
-            {movie.releaseYear || ""}
-          </p>
-        </div>
       </div>
 
       {/* Card footer */}
@@ -53,7 +45,7 @@ const MovieCard = ({ movie }) => {
             {movie.releaseYear || "—"}
           </span>
           {movie.genre && (
-            <span className="rounded-full bg-teal-500/10 px-2 py-0.5 text-xs font-medium text-teal-500 border border-teal-500/20">
+            <span className="rounded-full bg-teal-500/10 px-2 py-0.5 text-xs font-medium text-teal-500  ">
               {movie.genre}
             </span>
           )}

@@ -173,8 +173,8 @@ const MovieListingPage = () => {
                 onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
                 className={`cursor-pointer rounded-2xl transition-all duration-300 hover:-translate-y-2 ${
                   isDark
-                    ? "border border-white/10 shadow-xl shadow-black/30 hover:border-teal-400/70 hover:shadow-teal-500/20"
-                    : "border border-zinc-200 bg-white shadow-md shadow-zinc-200/70 hover:border-teal-400 hover:shadow-xl"
+                    ? "border border-white/10 shadow-xl shadow-black/30  hover:shadow-teal-500/20"
+                    : "border border-zinc-200 bg-white shadow-md shadow-zinc-200/70  hover:shadow-xl"
                 }`}
               >
                 <MovieCard movie={movie} />
@@ -215,8 +215,8 @@ const MovieListingPage = () => {
           <div
             className={`mx-auto mb-6 inline-flex rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] ${
               isDark
-                ? "border-teal-400/30 bg-teal-400/10 text-teal-200"
-                : "border-teal-200 bg-white/80 text-teal-700 shadow-sm"
+                ? "  bg-teal-400/10 text-teal-200"
+                : "  bg-white/80 text-teal-700 shadow-sm"
             }`}
           >
             FilmVault
@@ -430,8 +430,8 @@ const MovieListingPage = () => {
                     onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
                     className={`cursor-pointer animate-fadeInUp rounded-2xl transition-all duration-300 hover:-translate-y-2 ${
                       isDark
-                        ? "border border-white/10 shadow-xl shadow-black/30 hover:border-teal-400/70 hover:shadow-teal-500/20"
-                        : "border border-zinc-200 bg-white shadow-md shadow-zinc-200/70 hover:border-teal-400 hover:shadow-xl"
+                        ? "border border-white/10 shadow-xl shadow-black/30  hover:shadow-teal-500/20"
+                        : "border border-zinc-200 bg-white shadow-md shadow-zinc-200/70  hover:shadow-xl"
                     }`}
                     style={{ animationDelay: `${index * 40}ms` }}
                   >
