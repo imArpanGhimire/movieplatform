@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
 import ReviewSection from "../components/ReviewSection";
-import { Heart } from "lucide-react";
+import {
+  Bookmark,
+  Calendar,
+  Clock,
+  Film,
+  Heart,
+  Play,
+  Plus,
+  Star,
+  User,
+} from "lucide-react";
 import { sileo } from "sileo";
 
 const MovieDetailPage = () => {
@@ -15,6 +25,7 @@ const MovieDetailPage = () => {
   const [averageRating, setaverageRating] = useState(null);
   const [saved, setSaved] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   useEffect(() => {
     async function loadmovie() {
@@ -127,27 +138,38 @@ const MovieDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen animate-pulse bg-[var(--color-bg-base)] px-6 pb-10">
-        <div className="mb-6 h-[340px] w-full rounded-xl bg-[var(--color-bg-card)]" />
+      <div className="min-h-screen bg-[var(--color-bg-base)] px-6 py-8 text-[var(--color-text-primary)] transition-colors duration-300">
+        <div className="mx-auto max-w-7xl animate-pulse">
+          <div className="mb-8 h-14 rounded-2xl bg-[var(--color-bg-card)]" />
 
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-8 h-10 w-32 rounded-xl bg-[var(--color-bg-card)]" />
+          <div className="relative h-[520px] overflow-hidden rounded-[2rem] bg-[var(--color-bg-card)]">
+            <div className="absolute bottom-10 left-10 flex items-end gap-8">
+              <div className="h-[290px] w-[200px] rounded-3xl bg-[var(--color-bg-input)]" />
 
-          <div className="rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-8 md:p-10">
-            <div className="flex flex-col gap-8 md:flex-row">
-              <div className="h-[260px] w-[180px] rounded-2xl bg-[var(--color-bg-input)]" />
+              <div className="space-y-4">
+                <div className="h-5 w-40 rounded bg-[var(--color-bg-input)]" />
+                <div className="h-16 w-[520px] rounded bg-[var(--color-bg-input)]" />
+                <div className="h-4 w-[420px] rounded bg-[var(--color-bg-input)]" />
+                <div className="h-4 w-[600px] rounded bg-[var(--color-bg-input)]" />
 
-              <div className="flex-1 space-y-4">
-                <div className="h-4 w-32 rounded bg-[var(--color-bg-input)]" />
-                <div className="h-10 w-3/4 rounded bg-[var(--color-bg-input)]" />
-                <div className="h-4 w-24 rounded bg-[var(--color-bg-input)]" />
-
-                <div className="mt-4 space-y-2">
-                  <div className="h-3 w-full rounded bg-[var(--color-bg-input)]" />
-                  <div className="h-3 w-5/6 rounded bg-[var(--color-bg-input)]" />
-                  <div className="h-3 w-4/6 rounded bg-[var(--color-bg-input)]" />
+                <div className="flex gap-4 pt-4">
+                  <div className="h-12 w-40 rounded-full bg-[var(--color-bg-input)]" />
+                  <div className="h-12 w-40 rounded-full bg-[var(--color-bg-input)]" />
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_330px]">
+            <div className="space-y-5">
+              <div className="h-10 w-64 rounded bg-[var(--color-bg-input)]" />
+              <div className="h-44 rounded-3xl bg-[var(--color-bg-card)]" />
+              <div className="h-44 rounded-3xl bg-[var(--color-bg-card)]" />
+            </div>
+
+            <div className="space-y-5">
+              <div className="h-64 rounded-3xl bg-[var(--color-bg-card)]" />
+              <div className="h-56 rounded-3xl bg-[var(--color-bg-card)]" />
             </div>
           </div>
         </div>
@@ -157,13 +179,13 @@ const MovieDetailPage = () => {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-base)] px-6">
-        <div className="w-full max-w-md rounded-2xl border border-red-500/20 bg-[var(--color-bg-card)] p-6 text-center shadow-2xl">
-          <p className="text-lg font-medium text-red-400">{error}</p>
+      <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-base)] px-6 text-[var(--color-text-primary)]">
+        <div className="w-full max-w-md rounded-3xl border border-red-500/20 bg-[var(--color-bg-card)] p-8 text-center shadow-2xl">
+          <p className="text-lg font-semibold text-red-400">{error}</p>
 
           <button
             onClick={() => navigate("/movies")}
-            className="mt-5 rounded-xl bg-red-500/90 px-5 py-2.5 text-white transition hover:bg-red-500"
+            className="mt-6 rounded-full bg-red-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-red-600"
           >
             Go Back
           </button>
@@ -176,136 +198,215 @@ const MovieDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] transition-colors duration-300">
-      {movie.backdrop && (
-        <div className="relative h-[340px] w-full overflow-hidden">
+      <section className="relative min-h-[720px] overflow-hidden">
+        {movie.backdrop && (
           <img
             src={movie.backdrop}
             alt={movie.title}
-            className="h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover opacity-35"
           />
+        )}
 
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-[var(--color-bg-base)]" />
-        </div>
-      )}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg-base)] via-[var(--color-bg-base)]/75 to-[var(--color-bg-base)]/35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-[var(--color-bg-base)]/50 to-transparent" />
 
-      <div className="mx-auto max-w-5xl px-6 pb-10">
-        <button
-          onClick={() => navigate("/movies")}
-          className="mb-8 inline-flex items-center gap-2 rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-5 py-2.5 shadow-md transition hover:bg-[var(--color-bg-elevated)]"
-          style={{
-            marginTop: movie.backdrop ? "-3rem" : "2.5rem",
-            position: "relative",
-            zIndex: 10,
-          }}
-        >
-          ← Back to Movies
-        </button>
-
-        <div className="relative overflow-hidden rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] shadow-2xl">
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-teal-500/10 via-transparent to-cyan-500/10" />
-
-          <div className="relative flex flex-col gap-8 p-8 md:flex-row md:p-10">
+        <div className="relative z-10 mx-auto mt-10 flex max-w-7xl flex-col gap-10 px-6 pb-20 pt-28 lg:flex-row lg:items-end">
+          <div className="shrink-0">
             {movie.poster && (
-              <div className="flex-shrink-0">
-                <img
-                  src={movie.poster}
-                  alt={movie.title}
-                  className="w-full rounded-2xl shadow-xl md:w-[180px]"
-                />
-              </div>
+              <img
+                src={movie.poster}
+                alt={movie.title}
+                className="w-[210px] rounded-3xl border border-[color:var(--color-border)] object-cover shadow-[0_25px_80px_rgba(0,0,0,0.35)] md:w-[250px]"
+              />
+            )}
+          </div>
+
+          <div className="max-w-4xl">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-teal-500 px-4 py-1.5 text-xs font-black uppercase tracking-[0.2em] text-zinc-950">
+                Featured Movie
+              </span>
+
+              <span className="inline-flex items-center gap-1 text-sm font-bold text-teal-500">
+                <Star size={15} fill="currentColor" />
+                {averageRating || "N/A"}
+              </span>
+            </div>
+
+            <h1 className="mb-5 text-5xl font-black uppercase leading-none tracking-tight text-[var(--color-text-primary)] drop-shadow-xl md:text-7xl lg:text-8xl">
+              {movie.title}
+            </h1>
+
+            <div className="mb-6 flex flex-wrap gap-5 text-sm font-medium text-[var(--color-text-secondary)]">
+              <span className="inline-flex items-center gap-2">
+                <User size={17} className="text-teal-500" />
+                Dir. {movie.director || "N/A"}
+              </span>
+
+              <span className="inline-flex items-center gap-2">
+                <Film size={17} className="text-teal-500" />
+                {movie.genre || "N/A"}
+              </span>
+
+              <span className="inline-flex items-center gap-2">
+                <Clock size={17} className="text-teal-500" />
+                {movie.duration ? `${movie.duration} hr` : "N/A"}
+              </span>
+
+              <span className="inline-flex items-center gap-2">
+                <Calendar size={17} className="text-teal-500" />
+                {movie.releaseYear || "N/A"}
+              </span>
+            </div>
+
+            {movie.overview && (
+              <p className="mb-8 max-w-3xl text-base leading-8 text-[var(--color-text-secondary)] md:text-lg">
+                {movie.overview}
+              </p>
             )}
 
-            <div className="flex-1">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
-                <p className="text-sm uppercase tracking-[0.25em] text-teal-500">
-                  Movie Details
-                </p>
+            <div className="flex flex-wrap gap-4">
+              <button className="inline-flex items-center gap-3 rounded-full bg-teal-500 px-8 py-4 text-sm font-black uppercase tracking-wide text-zinc-950 shadow-lg shadow-teal-500/20 transition hover:-translate-y-0.5 hover:bg-teal-400">
+                <Play size={17} fill="currentColor" />
+                Watch Trailer
+              </button>
 
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={handleToggleLike}
-                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition ${
-                      liked
-                        ? "bg-pink-500 hover:bg-pink-600"
-                        : "bg-white/10 hover:bg-pink-500/20"
-                    }`}
-                  >
-                    <Heart size={16} fill={liked ? "currentColor" : "none"} />
-                    {liked ? "Liked" : "Like"}
-                  </button>
+              <button
+                onClick={handleToggleSave}
+                className={`inline-flex items-center gap-3 rounded-full border px-8 py-4 text-sm font-black uppercase tracking-wide transition hover:-translate-y-0.5 ${
+                  saved
+                    ? "border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500/15"
+                    : "border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]"
+                }`}
+              >
+                {saved ? (
+                  <Bookmark size={17} fill="currentColor" />
+                ) : (
+                  <Plus size={17} />
+                )}
+                {saved ? "Saved" : "Add To List"}
+              </button>
 
-                  <button
-                    onClick={handleToggleSave}
-                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition ${
-                      saved
-                        ? "bg-red-500 hover:bg-red-600"
-                        : "bg-teal-500 hover:bg-teal-600"
-                    }`}
-                  >
-                    {saved ? "Unsave" : "Save"}
-                  </button>
-                </div>
-              </div>
-
-              <h1 className="mb-2 font-swash text-4xl font-bold leading-tight text-[var(--color-text-primary)] md:text-5xl">
-                {movie.title}
-              </h1>
-
-              {movie.releaseYear && (
-                <p className="mb-4 text-sm text-[var(--color-text-muted)]">
-                  {movie.releaseYear}
-                </p>
-              )}
-
-              {movie.overview && (
-                <p className="mb-6 text-sm leading-7 text-[var(--color-text-secondary)]">
-                  {movie.overview}
-                </p>
-              )}
-
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-input)] p-4">
-                  <p className="mb-1 text-xs text-[var(--color-text-muted)]">
-                    Director
-                  </p>
-                  <p className="text-sm font-semibold capitalize text-[var(--color-text-primary)]">
-                    {movie.director || "N/A"}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-input)] p-4">
-                  <p className="mb-1 text-xs text-[var(--color-text-muted)]">
-                    Genre
-                  </p>
-                  <p className="text-sm font-semibold capitalize text-[var(--color-text-primary)]">
-                    {movie.genre || "N/A"}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-input)] p-4">
-                  <p className="mb-1 text-xs text-[var(--color-text-muted)]">
-                    Duration
-                  </p>
-                  <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-                    {movie.duration ? `${movie.duration} hr` : "N/A"}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-input)] p-4">
-                  <p className="mb-1 text-xs text-[var(--color-text-muted)]">
-                    Avg Rating
-                  </p>
-                  <p className="text-sm font-semibold text-amber-500">
-                    {averageRating || "N/A"} / 5
-                  </p>
-                </div>
-              </div>
+              <button
+                onClick={handleToggleLike}
+                className={`inline-flex items-center gap-3 rounded-full border px-8 py-4 text-sm font-black uppercase tracking-wide transition hover:-translate-y-0.5 ${
+                  liked
+                    ? "border-pink-500/30 bg-pink-500/10 text-pink-500 hover:bg-pink-500/15"
+                    : "border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]"
+                }`}
+              >
+                <Heart size={17} fill={liked ? "currentColor" : "none"} />
+                {liked ? "Liked" : "Like"}
+              </button>
             </div>
           </div>
         </div>
+      </section>
 
-        <ReviewSection movieId={movie._id} />
-      </div>
+      <main className="mx-auto grid max-w-7xl gap-10 px-6 pb-24 lg:grid-cols-[1fr_340px]">
+        <section>
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-black tracking-tight text-[var(--color-text-primary)] md:text-4xl">
+                Cinephile Reviews
+              </h2>
+
+              <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+                Latest thoughts from the community
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowAllReviews((prev) => !prev)}
+              className="hidden text-xs font-black uppercase tracking-wide text-teal-500 transition hover:text-teal-400 sm:block"
+            >
+              {showAllReviews ? "Show Less" : "View All Reviews"}
+            </button>
+          </div>
+
+          <ReviewSection movieId={movie._id} showAllReviews={showAllReviews} />
+
+          <button
+            onClick={() => setShowAllReviews((prev) => !prev)}
+            className="mt-6 w-full rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-5 py-4 text-sm font-black uppercase tracking-wide text-teal-500 transition hover:bg-[var(--color-bg-elevated)] sm:hidden"
+          >
+            {showAllReviews ? "Show Less" : "View All Reviews"}
+          </button>
+        </section>
+
+        <aside className="space-y-7">
+          <div className="rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-7 shadow-[0_20px_80px_rgba(0,0,0,0.10)]">
+            <h3 className="mb-5 text-xl font-black text-[var(--color-text-primary)]">
+              Movie Info
+            </h3>
+
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
+                  Director
+                </p>
+                <p className="mt-1 font-bold text-[var(--color-text-primary)]">
+                  {movie.director || "N/A"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
+                  Genre
+                </p>
+                <p className="mt-1 font-bold capitalize text-[var(--color-text-primary)]">
+                  {movie.genre || "N/A"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
+                  Release Year
+                </p>
+                <p className="mt-1 font-bold text-[var(--color-text-primary)]">
+                  {movie.releaseYear || "N/A"}
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
+                  Average Rating
+                </p>
+                <p className="mt-1 inline-flex items-center gap-2 font-bold text-amber-500">
+                  <Star size={16} fill="currentColor" />
+                  {averageRating || "N/A"} / 5
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-7 shadow-[0_20px_80px_rgba(0,0,0,0.10)]">
+            <h3 className="mb-5 text-xl font-black text-[var(--color-text-primary)]">
+              Gallery
+            </h3>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[movie.backdrop, movie.poster]
+                .filter(Boolean)
+                .map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={movie.title}
+                    className="h-24 w-full rounded-2xl border border-[color:var(--color-border)] object-cover"
+                  />
+                ))}
+            </div>
+          </div>
+
+          <button
+            onClick={() => navigate("/movies")}
+            className="w-full rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-5 py-4 text-sm font-black uppercase tracking-wide text-[var(--color-text-primary)] transition hover:bg-[var(--color-bg-elevated)]"
+          >
+            ← Back To Movies
+          </button>
+        </aside>
+      </main>
     </div>
   );
 };
