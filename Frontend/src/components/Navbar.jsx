@@ -4,7 +4,8 @@ import api from "../api/axios";
 import { sileo } from "sileo";
 import ThemeToggleButton from "./ThemeToggleButton";
 import { useTheme } from "../context/ThemeContext";
-import { Bookmark } from "lucide-react";
+
+import { Bookmark, User } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
@@ -86,6 +87,17 @@ const Navbar = () => {
             title="Saved Movies"
           >
             <Bookmark size={19} />
+          </button>
+
+          <button
+            onClick={() => navigate("/profile")}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border ${
+              isDark
+                ? "border-white/10 bg-white/10 text-teal-300 hover:bg-white/15"
+                : "border-white/50 bg-white/60 text-teal-600 hover:bg-white"
+            }`}
+          >
+            <User size={19} />
           </button>
 
           <div
