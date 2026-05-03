@@ -455,7 +455,7 @@ const MovieListingPage = () => {
                   className={
                     isDark
                       ? "mt-2 text-sm text-white/60"
-                      : "mt-2 text-sm text-zinc-500"
+                      : "mt-2 text-sm text-zinc-500/50"
                   }
                 >
                   Try a different search term.
