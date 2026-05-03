@@ -153,3 +153,38 @@ body {
     animation: none;
     mix-blend-mode: normal;
 }
+
+
+.poster-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.animate-up {
+    animation: scrollUp 40s linear infinite;
+}
+
+.animate-down {
+    animation: scrollDown 40s linear infinite;
+}
+
+@keyframes scrollUp {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-50%);
+    }
+}
+
+@keyframes scrollDown {
+    from {
+        transform: translateY(-50%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
