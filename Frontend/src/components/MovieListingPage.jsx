@@ -445,7 +445,7 @@ const MovieListingPage = () => {
 
                 <h3
                   className={`text-lg font-semibold ${
-                    isDark ? "text-white" : "text-zinc-900"
+                    isDark ? "text-white" : "text-zinc-900/70"
                   }`}
                 >
                   No results found
