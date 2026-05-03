@@ -428,7 +428,7 @@ const MovieListingPage = () => {
                   <div
                     key={movie.tmdbId}
                     onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
-                    className={`cursor-pointer animate-fadeInUp rounded-2xl transition-all duration-300 hover:-translate-y-2 ${
+                    className={`cursor-pointer animate-fadeInUp rounded-2xl transition-all duration-350 hover:-translate-y-2 ${
                       isDark
                         ? "border border-white/10 shadow-xl shadow-black/30  hover:shadow-teal-500/20"
                         : "border border-zinc-200 bg-white shadow-md shadow-zinc-200/70  hover:shadow-xl"
