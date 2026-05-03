@@ -16,6 +16,7 @@ import MovieListingPage from "./components/MovieListingPage";
 import MovieDetailPage from "./components/MovieDetailPage";
 import ProtectedRoute from "./protection/ProtectedRoute";
 import SavedMoviesPage from "./components/SavedMoviesPage";
+import LandingPage from "./components/LandingPage";
 
 import ProfilePage from "./components/ProfilePage";
 
@@ -38,7 +39,14 @@ const App = () => {
           }}
         />
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <LandingPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
