@@ -32,7 +32,7 @@ const LoginPage = () => {
       });
 
       console.log("Login success:", res.data);
-      navigate("/movies");
+      navigate("/");
     } catch (err) {
       console.log(err);
       setError(err.response?.data?.message || "Login failed");
