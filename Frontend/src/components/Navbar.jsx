@@ -3,16 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { sileo } from "sileo";
 import ThemeToggleButton from "./ThemeToggleButton";
-import { useTheme } from "../context/ThemeContext";
-
-import { Bookmark, User } from "lucide-react";
+import { Bookmark, LogOut, User } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { theme } = useTheme();
-
-  const isDark = theme === "dark";
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -21,12 +16,10 @@ const Navbar = () => {
 
   useEffect(() => {
     function handleScroll() {
-      setScrolled(window.scrollY > 40);
+      setScrolled(window.scrollY > 10);
     }
-
     handleScroll();
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -35,17 +28,14 @@ const Navbar = () => {
   async function handleLogout() {
     try {
       await api.post("/auth/logout");
-
       sileo.success({
         title: "Logged out",
         description: "You have been logged out successfully",
         position: "top-center",
       });
-
       navigate("/login");
     } catch (e) {
       console.log(e);
-
       sileo.error({
         title: "Logout failed",
         description: e.response?.data?.message || "Something went wrong",
@@ -54,65 +44,91 @@ const Navbar = () => {
     }
   }
 
+  const navItems = [
+    { label: "Movies", path: "/movies" },
+    { label: "Saved", path: "/saved" },
+    { label: "Profile", path: "/profile" },
+  ];
+
+  const isActive = (path) =>
+    path === "/movies"
+      ? location.pathname === "/" || location.pathname.startsWith("/movies")
+      : location.pathname.startsWith(path);
+
   return (
     <header
-      className={`fixed  left-0 right-0 z-[50] px-4 transition-all duration-300  `}
+      className={`fixed left-0 right-0 top-0 z-50 border-b transition-all duration-300 ${
+        scrolled
+          ? "border-[color:var(--color-border)] bg-[var(--color-bg-base)]/85 backdrop-blur-xl"
+          : "border-transparent bg-[var(--color-bg-base)]/60 backdrop-blur-md"
+      }`}
     >
-      <nav
-        className={`mx-auto  flex max-w-7xl items-center justify-between rounded-b-4xl border px-5 py-3 backdrop-blur-xl transition-all duration-300 ${
-          isDark
-            ? "border-white/10 bg-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]"
-            : "border-white/40 bg-white/40 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
-        }`}
-      >
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        {/* Brand */}
         <button
           onClick={() => navigate("/movies")}
-          className={`font-swash text-3xl font-black transition hover:opacity-80 ${
-            isDark ? "text-teal-300" : "text-teal-500"
-          }`}
+          className="flex items-center gap-2 transition hover:opacity-80"
         >
-          FilmVault
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--color-text-primary)] text-[var(--color-bg-base)]">
+            <span className="text-sm font-bold">F</span>
+          </div>
+          <span className="text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
+            FilmVault
+          </span>
         </button>
 
-        <div className="flex items-center gap-3">
+        {/* Center nav */}
+        <div className="hidden items-center gap-1 md:flex">
+          {navItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`relative rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                isActive(item.path)
+                  ? "text-[var(--color-text-primary)]"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+              }`}
+            >
+              {item.label}
+              {isActive(item.path) && (
+                <span className="absolute inset-x-3 -bottom-[18px] h-px bg-[var(--color-text-primary)]" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => navigate("/saved")}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border transition-all hover:-translate-y-0.5 ${
-              isDark
-                ? "border-white/10 bg-white/10 text-teal-300 hover:bg-white/15"
-                : "border-white/50 bg-white/60 text-teal-600 hover:bg-white"
-            }`}
-            title="Saved Movies"
+            className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)] md:hidden"
+            title="Saved"
+            aria-label="Saved"
           >
-            <Bookmark size={19} />
+            <Bookmark size={17} />
           </button>
 
           <button
             onClick={() => navigate("/profile")}
-            className={`flex h-11 w-11 items-center justify-center rounded-full border ${
-              isDark
-                ? "border-white/10 bg-white/10 text-teal-300 hover:bg-white/15"
-                : "border-white/50 bg-white/60 text-teal-600 hover:bg-white"
-            }`}
+            className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)] md:hidden"
+            title="Profile"
+            aria-label="Profile"
           >
-            <User size={19} />
+            <User size={17} />
           </button>
 
-          <div
-            className={`flex h-11 w-11 items-center justify-center rounded-full border ${
-              isDark
-                ? "border-white/10 bg-white/10"
-                : "border-white/50 bg-white/60"
-            }`}
-          >
+          <div className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)]">
             <ThemeToggleButton />
           </div>
 
+          <div className="mx-1 hidden h-5 w-px bg-[color:var(--color-border)] md:block" />
+
           <button
             onClick={handleLogout}
-            className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-red-600"
+            className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-3 py-1.5 text-sm font-medium text-[var(--color-text-primary)] transition hover:bg-[var(--color-bg-elevated)]"
           >
-            Logout
+            <LogOut size={14} />
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </nav>
