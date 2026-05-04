@@ -155,36 +155,43 @@ body {
 }
 
 
+/* Marquee columns */
 .poster-col {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
+    width: 140px;
 }
 
 .animate-up {
-    animation: scrollUp 40s linear infinite;
+    animation: scrollUp 30s linear infinite;
 }
 
 .animate-down {
-    animation: scrollDown 40s linear infinite;
+    animation: scrollDown 30s linear infinite;
 }
 
 @keyframes scrollUp {
-    from {
+    0% {
         transform: translateY(0);
     }
 
-    to {
+    100% {
         transform: translateY(-50%);
     }
 }
 
 @keyframes scrollDown {
-    from {
+    0% {
         transform: translateY(-50%);
     }
 
-    to {
+    100% {
         transform: translateY(0);
     }
+}
+
+/* Pause on hover (optional but nice) */
+.poster-col:hover {
+    animation-play-state: paused;
 }
