@@ -2,24 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MovieCard from "./MovieCard";
 import api from "../api/axios";
-import { useTheme } from "../context/ThemeContext";
-import {
-  Search,
-  X,
-  Film,
-  User,
-  Star,
-  BookOpen,
-  Layers,
-  TrendingUp,
-} from "lucide-react";
+import { Search, X, Film, User, Star, Layers, Sparkles } from "lucide-react";
 
 const TRIVIA = [
   "The Godfather was rejected 5 times before Paramount greenlit it.",
   "Parasite is the only non-English film to win Best Picture at the Oscars.",
   "Stanley Kubrick reportedly shot the same scene 127 times for The Shining.",
   "The Dark Knight's Joker makeup took 2 hours to apply every single day.",
-  "Spirited Away grossed more than Titanic when adjusted for Japan's box office.",
+  "Spirited Away grossed more than Titanic at Japan's box office.",
   "Schindler's List was shot almost entirely in black and white — by choice.",
   "Over 500 takes were filmed for a single scene in Eyes Wide Shut.",
 ];
@@ -47,7 +37,6 @@ const HOW_IT_WORKS = [
 
 const MovieListingPage = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
 
   const [loading, setloading] = useState(false);
   const [error, seterror] = useState("");
@@ -60,8 +49,6 @@ const MovieListingPage = () => {
   const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [triviaIndex, setTriviaIndex] = useState(0);
   const [triviaVisible, setTriviaVisible] = useState(true);
-
-  const isDark = theme === "dark";
 
   useEffect(() => {
     const savedTitle = sessionStorage.getItem("filmvault_title") || "";
@@ -81,14 +68,13 @@ const MovieListingPage = () => {
     setHasRestored(true);
   }, []);
 
-  // Trivia rotator
   useEffect(() => {
     const interval = setInterval(() => {
       setTriviaVisible(false);
       setTimeout(() => {
         setTriviaIndex((i) => (i + 1) % TRIVIA.length);
         setTriviaVisible(true);
-      }, 400);
+      }, 300);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -164,256 +150,36 @@ const MovieListingPage = () => {
     sessionStorage.removeItem("filmvault_movies");
   }
 
-  // ── Section header ─────────────────────────────────────────────────
-  function SectionHeader({ eyebrow, title, right }) {
-    return (
-      <div className="mb-8 flex items-end justify-between">
-        <div>
-          <span
-            className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest ${isDark ? "text-teal-400" : "text-teal-600"}`}
-          >
-            <span
-              className={`h-px w-4 ${isDark ? "bg-teal-400" : "bg-teal-600"}`}
-            />
-            {eyebrow}
-          </span>
-          <h2
-            className={`mt-1.5 text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}
-          >
-            {title}
-          </h2>
-        </div>
-        {right && (
-          <p
-            className={`text-sm ${isDark ? "text-white/40" : "text-zinc-400"}`}
-          >
-            {right}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // ── Divider ────────────────────────────────────────────────────────
-  function Divider() {
-    return (
-      <div className="mx-auto max-w-7xl px-6 pb-10">
-        <div
-          className={`h-px w-full ${isDark ? "bg-white/[0.06]" : "bg-zinc-200"}`}
-        />
-      </div>
-    );
-  }
-
-  // ── Trivia ticker ──────────────────────────────────────────────────
-  function TriviaTicker() {
-    return (
-      <section className="relative z-10 px-6 pb-6">
-        <div className="mx-auto max-w-7xl">
-          <div
-            className={`flex items-center gap-4 rounded-2xl border px-6 py-4 ${
-              isDark
-                ? "border-white/[0.07] bg-white/[0.03]"
-                : "border-zinc-200 bg-white shadow-sm"
-            }`}
-          >
-            {/* Label badge */}
-            <span
-              className={`shrink-0 rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
-                isDark
-                  ? "bg-teal-500/15 text-teal-400"
-                  : "bg-teal-100 text-teal-700"
-              }`}
-            >
-              Cinema Fact
-            </span>
-
-            {/* Divider line */}
-            <div
-              className={`h-4 w-px shrink-0 ${isDark ? "bg-white/10" : "bg-zinc-200"}`}
-            />
-
-            {/* Rotating trivia */}
-            <p
-              className={`text-sm leading-snug transition-opacity duration-300 ${
-                triviaVisible ? "opacity-100" : "opacity-0"
-              } ${isDark ? "text-white/60" : "text-zinc-500"}`}
-            >
-              {TRIVIA[triviaIndex]}
-            </p>
-
-            {/* Dot indicators */}
-            <div className="ml-auto flex shrink-0 items-center gap-1.5">
-              {TRIVIA.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    setTriviaVisible(false);
-                    setTimeout(() => {
-                      setTriviaIndex(i);
-                      setTriviaVisible(true);
-                    }, 300);
-                  }}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === triviaIndex
-                      ? isDark
-                        ? "w-4 bg-teal-400"
-                        : "w-4 bg-teal-500"
-                      : isDark
-                        ? "w-1.5 bg-white/15"
-                        : "w-1.5 bg-zinc-300"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // ── How it works ───────────────────────────────────────────────────
-  function HowItWorks() {
-    return (
-      <section className="relative z-10 px-6 pb-24">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader eyebrow="FilmVault" title="How it works" />
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {HOW_IT_WORKS.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.step}
-                  className={`group relative rounded-2xl border p-7 transition-all duration-300 ${
-                    isDark
-                      ? "border-white/[0.07] bg-white/[0.03]   hover:bg-teal-500/[0.04]"
-                      : "border-zinc-200 bg-white shadow-sm   hover:shadow-md"
-                  }`}
-                >
-                  {/* Step number — faint background */}
-                  <span
-                    className={`absolute right-6 top-5 font-black text-5xl leading-none select-none ${
-                      isDark ? "text-white/[0.04]" : "text-zinc-900/[0.05]"
-                    }`}
-                  >
-                    {item.step}
-                  </span>
-
-                  {/* Icon */}
-                  <div
-                    className={`mb-5 flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-300 ${
-                      isDark
-                        ? "bg-teal-500/10 text-teal-400 group-hover:bg-teal-500/20"
-                        : "bg-teal-50 text-teal-600 group-hover:bg-teal-100"
-                    }`}
-                  >
-                    <Icon size={18} />
-                  </div>
-
-                  <h3
-                    className={`mb-2 text-base font-black tracking-tight ${
-                      isDark ? "text-white" : "text-zinc-900"
-                    }`}
-                  >
-                    {item.title}
-                  </h3>
-                  <p
-                    className={`text-sm leading-relaxed ${
-                      isDark ? "text-white/45" : "text-zinc-500"
-                    }`}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // ── Top rated ──────────────────────────────────────────────────────
-  function renderTopRatedMovies() {
-    if (topRatedMovies.length === 0) return null;
-    return (
-      <section className="relative z-10 px-6 pb-16">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader eyebrow="Top Rated" title="Greatest of all time" />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {topRatedMovies.map((movie) => (
-              <div
-                key={movie.tmdbId}
-                onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
-                className={`cursor-pointer rounded-2xl transition-all duration-300 hover:-translate-y-1.5 ${
-                  isDark
-                    ? "border border-white/[0.07] shadow-lg shadow-black/40   hover:shadow-teal-500/10"
-                    : "border border-zinc-200/80 bg-white shadow-sm hover:shadow-md  "
-                }`}
-              >
-                <MovieCard movie={movie} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <div
-      className={`relative min-h-screen overflow-x-hidden ${isDark ? "bg-[#030711] text-white" : "bg-[#f6f7f9] text-zinc-950"}`}
-    >
-      {/* ── Background ambience ── */}
-      {isDark && (
-        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div className="absolute left-[-10%] top-[-20%] h-[650px] w-[650px] rounded-full bg-teal-500/20 blur-[130px]" />
-          <div className="absolute right-[-15%] top-[10%] h-[600px] w-[600px] rounded-full bg-cyan-500/10 blur-[140px]" />
-          <div className="absolute bottom-[-25%] left-1/2 h-[650px] w-[900px] -translate-x-1/2 rounded-full bg-teal-400/10 blur-[160px]" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:70px_70px]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030711]/70 to-[#030711]" />
-        </div>
-      )}
-      {!isDark && (
-        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div className="absolute left-[-10%] top-[-20%] h-[600px] w-[600px] rounded-full bg-teal-200/50 blur-[120px]" />
-          <div className="absolute right-[-10%] top-[15%] h-[500px] w-[500px] rounded-full bg-cyan-100/60 blur-[120px]" />
-        </div>
-      )}
+    <div className="relative min-h-screen overflow-x-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
+      {/* Subtle backdrop ambience */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-teal-500/[0.04] blur-3xl" />
+        <div className="absolute -right-32 top-40 h-[400px] w-[400px] rounded-full bg-teal-500/[0.03] blur-3xl" />
+      </div>
 
       {/* ── Search hero ── */}
       <section className="relative z-10 px-6 pb-12 pt-32">
         <div className="mx-auto max-w-3xl">
-          <div className="mb-10">
-            <p
-              className={`mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest ${isDark ? "text-teal-400" : "text-teal-600"}`}
-            >
-              <span
-                className={`h-px w-4 ${isDark ? "bg-teal-400" : "bg-teal-600"}`}
-              />
+          <div className="mb-8">
+            <p className="mb-2 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-teal-500">
+              <Sparkles size={11} />
               FilmVault Search
             </p>
-            <h1
-              className={`text-4xl font-black tracking-tight md:text-5xl ${isDark ? "text-white" : "text-zinc-900"}`}
-            >
+            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
               Find your next watch
             </h1>
-            <p
-              className={`mt-3 text-sm ${isDark ? "text-white/45" : "text-zinc-500"}`}
-            >
+            <p className="mt-2 text-sm text-[var(--color-text-muted)]">
               Search by title or director — we'll do the rest.
             </p>
           </div>
 
-          <div
-            className={`rounded-2xl p-1.5 ${isDark ? "bg-white/[0.05] border border-white/[0.08] shadow-2xl shadow-black/50 backdrop-blur-xl" : "bg-white border border-zinc-200 shadow-xl shadow-zinc-200/60"}`}
-          >
-            <div className="flex flex-col gap-1.5 sm:flex-row">
+          <div className="rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-1.5 shadow-sm">
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
               <div className="relative flex-1">
                 <Film
-                  size={15}
-                  className={`absolute left-4 top-1/2 -translate-y-1/2 ${isDark ? "text-white/30" : "text-zinc-400"}`}
+                  size={14}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
                 />
                 <input
                   type="text"
@@ -425,17 +191,17 @@ const MovieListingPage = () => {
                       setdebouncedDirector("");
                     }
                   }}
-                  placeholder="Movie title..."
-                  className={`h-12 w-full rounded-xl pl-10 pr-4 text-sm outline-none transition-colors ${isDark ? "bg-transparent text-white placeholder:text-white/25 focus:bg-white/[0.06]" : "bg-zinc-50 text-zinc-900 placeholder:text-zinc-400 focus:bg-zinc-100"}`}
+                  placeholder="Movie title"
+                  className="h-11 w-full rounded-lg bg-transparent pl-9 pr-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition focus:bg-[var(--color-bg-input)]"
                 />
               </div>
-              <div
-                className={`hidden sm:flex w-px self-stretch my-1.5 ${isDark ? "bg-white/10" : "bg-zinc-200"}`}
-              />
+
+              <div className="hidden h-5 w-px bg-[color:var(--color-border)] sm:block" />
+
               <div className="relative flex-1">
                 <User
-                  size={15}
-                  className={`absolute left-4 top-1/2 -translate-y-1/2 ${isDark ? "text-white/30" : "text-zinc-400"}`}
+                  size={14}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
                 />
                 <input
                   type="text"
@@ -447,38 +213,32 @@ const MovieListingPage = () => {
                       setdebouncedTitle("");
                     }
                   }}
-                  placeholder="Director name..."
-                  className={`h-12 w-full rounded-xl pl-10 pr-4 text-sm outline-none transition-colors ${isDark ? "bg-transparent text-white placeholder:text-white/25 focus:bg-white/[0.06]" : "bg-zinc-50 text-zinc-900 placeholder:text-zinc-400 focus:bg-zinc-100"}`}
+                  placeholder="Director name"
+                  className="h-11 w-full rounded-lg bg-transparent pl-9 pr-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition focus:bg-[var(--color-bg-input)]"
                 />
               </div>
+
               <button
                 onClick={title || director ? clearall : undefined}
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all ${
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition ${
                   title || director
-                    ? isDark
-                      ? "bg-white/10 text-white/60 hover:bg-white/15 hover:text-white"
-                      : "bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700"
-                    : isDark
-                      ? "bg-teal-500/20 text-teal-300 cursor-default"
-                      : "bg-teal-50 text-teal-600 cursor-default"
+                    ? "bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
+                    : "bg-teal-500/10 text-teal-500"
                 }`}
+                aria-label={title || director ? "Clear" : "Search"}
               >
-                {title || director ? <X size={16} /> : <Search size={16} />}
+                {title || director ? <X size={15} /> : <Search size={15} />}
               </button>
             </div>
           </div>
 
           {(title || director) && (
-            <p
-              className={`mt-3 text-xs ${isDark ? "text-white/30" : "text-zinc-400"}`}
-            >
+            <p className="mt-3 text-xs text-[var(--color-text-muted)]">
               Searching by{" "}
-              <span
-                className={`font-medium ${isDark ? "text-teal-400" : "text-teal-600"}`}
-              >
+              <span className="font-medium text-teal-500">
                 {director ? "director" : "title"}
               </span>{" "}
-              — type in the other field to switch
+              — type in the other field to switch.
             </p>
           )}
         </div>
@@ -487,38 +247,60 @@ const MovieListingPage = () => {
       {/* ── Default view (no search) ── */}
       {!hasSearch && !loading && (
         <>
+          {topRatedMovies.length > 0 && (
+            <section className="relative z-10 px-6 pb-16">
+              <div className="mx-auto max-w-6xl">
+                <SectionHeader
+                  eyebrow="Top Rated"
+                  title="Greatest of all time"
+                  description="Critically acclaimed films loved across generations"
+                />
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                  {topRatedMovies.map((movie) => (
+                    <div
+                      key={movie.tmdbId}
+                      onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
+                      className="group cursor-pointer overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-lg hover:shadow-teal-500/5"
+                    >
+                      <MovieCard movie={movie} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
           <Divider />
-          {renderTopRatedMovies()}
+
+          <TriviaTicker
+            triviaIndex={triviaIndex}
+            triviaVisible={triviaVisible}
+            setTriviaIndex={setTriviaIndex}
+            setTriviaVisible={setTriviaVisible}
+          />
+
           <Divider />
-          <TriviaTicker />
-          <div className="pb-10" />
-          <Divider />
+
           <HowItWorks />
         </>
       )}
 
       {/* ── Results ── */}
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pb-24">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24">
         {loading && (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <div className="relative h-10 w-10">
-              <div
-                className={`absolute inset-0 rounded-full border ${isDark ? "border-white/10" : "border-zinc-200"}`}
-              />
-              <div className="absolute inset-0 animate-spin rounded-full border border-transparent border-t-teal-400 border-r-teal-400/50" />
+          <div className="flex flex-col items-center justify-center gap-3 py-24">
+            <div className="relative h-9 w-9">
+              <div className="absolute inset-0 rounded-full border-2 border-[color:var(--color-border)]" />
+              <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-teal-500" />
             </div>
-            <p
-              className={`text-sm ${isDark ? "text-white/40" : "text-zinc-400"}`}
-            >
+            <p className="text-sm text-[var(--color-text-muted)]">
               Searching...
             </p>
           </div>
         )}
 
         {error && (
-          <div
-            className={`mx-auto mt-4 max-w-md rounded-xl p-4 text-center text-sm ${isDark ? "border border-red-500/20 bg-red-950/20 text-red-300" : "border border-red-200 bg-red-50 text-red-600"}`}
-          >
+          <div className="mx-auto mt-4 max-w-md rounded-lg border border-red-500/25 bg-red-500/10 p-3 text-center text-sm text-red-400">
             {error}
           </div>
         )}
@@ -528,9 +310,11 @@ const MovieListingPage = () => {
             <SectionHeader
               eyebrow="Search Results"
               title="Movies found"
-              right={
+              meta={
                 allmovies.length > 0
-                  ? `${allmovies.length} ${allmovies.length === 1 ? "result" : "results"}`
+                  ? `${allmovies.length} ${
+                      allmovies.length === 1 ? "result" : "results"
+                    }`
                   : null
               }
             />
@@ -542,11 +326,7 @@ const MovieListingPage = () => {
                     <div
                       key={movie.tmdbId}
                       onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
-                      className={`cursor-pointer animate-fadeInUp rounded-2xl transition-all duration-300 hover:-translate-y-1.5 ${
-                        isDark
-                          ? "border border-white/[0.07] shadow-lg shadow-black/40 hover:border-white/15 hover:shadow-teal-500/10"
-                          : "border border-zinc-200/80 bg-white shadow-sm hover:shadow-md hover:border-zinc-300"
-                      }`}
+                      className="group animate-fadeInUp cursor-pointer overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-lg hover:shadow-teal-500/5"
                       style={{ animationDelay: `${index * 40}ms` }}
                     >
                       <MovieCard movie={movie} />
@@ -554,33 +334,30 @@ const MovieListingPage = () => {
                   ))}
                 </div>
 
-                {/* Below results */}
-                <div className="mt-20">
+                <div className="mt-20 space-y-0">
                   <Divider />
-                  <TriviaTicker />
-                  <div className="pb-10" />
+                  <TriviaTicker
+                    triviaIndex={triviaIndex}
+                    triviaVisible={triviaVisible}
+                    setTriviaIndex={setTriviaIndex}
+                    setTriviaVisible={setTriviaVisible}
+                  />
                   <Divider />
                   <HowItWorks />
                 </div>
               </>
             ) : (
               <div className="flex flex-col items-center justify-center py-24 text-center">
-                <div
-                  className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl ${isDark ? "bg-white/[0.05] border border-white/10" : "bg-zinc-100 border border-zinc-200"}`}
-                >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)]">
                   <Search
-                    size={22}
-                    className={isDark ? "text-white/25" : "text-zinc-300"}
+                    size={18}
+                    className="text-[var(--color-text-muted)]"
                   />
                 </div>
-                <h3
-                  className={`text-base font-bold ${isDark ? "text-white/70" : "text-zinc-700"}`}
-                >
+                <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
                   No results found
                 </h3>
-                <p
-                  className={`mt-1.5 text-sm ${isDark ? "text-white/30" : "text-zinc-400"}`}
-                >
+                <p className="mt-1.5 text-sm text-[var(--color-text-muted)]">
                   Try a different search term or director name.
                 </p>
               </div>
@@ -591,5 +368,131 @@ const MovieListingPage = () => {
     </div>
   );
 };
+
+/* ─── Helpers ─────────────────────────────────────────────── */
+
+const SectionHeader = ({ eyebrow, title, description, meta }) => (
+  <div className="mb-6 flex items-end justify-between gap-4 border-b border-[color:var(--color-border)] pb-4">
+    <div>
+      {eyebrow && (
+        <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-teal-500">
+          {eyebrow}
+        </p>
+      )}
+      <h2 className="text-xl font-semibold tracking-tight text-[var(--color-text-primary)] md:text-2xl">
+        {title}
+      </h2>
+      {description && (
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+          {description}
+        </p>
+      )}
+    </div>
+    {meta && (
+      <span className="rounded-full border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-3 py-1 text-xs font-medium text-[var(--color-text-secondary)]">
+        {meta}
+      </span>
+    )}
+  </div>
+);
+
+const Divider = () => (
+  <div className="mx-auto max-w-6xl px-6 py-2">
+    <div className="h-px w-full bg-[color:var(--color-border)]" />
+  </div>
+);
+
+const TriviaTicker = ({
+  triviaIndex,
+  triviaVisible,
+  setTriviaIndex,
+  setTriviaVisible,
+}) => (
+  <section className="relative z-10 px-6 py-10">
+    <div className="mx-auto max-w-6xl">
+      <div className="flex items-center gap-4 rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-5 py-4">
+        <span className="shrink-0 rounded-md bg-teal-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-teal-500">
+          Cinema Fact
+        </span>
+
+        <div className="hidden h-4 w-px shrink-0 bg-[color:var(--color-border)] sm:block" />
+
+        <p
+          className={`flex-1 text-sm leading-snug text-[var(--color-text-secondary)] transition-opacity duration-300 ${
+            triviaVisible ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {TRIVIA[triviaIndex]}
+        </p>
+
+        <div className="ml-auto hidden shrink-0 items-center gap-1.5 sm:flex">
+          {TRIVIA.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setTriviaVisible(false);
+                setTimeout(() => {
+                  setTriviaIndex(i);
+                  setTriviaVisible(true);
+                }, 300);
+              }}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === triviaIndex
+                  ? "w-4 bg-teal-500"
+                  : "w-1.5 bg-[color:var(--color-border-strong)] hover:bg-[var(--color-text-muted)]"
+              }`}
+              aria-label={`Go to trivia ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const HowItWorks = () => (
+  <section className="relative z-10 px-6 pb-24 pt-10">
+    <div className="mx-auto max-w-6xl">
+      <SectionHeader
+        eyebrow="FilmVault"
+        title="How it works"
+        description="Three simple steps to make this your home for cinema"
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {HOW_IT_WORKS.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div
+              key={item.step}
+              className="group relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-6 transition hover:border-teal-500/30"
+            >
+              {/* Faint step number */}
+              <span className="pointer-events-none absolute right-5 top-3 select-none text-5xl font-bold leading-none text-[var(--color-text-primary)]/[0.04]">
+                {item.step}
+              </span>
+
+              {/* Subtle glow on hover */}
+              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-500/0 blur-2xl transition group-hover:bg-teal-500/[0.06]" />
+
+              <div className="relative">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-500 transition group-hover:bg-teal-500/15">
+                  <Icon size={17} />
+                </div>
+
+                <h3 className="mb-1.5 text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
+                  {item.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  {item.desc}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+);
 
 export default MovieListingPage;
