@@ -134,14 +134,26 @@ async function savemovie(req, res) {
 
 async function topRatedMovies(req, res) {
     try {
-        const response = await fetch(
-            `${TMDB_BASE}/movie/top_rated?language=en-US&page=1`,
-            { headers }
-        );
+        // Fetch 3 pages in parallel
+        const [res1, res2, res3] = await Promise.all([
+            fetch(`${TMDB_BASE}/movie/top_rated?language=en-US&page=1`, { headers }),
+            fetch(`${TMDB_BASE}/movie/top_rated?language=en-US&page=2`, { headers }),
+            fetch(`${TMDB_BASE}/movie/top_rated?language=en-US&page=3`, { headers }),
+        ]);
 
-        const data = await response.json();
+        const [data1, data2, data3] = await Promise.all([
+            res1.json(),
+            res2.json(),
+            res3.json(),
+        ]);
 
-        const movies = data.results.slice(0, 12).map((m) => ({
+        const allResults = [
+            ...data1.results,
+            ...data2.results,
+            ...data3.results,
+        ];
+
+        const movies = allResults.map((m) => ({
             tmdbId: m.id,
             title: m.title,
             overview: m.overview,
@@ -151,10 +163,9 @@ async function topRatedMovies(req, res) {
             backdrop: m.backdrop_path
                 ? `https://image.tmdb.org/t/p/w1280${m.backdrop_path}`
                 : null,
-            releaseYear: m.release_date
-                ? m.release_date.split("-")[0]
-                : null,
+            releaseYear: m.release_date ? m.release_date.split("-")[0] : null,
             language: m.original_language,
+            rating: m.vote_average,
         }));
 
         return res.status(200).json({ movies });
