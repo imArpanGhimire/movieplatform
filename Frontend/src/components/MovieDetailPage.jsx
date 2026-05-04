@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
 import ReviewSection from "../components/ReviewSection";
 import {
+  ArrowLeft,
   Bookmark,
   Calendar,
   Clock,
@@ -47,7 +48,6 @@ const MovieDetailPage = () => {
         const isAlreadySaved = savedMovies.some(
           (item) => String(item.tmdbId) === String(savedMovie.tmdbId),
         );
-
         setSaved(isAlreadySaved);
 
         const profileRes = await api.get("/auth/profile");
@@ -56,7 +56,6 @@ const MovieDetailPage = () => {
         const isAlreadyLiked = likedMovies.some(
           (item) => String(item.tmdbId) === String(savedMovie.tmdbId),
         );
-
         setLiked(isAlreadyLiked);
       } catch (e) {
         console.log(e);
@@ -74,7 +73,6 @@ const MovieDetailPage = () => {
       if (saved) {
         await api.delete(`/saved/${movie.tmdbId}`);
         setSaved(false);
-
         sileo.success({
           title: "Removed",
           description: "Movie removed from saved list",
@@ -86,9 +84,7 @@ const MovieDetailPage = () => {
           title: movie.title,
           poster: movie.poster,
         });
-
         setSaved(true);
-
         sileo.success({
           title: "Saved",
           description: "Movie added to your list",
@@ -97,7 +93,6 @@ const MovieDetailPage = () => {
       }
     } catch (e) {
       console.log(e);
-
       sileo.error({
         title: "Error",
         description: e.response?.data?.message || "Something went wrong",
@@ -117,7 +112,6 @@ const MovieDetailPage = () => {
       });
 
       setLiked(res.data.liked);
-
       sileo.success({
         title: res.data.liked ? "Liked" : "Removed",
         description: res.data.liked
@@ -127,7 +121,6 @@ const MovieDetailPage = () => {
       });
     } catch (e) {
       console.log(e);
-
       sileo.error({
         title: "Error",
         description: e.response?.data?.message || "Failed to update like",
@@ -138,38 +131,24 @@ const MovieDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg-base)] px-6 py-8 text-[var(--color-text-primary)] transition-colors duration-300">
-        <div className="mx-auto max-w-7xl animate-pulse">
-          <div className="mb-8 h-14 rounded-2xl bg-[var(--color-bg-card)]" />
-
-          <div className="relative h-[520px] overflow-hidden rounded-[2rem] bg-[var(--color-bg-card)]">
-            <div className="absolute bottom-10 left-10 flex items-end gap-8">
-              <div className="h-[290px] w-[200px] rounded-3xl bg-[var(--color-bg-input)]" />
-
-              <div className="space-y-4">
-                <div className="h-5 w-40 rounded bg-[var(--color-bg-input)]" />
-                <div className="h-16 w-[520px] rounded bg-[var(--color-bg-input)]" />
-                <div className="h-4 w-[420px] rounded bg-[var(--color-bg-input)]" />
-                <div className="h-4 w-[600px] rounded bg-[var(--color-bg-input)]" />
-
-                <div className="flex gap-4 pt-4">
-                  <div className="h-12 w-40 rounded-full bg-[var(--color-bg-input)]" />
-                  <div className="h-12 w-40 rounded-full bg-[var(--color-bg-input)]" />
-                </div>
+      <div className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
+        <div className="mx-auto max-w-6xl animate-pulse px-6 py-10">
+          <div className="mb-10 h-4 w-24 rounded bg-[var(--color-bg-card)]" />
+          <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
+            <div className="aspect-[2/3] rounded-xl bg-[var(--color-bg-card)]" />
+            <div className="space-y-5">
+              <div className="h-4 w-32 rounded bg-[var(--color-bg-card)]" />
+              <div className="h-12 w-3/4 rounded bg-[var(--color-bg-card)]" />
+              <div className="h-4 w-1/2 rounded bg-[var(--color-bg-card)]" />
+              <div className="space-y-2 pt-4">
+                <div className="h-3 w-full rounded bg-[var(--color-bg-card)]" />
+                <div className="h-3 w-5/6 rounded bg-[var(--color-bg-card)]" />
+                <div className="h-3 w-4/6 rounded bg-[var(--color-bg-card)]" />
               </div>
-            </div>
-          </div>
-
-          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_330px]">
-            <div className="space-y-5">
-              <div className="h-10 w-64 rounded bg-[var(--color-bg-input)]" />
-              <div className="h-44 rounded-3xl bg-[var(--color-bg-card)]" />
-              <div className="h-44 rounded-3xl bg-[var(--color-bg-card)]" />
-            </div>
-
-            <div className="space-y-5">
-              <div className="h-64 rounded-3xl bg-[var(--color-bg-card)]" />
-              <div className="h-56 rounded-3xl bg-[var(--color-bg-card)]" />
+              <div className="flex gap-3 pt-4">
+                <div className="h-11 w-32 rounded-lg bg-[var(--color-bg-card)]" />
+                <div className="h-11 w-32 rounded-lg bg-[var(--color-bg-card)]" />
+              </div>
             </div>
           </div>
         </div>
@@ -180,12 +159,11 @@ const MovieDetailPage = () => {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-base)] px-6 text-[var(--color-text-primary)]">
-        <div className="w-full max-w-md rounded-3xl border border-red-500/20 bg-[var(--color-bg-card)] p-8 text-center shadow-2xl">
-          <p className="text-lg font-semibold text-red-400">{error}</p>
-
+        <div className="w-full max-w-sm rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-8 text-center">
+          <p className="text-base font-medium text-red-400">{error}</p>
           <button
             onClick={() => navigate("/movies")}
-            className="mt-6 rounded-full bg-red-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-red-600"
+            className="mt-6 rounded-lg bg-[var(--color-text-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90"
           >
             Go Back
           </button>
@@ -197,218 +175,259 @@ const MovieDetailPage = () => {
   if (!movie) return null;
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] transition-colors duration-300">
-      <section className="relative min-h-[720px] overflow-hidden">
+    <div className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
+      {/* Backdrop */}
+      <div className="relative h-[55vh] min-h-[420px] w-full overflow-hidden">
         {movie.backdrop && (
           <img
             src={movie.backdrop}
             alt={movie.title}
-            className="absolute inset-0 h-full w-full object-cover opacity-35"
+            className="h-full w-full object-cover"
           />
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-[var(--color-bg-base)]/70 to-[var(--color-bg-base)]/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg-base)]/60 to-transparent" />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg-base)] via-[var(--color-bg-base)]/75 to-[var(--color-bg-base)]/35" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-[var(--color-bg-base)]/50 to-transparent" />
+        {/* Back button */}
+        {/* Back button — sits opposite the poster */}
+        <div className="absolute left-0 right-0 top-0 z-10">
+          <div className="mx-auto max-w-6xl px-6 pt-24">
+            <div className="flex justify-end">
+              <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-base)]/60 px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] backdrop-blur-sm transition hover:bg-[var(--color-bg-card)]"
+              >
+                <ArrowLeft size={14} />
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div className="relative z-10 mx-auto mt-10 flex max-w-7xl flex-col gap-10 px-6 pb-20 pt-28 lg:flex-row lg:items-end">
-          <div className="shrink-0">
+      {/* Content */}
+      <div className="mx-auto max-w-6xl px-6 pb-24">
+        {/* Header section */}
+        <div className="-mt-44 grid gap-10 lg:grid-cols-[260px_1fr] lg:gap-12">
+          {/* Poster */}
+          <div className="relative z-10">
             {movie.poster && (
               <img
                 src={movie.poster}
                 alt={movie.title}
-                className="w-[210px] rounded-3xl border border-[color:var(--color-border)] object-cover shadow-[0_25px_80px_rgba(0,0,0,0.35)] md:w-[250px]"
+                className="w-full max-w-[260px] rounded-xl border border-[color:var(--color-border)] object-cover shadow-2xl"
               />
             )}
           </div>
 
-          <div className="max-w-4xl">
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-teal-500 px-4 py-1.5 text-xs font-black uppercase tracking-[0.2em] text-zinc-950">
-                Featured Movie
-              </span>
-
-              <span className="inline-flex items-center gap-1 text-sm font-bold text-teal-500">
-                <Star size={15} fill="currentColor" />
-                {averageRating || "N/A"}
-              </span>
+          {/* Info */}
+          <div className="relative z-10 lg:pt-32">
+            <div className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
+              <span>{movie.releaseYear || "—"}</span>
+              <span className="text-[var(--color-text-muted)]/50">•</span>
+              <span className="capitalize">{movie.genre || "Movie"}</span>
             </div>
 
-            <h1 className="mb-5 text-5xl font-black uppercase leading-none tracking-tight text-[var(--color-text-primary)] drop-shadow-xl md:text-7xl lg:text-8xl">
+            <h1 className="text-4xl font-semibold leading-tight tracking-tight text-[var(--color-text-primary)] md:text-5xl">
               {movie.title}
             </h1>
 
-            <div className="mb-6 flex flex-wrap gap-5 text-sm font-medium text-[var(--color-text-secondary)]">
-              <span className="inline-flex items-center gap-2">
-                <User size={17} className="text-teal-500" />
-                Dir. {movie.director || "N/A"}
+            <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[var(--color-text-secondary)]">
+              <span className="inline-flex items-center gap-1.5">
+                <Star
+                  size={14}
+                  className="text-amber-500"
+                  fill="currentColor"
+                />
+                <span className="font-medium text-[var(--color-text-primary)]">
+                  {averageRating || "—"}
+                </span>
+                <span className="text-[var(--color-text-muted)]">/ 5</span>
               </span>
-
-              <span className="inline-flex items-center gap-2">
-                <Film size={17} className="text-teal-500" />
-                {movie.genre || "N/A"}
+              <span className="inline-flex items-center gap-1.5">
+                <Clock size={14} className="text-[var(--color-text-muted)]" />
+                {movie.duration ? `${movie.duration} hr` : "—"}
               </span>
-
-              <span className="inline-flex items-center gap-2">
-                <Clock size={17} className="text-teal-500" />
-                {movie.duration ? `${movie.duration} hr` : "N/A"}
-              </span>
-
-              <span className="inline-flex items-center gap-2">
-                <Calendar size={17} className="text-teal-500" />
-                {movie.releaseYear || "N/A"}
+              <span className="inline-flex items-center gap-1.5">
+                <User size={14} className="text-[var(--color-text-muted)]" />
+                {movie.director || "—"}
               </span>
             </div>
 
             {movie.overview && (
-              <p className="mb-8 max-w-3xl text-base leading-8 text-[var(--color-text-secondary)] md:text-lg">
+              <p className="mt-6 max-w-2xl text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
                 {movie.overview}
               </p>
             )}
 
-            <div className="flex flex-wrap gap-4">
-              <button className="inline-flex items-center gap-3 rounded-full bg-teal-500 px-8 py-4 text-sm font-black uppercase tracking-wide text-zinc-950 shadow-lg shadow-teal-500/20 transition hover:-translate-y-0.5 hover:bg-teal-400">
-                <Play size={17} fill="currentColor" />
+            {/* Actions */}
+            <div className="mt-8 flex flex-wrap gap-2.5">
+              <button className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-text-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90">
+                <Play size={15} fill="currentColor" />
                 Watch Trailer
               </button>
 
               <button
                 onClick={handleToggleSave}
-                className={`inline-flex items-center gap-3 rounded-full border px-8 py-4 text-sm font-black uppercase tracking-wide transition hover:-translate-y-0.5 ${
+                className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition ${
                   saved
-                    ? "border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500/15"
+                    ? "border-teal-500/30 bg-teal-500/10 text-teal-500"
                     : "border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]"
                 }`}
               >
                 {saved ? (
-                  <Bookmark size={17} fill="currentColor" />
+                  <Bookmark size={15} fill="currentColor" />
                 ) : (
-                  <Plus size={17} />
+                  <Plus size={15} />
                 )}
-                {saved ? "Saved" : "Add To List"}
+                {saved ? "Saved" : "Add to list"}
               </button>
 
               <button
                 onClick={handleToggleLike}
-                className={`inline-flex items-center gap-3 rounded-full border px-8 py-4 text-sm font-black uppercase tracking-wide transition hover:-translate-y-0.5 ${
+                className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition ${
                   liked
-                    ? "border-pink-500/30 bg-pink-500/10 text-pink-500 hover:bg-pink-500/15"
+                    ? "border-pink-500/30 bg-pink-500/10 text-pink-500"
                     : "border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]"
                 }`}
               >
-                <Heart size={17} fill={liked ? "currentColor" : "none"} />
+                <Heart size={15} fill={liked ? "currentColor" : "none"} />
                 {liked ? "Liked" : "Like"}
               </button>
             </div>
           </div>
         </div>
-      </section>
 
-      <main className="mx-auto grid max-w-7xl gap-10 px-6 pb-24 lg:grid-cols-[1fr_340px]">
-        <section>
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-black tracking-tight text-[var(--color-text-primary)] md:text-4xl">
-                Cinephile Reviews
-              </h2>
+        {/* Details strip */}
+        <div className="mt-16 grid grid-cols-2 divide-x divide-[color:var(--color-border)] overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] sm:grid-cols-4">
+          <DetailCell icon={User} label="Director" value={movie.director} />
+          <DetailCell
+            icon={Film}
+            label="Genre"
+            value={movie.genre}
+            capitalize
+          />
+          <DetailCell
+            icon={Calendar}
+            label="Released"
+            value={movie.releaseYear}
+          />
+          <DetailCell
+            icon={Star}
+            label="Rating"
+            value={averageRating ? `${averageRating} / 5` : null}
+          />
+        </div>
 
-              <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-                Latest thoughts from the community
-              </p>
+        {/* Main content */}
+        <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_300px]">
+          {/* Reviews */}
+          <section>
+            <div className="mb-6 flex items-end justify-between border-b border-[color:var(--color-border)] pb-4">
+              <div>
+                <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
+                  Reviews
+                </h2>
+                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                  Latest thoughts from the community
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowAllReviews((prev) => !prev)}
+                className="hidden text-sm font-medium text-[var(--color-text-secondary)] transition hover:text-[var(--color-text-primary)] sm:block"
+              >
+                {showAllReviews ? "Show less" : "View all"}
+              </button>
             </div>
+
+            <ReviewSection
+              movieId={movie._id}
+              showAllReviews={showAllReviews}
+            />
 
             <button
               onClick={() => setShowAllReviews((prev) => !prev)}
-              className="hidden text-xs font-black uppercase tracking-wide text-teal-500 transition hover:text-teal-400 sm:block"
+              className="mt-5 w-full rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-4 py-3 text-sm font-medium text-[var(--color-text-primary)] transition hover:bg-[var(--color-bg-elevated)] sm:hidden"
             >
-              {showAllReviews ? "Show Less" : "View All Reviews"}
+              {showAllReviews ? "Show less" : "View all reviews"}
             </button>
-          </div>
+          </section>
 
-          <ReviewSection movieId={movie._id} showAllReviews={showAllReviews} />
-
-          <button
-            onClick={() => setShowAllReviews((prev) => !prev)}
-            className="mt-6 w-full rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-5 py-4 text-sm font-black uppercase tracking-wide text-teal-500 transition hover:bg-[var(--color-bg-elevated)] sm:hidden"
-          >
-            {showAllReviews ? "Show Less" : "View All Reviews"}
-          </button>
-        </section>
-
-        <aside className="space-y-7">
-          <div className="rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-7 shadow-[0_20px_80px_rgba(0,0,0,0.10)]">
-            <h3 className="mb-5 text-xl font-black text-[var(--color-text-primary)]">
-              Movie Info
-            </h3>
-
-            <div className="space-y-4">
-              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
-                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
-                  Director
-                </p>
-                <p className="mt-1 font-bold text-[var(--color-text-primary)]">
-                  {movie.director || "N/A"}
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
-                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
-                  Genre
-                </p>
-                <p className="mt-1 font-bold capitalize text-[var(--color-text-primary)]">
-                  {movie.genre || "N/A"}
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
-                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
-                  Release Year
-                </p>
-                <p className="mt-1 font-bold text-[var(--color-text-primary)]">
-                  {movie.releaseYear || "N/A"}
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-[var(--color-bg-input)] p-4">
-                <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">
-                  Average Rating
-                </p>
-                <p className="mt-1 inline-flex items-center gap-2 font-bold text-amber-500">
-                  <Star size={16} fill="currentColor" />
-                  {averageRating || "N/A"} / 5
-                </p>
+          {/* Sidebar */}
+          <aside className="space-y-8">
+            {/* Gallery */}
+            <div>
+              <h3 className="mb-4 text-xs font-medium uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
+                Gallery
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                {[movie.backdrop, movie.poster]
+                  .filter(Boolean)
+                  .map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={movie.title}
+                      className="aspect-video w-full rounded-lg border border-[color:var(--color-border)] object-cover"
+                    />
+                  ))}
               </div>
             </div>
-          </div>
 
-          <div className="rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-7 shadow-[0_20px_80px_rgba(0,0,0,0.10)]">
-            <h3 className="mb-5 text-xl font-black text-[var(--color-text-primary)]">
-              Gallery
-            </h3>
-
-            <div className="grid grid-cols-2 gap-3">
-              {[movie.backdrop, movie.poster]
-                .filter(Boolean)
-                .map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={movie.title}
-                    className="h-24 w-full rounded-2xl border border-[color:var(--color-border)] object-cover"
-                  />
-                ))}
+            {/* Quick info */}
+            <div>
+              <h3 className="mb-4 text-xs font-medium uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
+                Information
+              </h3>
+              <dl className="space-y-3 text-sm">
+                <InfoRow label="Director" value={movie.director} />
+                <InfoRow label="Genre" value={movie.genre} capitalize />
+                <InfoRow label="Year" value={movie.releaseYear} />
+                <InfoRow
+                  label="Duration"
+                  value={movie.duration ? `${movie.duration} hr` : null}
+                />
+                <InfoRow
+                  label="Rating"
+                  value={averageRating ? `${averageRating} / 5` : null}
+                />
+              </dl>
             </div>
-          </div>
-
-          <button
-            onClick={() => navigate("/movies")}
-            className="w-full rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-5 py-4 text-sm font-black uppercase tracking-wide text-[var(--color-text-primary)] transition hover:bg-[var(--color-bg-elevated)]"
-          >
-            ← Back To Movies
-          </button>
-        </aside>
-      </main>
+          </aside>
+        </div>
+      </div>
     </div>
   );
 };
+
+const DetailCell = ({ icon: Icon, label, value, capitalize }) => (
+  <div className="px-5 py-5">
+    <div className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+      <Icon size={12} />
+      {label}
+    </div>
+    <p
+      className={`truncate text-sm font-medium text-[var(--color-text-primary)] ${
+        capitalize ? "capitalize" : ""
+      }`}
+    >
+      {value || "—"}
+    </p>
+  </div>
+);
+
+const InfoRow = ({ label, value, capitalize }) => (
+  <div className="flex items-center justify-between gap-4 border-b border-[color:var(--color-border)] pb-3 last:border-0 last:pb-0">
+    <dt className="text-[var(--color-text-muted)]">{label}</dt>
+    <dd
+      className={`text-right font-medium text-[var(--color-text-primary)] ${
+        capitalize ? "capitalize" : ""
+      }`}
+    >
+      {value || "—"}
+    </dd>
+  </div>
+);
 
 export default MovieDetailPage;
