@@ -168,7 +168,7 @@ body {
 }
 
 .animate-down {
-    animation: scrollDown 30s linear infinite;
+    animation: scrollDown 60s linear infinite;
 }
 
 @keyframes scrollUp {
