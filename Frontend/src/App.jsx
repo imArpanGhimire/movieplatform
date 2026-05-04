@@ -19,6 +19,7 @@ import SavedMoviesPage from "./components/SavedMoviesPage";
 import LandingPage from "./components/LandingPage";
 
 import ProfilePage from "./components/ProfilePage";
+import GuestRoute from "./protection/GuestRoute";
 
 const App = () => {
   return (
@@ -39,18 +40,28 @@ const App = () => {
           }}
         />
         <Routes>
+          {/* Public — anyone can visit */}
+          <Route path="/" element={<LandingPage />} />
+
+          {/* Guest only — logged-in users get sent to /movies */}
           <Route
-            path="/"
+            path="/login"
             element={
-              <ProtectedRoute>
-                <LandingPage />
-              </ProtectedRoute>
+              <GuestRoute>
+                <LoginPage />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <GuestRoute>
+                <RegisterPage />
+              </GuestRoute>
             }
           />
 
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-
+          {/* Protected — guests get sent to /login */}
           <Route
             path="/movies"
             element={
@@ -59,7 +70,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/movie/tmdb/:tmdbId"
             element={
@@ -68,7 +78,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/saved"
             element={
@@ -77,7 +86,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/profile"
             element={
