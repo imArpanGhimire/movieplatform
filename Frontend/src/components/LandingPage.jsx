@@ -12,6 +12,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import ctaBg from "../images/cta-bg.jpg";
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
@@ -201,93 +203,99 @@ const LandingPage = () => {
               <ArrowRight size={13} />
             </button>
           </div>
+          <div className="relative hidden lg:flex flex-col h-[480px]">
+            {THEME_CARDS.map((card, i) => {
+              const cardMovies = movies.slice(
+                card.movieSlice[0],
+                card.movieSlice[1],
+              );
+              return (
+                <div
+                  key={card.title}
+                  className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] flex-1 cursor-pointer group transition-all duration-500 hover:flex-[2]"
+                  style={{
+                    zIndex: i,
+                    marginTop: i === 0 ? "0px" : "-32px",
+                    rotate: `${(i - 1) * 2}deg`,
+                    transformOrigin: "left center",
+                  }}
+                >
+                  {/* Poster collage background */}
+                  <div className="absolute inset-0 flex">
+                    {cardMovies.map((movie, j) => (
+                      <img
+                        key={j}
+                        src={movie.poster}
+                        alt=""
+                        className="h-full flex-1 object-cover"
+                      />
+                    ))}
+                  </div>
 
-          <div className="flex flex-col gap-3">
-            {COLLECTIONS.map((col, i) => (
-              <article
-                key={col.title}
-                className="group relative cursor-pointer overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] transition hover:border-[color:var(--color-border-strong)]"
-              >
-                <div className="flex items-center gap-4 p-4">
-                  {/* Thumbnail */}
-                  <div
-                    className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br ${col.gradient}`}
-                  >
+                  {/* Overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
                     <div
-                      className="absolute inset-0 opacity-25 mix-blend-overlay"
-                      style={{
-                        backgroundImage:
-                          "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-                        backgroundSize: "150px",
-                      }}
-                    />
-                    <div className="absolute bottom-1 left-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/15 text-xs font-semibold text-white backdrop-blur">
-                      <Layers size={11} />
-                    </div>
-                  </div>
-
-                  {/* Body */}
-                  <div className="min-w-0 flex-1">
-                    <h4 className="truncate text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
-                      {col.title}
-                    </h4>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-[var(--color-text-muted)]">
-                      <span>{col.count}</span>
-                      <span className="text-[var(--color-text-muted)]/40">
-                        •
-                      </span>
-                      <span>{col.rated}</span>
-                    </div>
-                  </div>
-
-                  {/* Author */}
-                  <div className="flex shrink-0 items-center gap-2 text-xs text-[var(--color-text-muted)]">
-                    <span
-                      className={`flex h-6 w-6 items-center justify-center rounded-full ${col.accent} text-[10px] font-semibold uppercase text-white`}
+                      className={`mb-1.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${card.badgeClass}`}
                     >
-                      {col.by[0]}
-                    </span>
-                    <span className="hidden sm:inline">@{col.by}</span>
-                  </div>
-
-                  {/* Bookmark count */}
-                  <div className="hidden items-center gap-1 rounded-md border border-[color:var(--color-border)] bg-[var(--color-bg-input)] px-2 py-1 text-xs font-medium text-[var(--color-text-secondary)] sm:flex">
-                    <BookmarkCheck size={11} />
-                    {60 + i * 17}
+                      {card.badge}
+                    </div>
+                    <h3 className="text-xl font-bold text-white tracking-tight">
+                      {card.title}
+                    </h3>
+                    <p className="mt-1 text-xs text-white/60">{card.desc}</p>
                   </div>
                 </div>
-              </article>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* ── CTA ── */}
+      {/* ── CTA ── */}
       <section className="relative z-10 px-6 pb-24">
         <div className="mx-auto max-w-6xl">
-          <div className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-8 py-16 text-center md:px-16 md:py-20">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.08),transparent_60%)]" />
-            <div className="pointer-events-none absolute -left-20 -top-20 h-60 w-60 rounded-full bg-teal-500/10 blur-3xl" />
-            <div className="pointer-events-none absolute -right-20 -bottom-20 h-60 w-60 rounded-full bg-teal-500/10 blur-3xl" />
+          <div className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)]">
+            {/* Movie collage background */}
+            <img
+              src={ctaBg}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover opacity-70 blur-xs scale-105"
+            />
 
-            <div className="relative mx-auto max-w-xl">
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Ready to find your next favorite film?
-              </h2>
-              <p className="mx-auto mt-3 max-w-md text-sm text-[var(--color-text-muted)]">
-                Join FilmVault today and turn endless scrolling into endless
-                discovery.
-              </p>
-              <button
-                onClick={() => navigate("/register")}
-                className="group mt-8 inline-flex items-center gap-2 rounded-lg bg-[var(--color-text-primary)] px-6 py-3 text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90"
-              >
-                Create your account
-                <ArrowRight
-                  size={14}
-                  className="transition group-hover:translate-x-0.5"
-                />
-              </button>
+            {/* Overlays */}
+            <div className="absolute inset-0 bg-[var(--color-bg-base)]/60" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.12),transparent_20%)]" />
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[var(--color-bg-base)]/80 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--color-bg-base)]/80 to-transparent" />
+            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[var(--color-bg-base)]/80 to-transparent" />
+            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[var(--color-bg-base)]/80 to-transparent" />
+
+            {/* Content */}
+            <div className="relative px-8 py-16 text-center md:px-16 md:py-20">
+              <div className="relative mx-auto max-w-xl">
+                <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                  Ready to find your next favorite film?
+                </h2>
+                <p className="mx-auto mt-3 max-w-md text-sm text-[var(--color-text-muted)]">
+                  Join FilmVault today and turn endless scrolling into endless
+                  discovery.
+                </p>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="group mt-8 inline-flex items-center gap-2 rounded-lg bg-[var(--color-text-primary)] px-6 py-3 text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90"
+                >
+                  Create your account
+                  <ArrowRight
+                    size={14}
+                    className="transition group-hover:translate-x-0.5"
+                  />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -382,6 +390,30 @@ const COLLECTIONS = [
     by: "mpowell",
     gradient: "from-indigo-700 to-blue-800",
     accent: "bg-indigo-500",
+  },
+];
+
+const THEME_CARDS = [
+  {
+    title: "Critically Acclaimed",
+    desc: "Films that changed cinema forever",
+    badge: "All time greats",
+    badgeClass: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
+    movieSlice: [0, 4],
+  },
+  {
+    title: "Hidden Masterpieces",
+    desc: "Underseen films worth every minute",
+    badge: "Cult classics",
+    badgeClass: "bg-teal-500/20 text-teal-400 border border-teal-500/30",
+    movieSlice: [4, 8],
+  },
+  {
+    title: "Director's Vision",
+    desc: "Cinema as pure artistic expression",
+    badge: "Auteur picks",
+    badgeClass: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
+    movieSlice: [8, 12],
   },
 ];
 
