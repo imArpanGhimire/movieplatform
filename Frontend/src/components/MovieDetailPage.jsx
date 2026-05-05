@@ -174,6 +174,20 @@ const MovieDetailPage = () => {
 
   if (!movie) return null;
 
+  async function handleWatchTrailer() {
+    try {
+      const res = await api.get(`/tmdb/trailer/${tmdbId}`);
+
+      window.open(res.data.youtubeUrl, "_blank");
+    } catch (e) {
+      console.log(e);
+      sileo.error({
+        title: "Error",
+        description: "Trailer not available",
+        position: "top-center",
+      });
+    }
+  }
   return (
     <div className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
       {/* Backdrop */}
@@ -262,11 +276,13 @@ const MovieDetailPage = () => {
 
             {/* Actions */}
             <div className="mt-8 flex flex-wrap gap-2.5">
-              <button className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-text-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90">
+              <button
+                onClick={handleWatchTrailer}
+                className="inline-flex items-center gap-2 rounded-lg cursor-pointer bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-500"
+              >
                 <Play size={15} fill="currentColor" />
                 Watch Trailer
               </button>
-
               <button
                 onClick={handleToggleSave}
                 className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition ${
