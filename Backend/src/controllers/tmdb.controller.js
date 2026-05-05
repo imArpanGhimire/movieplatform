@@ -1,4 +1,5 @@
 const moviemodel = require("../models/movie.model")
+const axios = require("axios");
 
 const TMDB_BASE = "https://api.themoviedb.org/3"
 
