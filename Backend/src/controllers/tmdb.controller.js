@@ -175,9 +175,59 @@ async function topRatedMovies(req, res) {
     }
 }
 
+async function getTrailer(req, res) {
+    try {
+        const { id } = req.params;
+
+        const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/${id}/videos`,
+            {
+                params: {
+                    api_key: process.env.TMDB_API_KEY,
+                },
+            }
+        );
+
+        const videos = response.data.results || [];
+
+        // Prefer official trailer first
+        let trailer = videos.find(
+            (v) =>
+                v.type === "Trailer" &&
+                v.site === "YouTube" &&
+                v.official === true
+        );
+
+        // fallback if no official trailer
+        if (!trailer) {
+            trailer = videos.find(
+                (v) => v.type === "Trailer" && v.site === "YouTube"
+            );
+        }
+
+        // fallback to teaser if trailer not found
+        if (!trailer) {
+            trailer = videos.find(
+                (v) => v.type === "Teaser" && v.site === "YouTube"
+            );
+        }
+
+        if (!trailer) {
+            return res.status(404).json({ message: "No trailer found" });
+        }
+
+        return res.json({
+            youtubeUrl: `https://www.youtube.com/watch?v=${trailer.key}`,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Failed to fetch trailer" });
+    }
+}
+
 module.exports = {
     searchtmdb,
     savemovie,
     searchByDirector,
-    topRatedMovies,
+    topRatedMovies, getTrailer
 };
