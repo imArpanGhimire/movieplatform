@@ -229,7 +229,7 @@ const MovieDetailPage = () => {
               <img
                 src={movie.poster}
                 alt={movie.title}
-                className="w-full max-w-[260px] rounded-xl border border-[color:var(--color-border)] object-cover shadow-2xl"
+                className="w-full max-w-[260px] rounded-2xl border border-[color:var(--color-border)] object-cover shadow-2xl"
               />
             )}
           </div>
