@@ -246,7 +246,7 @@ const MovieDetailPage = () => {
               {movie.title}
             </h1>
 
-            <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[var(--color-text-secondary)]">
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[var(--color-text-secondary)]">
               <span className="inline-flex items-center gap-1.5">
                 <Star
                   size={14}
