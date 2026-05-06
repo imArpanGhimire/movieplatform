@@ -236,7 +236,7 @@ const MovieDetailPage = () => {
 
           {/* Info */}
           <div className="relative z-10 lg:pt-32">
-            <div className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
+            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
               <span>{movie.releaseYear || "—"}</span>
               <span className="text-[var(--color-text-muted)]/50">•</span>
               <span className="capitalize">{movie.genre || "Movie"}</span>
