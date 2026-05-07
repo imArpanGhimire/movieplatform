@@ -20,6 +20,8 @@ import LandingPage from "./components/LandingPage";
 import ProfilePage from "./components/ProfilePage";
 import ScrollToTop from "./components/ScrollToTop";
 
+import PersonalizedHome from "./components/PersonalizedHome";
+
 const AUTH_ROUTES = ["/login", "/register"];
 
 const AppContent = () => {
@@ -94,6 +96,15 @@ const AppContent = () => {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <PersonalizedHome />
             </ProtectedRoute>
           }
         />
