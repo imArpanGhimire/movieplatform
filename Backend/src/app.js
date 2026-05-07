@@ -1,5 +1,6 @@
 const express = require("express");
-const app = express();
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const authroutes = require("./routes/auth.routes");
 const movieroutes = require("./routes/movie.routes");
@@ -7,9 +8,9 @@ const likesroutes = require("./routes/likes.routes");
 const replyRoutes = require("./routes/reply.routes");
 const tmdbRoutes = require("./routes/tmdb.routes");
 const savedRoutes = require("./routes/saved.routes");
+const personalizedRoutes = require("./routes/personalized.routes");
 
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
+const app = express();
 
 app.use(
     cors({
@@ -27,5 +28,6 @@ app.use("/api/toggle", likesroutes);
 app.use("/api/reply", replyRoutes);
 app.use("/api/tmdb", tmdbRoutes);
 app.use("/api/saved", savedRoutes);
+app.use("/api/personalized", personalizedRoutes);
 
 module.exports = app;
