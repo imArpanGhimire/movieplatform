@@ -56,75 +56,39 @@ function useDragScroll() {
 
 /* ─── skeleton ───────────────────────────────────────────── */
 function Skeleton() {
-  const bar = (w, h = "10px", r = "6px") => (
-    <div
-      style={{
-        width: w,
-        height: h,
-        borderRadius: r,
-        background: "var(--color-bg-card)",
-        animation: "fv-pulse 1.6s ease infinite",
-      }}
-    />
-  );
-
   return (
-    <div style={{ minHeight: "100vh", background: "var(--color-bg-base)" }}>
-      {/* hero skeleton */}
-      <div
-        style={{
-          height: 420,
-          background: "var(--color-bg-page)",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: "36px 40px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-          }}
-        >
-          {bar("80px")}
-          {bar("320px", "44px", "6px")}
-          {bar("280px")}
-          {bar("200px")}
-          <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-            {bar("120px", "36px", "8px")}
-            {bar("100px", "36px", "8px")}
+    <div className="min-h-screen bg-[var(--color-bg-base)]">
+      {/* hero */}
+      <div className="relative h-[420px] overflow-hidden bg-[var(--color-bg-page)]">
+        <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-3 p-10">
+          <div className="h-2.5 w-20 animate-pulse rounded bg-[var(--color-bg-card)]" />
+          <div className="h-11 w-80 animate-pulse rounded bg-[var(--color-bg-card)]" />
+          <div className="h-3 w-72 animate-pulse rounded bg-[var(--color-bg-card)]" />
+          <div className="h-3 w-52 animate-pulse rounded bg-[var(--color-bg-card)]" />
+          <div className="mt-1.5 flex gap-2.5">
+            <div className="h-9 w-28 animate-pulse rounded-lg bg-[var(--color-bg-card)]" />
+            <div className="h-9 w-24 animate-pulse rounded-lg bg-[var(--color-bg-card)]" />
           </div>
         </div>
       </div>
-      {/* row skeletons */}
+      {/* rows */}
       {[0, 1].map((s) => (
-        <div key={s} style={{ padding: "32px 40px 0" }}>
-          <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-            {bar("100px")} {bar("160px")}
+        <div key={s} className="px-10 pt-8">
+          <div className="mb-5 flex gap-2.5">
+            <div className="h-2.5 w-24 animate-pulse rounded bg-[var(--color-bg-card)]" />
+            <div className="h-2.5 w-40 animate-pulse rounded bg-[var(--color-bg-card)]" />
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
+          <div className="flex gap-2.5">
             {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
-                style={{
-                  width: 100,
-                  flexShrink: 0,
-                  aspectRatio: "2/3",
-                  borderRadius: 10,
-                  background: "var(--color-bg-card)",
-                  animation: `fv-pulse 1.6s ${i * 80}ms ease infinite`,
-                }}
+                className="aspect-[2/3] w-[100px] flex-none animate-pulse rounded-xl bg-[var(--color-bg-card)]"
+                style={{ animationDelay: `${i * 80}ms` }}
               />
             ))}
           </div>
         </div>
       ))}
-      <style>{`@keyframes fv-pulse{0%,100%{opacity:.4}50%{opacity:.9}}`}</style>
     </div>
   );
 }
@@ -136,149 +100,47 @@ function Hero({ movie }) {
     IMG(movie.backdrop_path, "original") || IMG(movie.poster_path, "w780");
 
   return (
-    <div
-      style={{
-        position: "relative",
-        height: 420,
-        overflow: "hidden",
-        background: "var(--color-bg-page)",
-      }}
-    >
-      {/* backdrop */}
+    <div className="relative h-[420px] overflow-hidden bg-[var(--color-bg-page)]">
+      {/* backdrop image */}
       {backdrop && (
         <img
           src={backdrop}
           alt={movie.title}
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transition: "transform .7s ease",
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
-          onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.04]"
         />
       )}
+
       {/* gradients */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(90deg, var(--color-bg-base) 0%, rgba(9,9,11,.75) 50%, transparent 100%)",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(0deg, var(--color-bg-base) 0%, rgba(9,9,11,.5) 35%, transparent 100%)",
-        }}
-      />
+      <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-bg-base)] via-[var(--color-bg-base)]/75 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-[var(--color-bg-base)]/50 to-transparent" />
 
       {/* content */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "36px 40px",
-          maxWidth: 600,
-          animation: "fv-up .5s ease both",
-        }}
-      >
+      <div className="animate-[fv-up_.5s_ease_both] absolute bottom-0 left-0 right-0 max-w-[600px] p-10">
         {/* eyebrow */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            marginBottom: 12,
-          }}
-        >
-          <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "var(--color-brand)",
-            }}
-          />
-          <span
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              color: "var(--color-brand)",
-            }}
-          >
+        <div className="mb-3 flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand)]" />
+          <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--color-brand)]">
             Featured Pick
           </span>
         </div>
 
         {/* title */}
-        <h2
-          style={{
-            fontFamily: "var(--font-swash, 'Cinzel', serif)",
-            fontSize: "clamp(28px,4vw,44px)",
-            fontWeight: 700,
-            color: "var(--color-text-primary)",
-            lineHeight: 1.05,
-            letterSpacing: "-.5px",
-            marginBottom: 10,
-          }}
-        >
+        <h2 className="mb-2.5 font-[var(--font-swash)] text-[clamp(28px,4vw,44px)] font-bold leading-[1.05] tracking-tight text-[var(--color-text-primary)]">
           {movie.title}
         </h2>
 
         {/* overview */}
         {movie.overview && (
-          <p
-            style={{
-              fontSize: 13,
-              color: "var(--color-text-muted)",
-              lineHeight: 1.65,
-              marginBottom: 18,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              maxWidth: 420,
-            }}
-          >
+          <p className="mb-4 line-clamp-2 max-w-[420px] text-[13px] leading-relaxed text-[var(--color-text-muted)]">
             {movie.overview}
           </p>
         )}
 
-        {/* actions row */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {/* actions */}
+        <div className="flex items-center gap-2.5">
           <Link
             to={`/movie/tmdb/${movie.id}`}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 7,
-              background: "var(--color-brand)",
-              color: "#09090b",
-              borderRadius: 8,
-              padding: "9px 18px",
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              textDecoration: "none",
-              transition: "background .2s",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.background = "var(--color-brand-hover)")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.background = "var(--color-brand)")
-            }
+            className="flex items-center gap-1.5 rounded-lg bg-[var(--color-brand)] px-[18px] py-[9px] text-[12px] font-bold tracking-[0.04em] text-[#09090b] no-underline transition-colors duration-200 hover:bg-[var(--color-brand-hover)]"
           >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
               <path d="M2 1l7 4-7 4V1z" />
@@ -286,63 +148,20 @@ function Hero({ movie }) {
             Watch Now
           </Link>
 
-          <button
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              background: "rgba(255,255,255,.07)",
-              border: "1px solid var(--color-border)",
-              color: "var(--color-text-secondary)",
-              borderRadius: 8,
-              padding: "9px 16px",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "background .2s",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,.11)")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,.07)")
-            }
-          >
+          <button className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/[0.07] px-4 py-[9px] text-[12px] font-semibold text-[var(--color-text-secondary)] transition-colors duration-200 hover:bg-white/[0.11]">
             + Add to List
           </button>
 
           {/* rating */}
           {movie.vote_average > 0 && (
-            <div style={{ marginLeft: "auto", textAlign: "right" }}>
-              <div
-                style={{
-                  fontSize: 28,
-                  fontWeight: 800,
-                  color: "var(--color-text-primary)",
-                  lineHeight: 1,
-                }}
-              >
+            <div className="ml-auto text-right">
+              <div className="text-[28px] font-extrabold leading-none text-[var(--color-text-primary)]">
                 {movie.vote_average.toFixed(1)}
               </div>
-              <div
-                style={{
-                  fontSize: 10,
-                  color: "var(--color-brand)",
-                  letterSpacing: 2,
-                  marginTop: 2,
-                }}
-              >
+              <div className="mt-0.5 text-[10px] tracking-[2px] text-[var(--color-brand)]">
                 ★★★★★
               </div>
-              <div
-                style={{
-                  fontSize: 9,
-                  color: "var(--color-text-muted)",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  marginTop: 2,
-                }}
-              >
+              <div className="mt-0.5 text-[9px] uppercase tracking-[0.1em] text-[var(--color-text-muted)]">
                 IMDb Score
               </div>
             </div>
@@ -355,119 +174,44 @@ function Hero({ movie }) {
 
 /* ─── poster card ────────────────────────────────────────── */
 function PosterCard({ movie, index }) {
-  const [hovered, setHovered] = useState(false);
-
   return (
     <Link
       to={`/movie/tmdb/${movie.id}`}
       draggable={false}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        textDecoration: "none",
-        userSelect: "none",
-        animation: `fv-up .45s ${index * 35}ms ease both`,
-      }}
+      className="group flex select-none flex-col no-underline"
+      style={{ animation: `fv-up .45s ${index * 35}ms ease both` }}
     >
       {/* poster */}
-      <div
-        style={{
-          position: "relative",
-          aspectRatio: "2/3",
-          borderRadius: 10,
-          overflow: "hidden",
-          background: "var(--color-bg-card)",
-        }}
-      >
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-[var(--color-bg-card)]">
         {IMG(movie.poster_path) ? (
           <img
             src={IMG(movie.poster_path)}
             alt={movie.title}
             draggable={false}
             loading="lazy"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-              transition: "transform .5s ease",
-              transform: hovered ? "scale(1.07)" : "scale(1)",
-            }}
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.07]"
           />
         ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              background: "var(--color-bg-elevated)",
-            }}
-          />
+          <div className="h-full w-full bg-[var(--color-bg-elevated)]" />
         )}
 
         {/* hover overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(0deg, rgba(9,9,11,.8) 0%, transparent 60%)",
-            opacity: hovered ? 1 : 0,
-            transition: "opacity .3s",
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(9,9,11,0.8)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
         {/* rating badge */}
         {movie.vote_average > 0 && (
-          <span
-            style={{
-              position: "absolute",
-              bottom: 8,
-              left: 8,
-              background: "rgba(9,9,11,.8)",
-              backdropFilter: "blur(4px)",
-              borderRadius: 6,
-              padding: "2px 6px",
-              fontSize: 9,
-              fontWeight: 700,
-              color: "var(--color-brand)",
-              opacity: hovered ? 1 : 0,
-              transition: "opacity .3s",
-            }}
-          >
+          <span className="absolute bottom-2 left-2 rounded-md bg-[rgba(9,9,11,0.8)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--color-brand)] opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
             ★ {movie.vote_average.toFixed(1)}
           </span>
         )}
       </div>
 
       {/* meta */}
-      <p
-        style={{
-          marginTop: 8,
-          fontSize: 11,
-          fontWeight: 600,
-          color: hovered
-            ? "var(--color-text-primary)"
-            : "var(--color-text-secondary)",
-          lineHeight: 1.3,
-          transition: "color .2s",
-          overflow: "hidden",
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-        }}
-      >
+      <p className="mt-2 line-clamp-2 text-[11px] font-semibold leading-snug text-[var(--color-text-secondary)] transition-colors duration-200 group-hover:text-[var(--color-text-primary)]">
         {movie.title}
       </p>
       {movie.release_date && (
-        <p
-          style={{
-            marginTop: 3,
-            fontSize: 10,
-            color: "var(--color-text-muted)",
-          }}
-        >
+        <p className="mt-0.5 text-[10px] text-[var(--color-text-muted)]">
           {movie.release_date.split("-")[0]}
         </p>
       )}
@@ -485,18 +229,10 @@ function DragRow({ movies, skip = 0 }) {
       ref={ref}
       onMouseDown={onMouseDown}
       onClick={onClick}
-      style={{
-        display: "flex",
-        gap: 10,
-        overflowX: "auto",
-        paddingBottom: 8,
-        cursor: "grab",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-      }}
+      className="flex gap-2.5 overflow-x-auto pb-2 [cursor:grab] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {movies.slice(skip, skip + 16).map((m, i) => (
-        <div key={m.id} style={{ width: 100, flexShrink: 0 }}>
+        <div key={m.id} className="w-[100px] flex-none">
           <PosterCard movie={m} index={i} />
         </div>
       ))}
@@ -507,170 +243,93 @@ function DragRow({ movies, skip = 0 }) {
 /* ─── trending mosaic ────────────────────────────────────── */
 function TrendingMosaic({ movies }) {
   if (!movies?.length) return null;
-  const list = movies.slice(0, 10);
+  const [top2, rest] = [movies.slice(0, 2), movies.slice(2, 10)];
 
   return (
-    <div
-      style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}
-    >
-      {list.map((movie, i) => {
-        const big = i < 2;
-        const src = big
-          ? IMG(movie.backdrop_path, "w780") || IMG(movie.poster_path)
-          : IMG(movie.poster_path);
-
-        return (
+    <div className="flex flex-col gap-3">
+      {/* Top 2 — wide featured cards */}
+      <div className="grid grid-cols-2 gap-3">
+        {top2.map((movie, i) => (
           <Link
             key={movie.id}
             to={`/movie/tmdb/${movie.id}`}
-            style={{
-              gridColumn: big ? "span 2" : "span 1",
-              aspectRatio: big ? "16/9" : "2/3",
-              borderRadius: 12,
-              overflow: "hidden",
-              position: "relative",
-              background: "var(--color-bg-card)",
-              display: "block",
-              textDecoration: "none",
-              animation: `fv-up .45s ${i * 40}ms ease both`,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.querySelector(".t-overlay").style.opacity = "1";
-              e.currentTarget.querySelector(".t-info").style.opacity = "1";
-              e.currentTarget.querySelector(".t-info").style.transform =
-                "translateY(0)";
-              const img = e.currentTarget.querySelector("img");
-              if (img) img.style.transform = "scale(1.06)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.querySelector(".t-overlay").style.opacity = "0";
-              e.currentTarget.querySelector(".t-info").style.opacity = "0";
-              e.currentTarget.querySelector(".t-info").style.transform =
-                "translateY(6px)";
-              const img = e.currentTarget.querySelector("img");
-              if (img) img.style.transform = "scale(1)";
-            }}
+            className="group relative block aspect-[16/9] overflow-hidden rounded-2xl bg-[var(--color-bg-card)] no-underline"
+            style={{ animation: `fv-up .45s ${i * 40}ms ease both` }}
           >
-            {src && (
+            {IMG(movie.backdrop_path, "w780") && (
               <img
-                src={src}
+                src={IMG(movie.backdrop_path, "w780")}
                 alt={movie.title}
                 loading="lazy"
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transition: "transform .5s ease",
-                }}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               />
             )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-            {/* always-on dark base */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "rgba(9,9,11,.25)",
-              }}
-            />
-
-            {/* hover overlay */}
-            <div
-              className="t-overlay"
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(0deg, rgba(9,9,11,.88) 0%, rgba(9,9,11,.1) 60%, transparent 100%)",
-                opacity: 0,
-                transition: "opacity .3s",
-              }}
-            />
-
-            {/* rank — always visible */}
-            <span
-              style={{
-                position: "absolute",
-                top: 10,
-                left: 10,
-                background: "rgba(9,9,11,.65)",
-                backdropFilter: "blur(4px)",
-                borderRadius: 6,
-                padding: "3px 7px",
-                fontSize: 9,
-                fontWeight: 800,
-                color: "var(--color-text-muted)",
-                letterSpacing: "0.1em",
-              }}
-            >
+            {/* rank */}
+            <span className="absolute left-3 top-3 rounded-lg bg-black/60 px-2 py-1 text-[10px] font-black tracking-widest text-white/40 backdrop-blur-sm">
               #{i + 1}
             </span>
 
-            {/* teal rating badge — always visible on big tiles */}
-            {big && movie.vote_average > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  background: "var(--color-brand-subtle)",
-                  border: "1px solid var(--color-brand-border)",
-                  borderRadius: 6,
-                  padding: "3px 7px",
-                  fontSize: 9,
-                  fontWeight: 700,
-                  color: "var(--color-brand)",
-                }}
-              >
+            {/* rating */}
+            {movie.vote_average > 0 && (
+              <span className="absolute right-3 top-3 rounded-lg border border-[var(--color-brand-border)] bg-[var(--color-brand-subtle)] px-2 py-1 text-[10px] font-bold text-[var(--color-brand)] backdrop-blur-sm">
                 ★ {movie.vote_average.toFixed(1)}
               </span>
             )}
 
-            {/* title + year — slides up on hover */}
-            <div
-              className="t-info"
-              style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: big ? "12px 14px" : "8px 10px",
-                opacity: 0,
-                transform: "translateY(6px)",
-                transition: "opacity .3s, transform .3s",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: big ? 14 : 10,
-                  fontWeight: 700,
-                  color: "var(--color-text-primary)",
-                  lineHeight: 1.3,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
+            {/* info */}
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <p className="text-base font-black leading-tight text-white drop-shadow-lg">
                 {movie.title}
               </p>
-              {big && movie.release_date && (
-                <p
-                  style={{
-                    marginTop: 3,
-                    fontSize: 10,
-                    color: "var(--color-text-muted)",
-                  }}
-                >
+              {movie.release_date && (
+                <p className="mt-1 text-[11px] text-white/40">
                   {movie.release_date.split("-")[0]}
                 </p>
               )}
             </div>
           </Link>
-        );
-      })}
+        ))}
+      </div>
+
+      {/* Rest — compact horizontal scroll row */}
+      <div className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {rest.map((movie, i) => (
+          <Link
+            key={movie.id}
+            to={`/movie/tmdb/${movie.id}`}
+            className="group relative block flex-none overflow-hidden rounded-xl bg-[var(--color-bg-card)] no-underline"
+            style={{
+              width: 110,
+              aspectRatio: "2/3",
+              animation: `fv-up .45s ${(i + 2) * 40}ms ease both`,
+            }}
+          >
+            {IMG(movie.poster_path) && (
+              <img
+                src={IMG(movie.poster_path)}
+                alt={movie.title}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+            {/* rank chip */}
+            <span className="absolute left-2 top-2 rounded-md bg-black/60 px-1.5 py-0.5 text-[9px] font-black tracking-wider text-white/35 backdrop-blur-sm">
+              #{i + 3}
+            </span>
+
+            {/* title on hover */}
+            <div className="absolute bottom-0 left-0 right-0 translate-y-1 p-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              <p className="line-clamp-2 text-[10px] font-bold leading-snug text-white">
+                {movie.title}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
@@ -678,51 +337,17 @@ function TrendingMosaic({ movies }) {
 /* ─── section wrapper ────────────────────────────────────── */
 function Section({ eyebrow, title, count, children }) {
   return (
-    <section style={{ padding: "32px 40px 0" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 16,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            color: "var(--color-brand)",
-            flexShrink: 0,
-          }}
-        >
+    <section className="px-10 pt-8">
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex-none text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--color-brand)]">
           {eyebrow}
         </span>
-        <span
-          style={{
-            fontSize: 15,
-            fontWeight: 700,
-            color: "var(--color-text-primary)",
-            letterSpacing: "-.2px",
-            flexShrink: 0,
-          }}
-        >
+        <span className="flex-none text-[15px] font-bold tracking-tight text-[var(--color-text-primary)]">
           {title}
         </span>
-        <div
-          style={{ flex: 1, height: 1, background: "var(--color-border)" }}
-        />
+        <div className="h-px flex-1 bg-[var(--color-border)]" />
         {count && (
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 600,
-              color: "var(--color-text-muted)",
-              letterSpacing: "0.1em",
-              flexShrink: 0,
-            }}
-          >
+          <span className="flex-none text-[10px] font-semibold tracking-[0.1em] text-[var(--color-text-muted)]">
             {count}
           </span>
         )}
@@ -758,20 +383,11 @@ export default function PersonalizedHome() {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "var(--color-bg-base)",
-          paddingBottom: 80,
-        }}
-      >
-        {/* hero — no top padding, bleeds to nav */}
+      <div className="min-h-screen bg-[var(--color-bg-base)] pb-20">
         {featured && <Hero movie={featured} />}
 
-        {/* because you saved */}
         {saved.length > 1 && (
           <Section
             eyebrow="Because You Saved"
@@ -782,18 +398,16 @@ export default function PersonalizedHome() {
           </Section>
         )}
 
-        {/* genre picks */}
         {genre.length > 0 && (
           <Section
             eyebrow="Your Taste"
-            title="From Your Favorite Genres"
+            title="From Your Selected Genre"
             count={`${Math.min(genre.length, 16)} FILMS`}
           >
             <DragRow movies={genre} />
           </Section>
         )}
 
-        {/* trending mosaic */}
         {trending.length > 0 && (
           <Section
             eyebrow="Right Now"
