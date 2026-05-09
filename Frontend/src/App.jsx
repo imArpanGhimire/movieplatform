@@ -20,6 +20,7 @@ import LandingPage from "./components/LandingPage";
 import ProfilePage from "./components/ProfilePage";
 import ScrollToTop from "./components/ScrollToTop";
 import PersonalizedHome from "./components/PersonalizedHome";
+import MovieBattle from "./components/MovieBattle";
 
 const AUTH_ROUTES = ["/login", "/register"];
 
@@ -107,6 +108,7 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/battle" element={<MovieBattle />} />
       </Routes>
       {!hideFooter && <Footer />}
     </>
