@@ -370,11 +370,12 @@ export default function PersonalizedHome() {
   }, []);
 
   if (loading) return <Skeleton />;
-
-  const featured = sections?.becauseYouSaved?.[0];
   const saved = sections?.becauseYouSaved ?? [];
   const genre = sections?.favoriteGenrePicks ?? [];
   const trending = sections?.trending ?? [];
+
+  const hasSavedRecommendations = saved.length > 0;
+  const featured = hasSavedRecommendations ? saved[0] : trending[0];
 
   return (
     <>
@@ -388,14 +389,28 @@ export default function PersonalizedHome() {
       <div className="min-h-screen bg-[var(--color-bg-base)] pb-20">
         {featured && <Hero movie={featured} />}
 
-        {saved.length > 1 && (
-          <Section
-            eyebrow="Because You Saved"
-            title="More Like What You Love"
-            count={`${Math.min(saved.length - 1, 16)} FILMS`}
-          >
-            <DragRow movies={saved} skip={1} />
-          </Section>
+        {!hasSavedRecommendations && (
+          <section className="mx-10 mt-8 rounded-2xl border border-[var(--color-brand)]/20 bg-[var(--color-bg-card)] p-6">
+            <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--color-brand)]">
+              New here?
+            </p>
+
+            <h2 className="mt-2 text-2xl font-black text-[var(--color-text-primary)]">
+              Save a few movies to unlock better recommendations.
+            </h2>
+
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--color-text-muted)]">
+              Your personal feed improves when you save movies you like. Until
+              then, we’ll show trending and genre-based picks to help you start.
+            </p>
+
+            <Link
+              to="/movies"
+              className="mt-5 inline-flex rounded-xl bg-[var(--color-brand)] px-5 py-2.5 text-sm font-bold text-black"
+            >
+              Start saving movies
+            </Link>
+          </section>
         )}
 
         {genre.length > 0 && (
@@ -405,6 +420,16 @@ export default function PersonalizedHome() {
             count={`${Math.min(genre.length, 16)} FILMS`}
           >
             <DragRow movies={genre} />
+          </Section>
+        )}
+
+        {saved.length > 1 && hasSavedRecommendations && (
+          <Section
+            eyebrow="Because You Saved"
+            title="More Like What You Love"
+            count={`${Math.min(saved.length - 1, 16)} FILMS`}
+          >
+            <DragRow movies={saved} skip={1} />
           </Section>
         )}
 
