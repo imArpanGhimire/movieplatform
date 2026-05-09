@@ -1,71 +1,58 @@
+const axios = require("axios");
 const Battle = require("../models/battle.model");
-
 
 const getTodayDate = () => {
     return new Date().toISOString().split("T")[0];
 };
 
-const sampleMovies = [
-    {
-        tmdbId: "157336",
-        title: "Interstellar",
-        poster: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-        releaseDate: "2014-11-05",
-        rating: 8.4,
-    },
-    {
-        tmdbId: "27205",
-        title: "Inception",
-        poster: "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
-        releaseDate: "2010-07-15",
-        rating: 8.3,
-    },
-    {
-        tmdbId: "155",
-        title: "The Dark Knight",
-        poster: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-        releaseDate: "2008-07-16",
-        rating: 8.5,
-    },
-    {
-        tmdbId: "680",
-        title: "Pulp Fiction",
-        poster: "/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
-        releaseDate: "1994-09-10",
-        rating: 8.5,
-    },
-    {
-        tmdbId: "13",
-        title: "Forrest Gump",
-        poster: "/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
-        releaseDate: "1994-06-23",
-        rating: 8.5,
-    },
-    {
-        tmdbId: "278",
-        title: "The Shawshank Redemption",
-        poster: "/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-        releaseDate: "1994-09-23",
-        rating: 8.7,
-    },
-    {
-        tmdbId: "550",
-        title: "Fight Club",
-        poster: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
-        releaseDate: "1999-10-15",
-        rating: 8.4,
-    },
-    {
-        tmdbId: "603",
-        title: "The Matrix",
-        poster: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
-        releaseDate: "1999-03-30",
-        rating: 8.2,
-    },
-];
+const getRandomPage = () => {
+    return Math.floor(Math.random() * 20) + 1;
+};
 
 const shuffleMovies = (movies) => {
     return [...movies].sort(() => Math.random() - 0.5);
+};
+
+const formatMovie = (movie) => {
+    return {
+        tmdbId: String(movie.id),
+        title: movie.title,
+        poster: movie.poster_path,
+        releaseDate: movie.release_date,
+        rating: movie.vote_average,
+    };
+};
+
+const fetchRandomMoviesFromTMDB = async () => {
+    const page = Math.floor(Math.random() * 5) + 1;
+
+    const response = await axios.get(
+        "https://api.themoviedb.org/3/discover/movie",
+        {
+            params: {
+                api_key: process.env.TMDB_API_KEY,
+                language: "en-US",
+                sort_by: "vote_count.desc",
+                "vote_count.gte": 1000,
+                "vote_average.gte": 7.1,
+                include_video: false,
+                page,
+            },
+        }
+    );
+
+    const movies = response.data.results
+        .filter(
+            (movie) =>
+                movie.poster_path &&
+                movie.title &&
+                movie.release_date &&
+                movie.vote_average >= 7.1 &&
+                movie.vote_count >= 1000
+        )
+        .map(formatMovie);
+
+    return shuffleMovies(movies);
 };
 
 const formatBattle = (battle, userId) => {
@@ -91,10 +78,13 @@ const formatBattle = (battle, userId) => {
         votesA,
         votesB,
         totalVotes,
-        percentageA: totalVotes === 0 ? 0 : Math.round((votesA / totalVotes) * 100),
-        percentageB: totalVotes === 0 ? 0 : Math.round((votesB / totalVotes) * 100),
+        percentageA:
+            totalVotes === 0 ? 0 : Math.round((votesA / totalVotes) * 100),
+        percentageB:
+            totalVotes === 0 ? 0 : Math.round((votesB / totalVotes) * 100),
         hasVoted: Boolean(userVote),
         selectedMovie: userVote ? userVote.selectedMovie : null,
+        createdAt: battle.createdAt,
     };
 };
 
@@ -110,22 +100,26 @@ const generateTodayBattlesIfNeeded = async () => {
         return existingBattles;
     }
 
-    const shuffledMovies = shuffleMovies(sampleMovies);
+    const movies = await fetchRandomMoviesFromTMDB();
+
+    if (movies.length < 6) {
+        throw new Error("Not enough movies received from TMDB");
+    }
 
     const battlesToCreate = [
         {
-            movieA: shuffledMovies[0],
-            movieB: shuffledMovies[1],
+            movieA: movies[0],
+            movieB: movies[1],
             battleDate: today,
         },
         {
-            movieA: shuffledMovies[2],
-            movieB: shuffledMovies[3],
+            movieA: movies[2],
+            movieB: movies[3],
             battleDate: today,
         },
         {
-            movieA: shuffledMovies[4],
-            movieB: shuffledMovies[5],
+            movieA: movies[4],
+            movieB: movies[5],
             battleDate: today,
         },
     ];
@@ -149,6 +143,7 @@ const getTodayBattles = async (req, res) => {
         });
     } catch (error) {
         console.log("Get today battles error:", error);
+
         res.status(500).json({
             success: false,
             message: "Server error while fetching battles",
@@ -204,6 +199,7 @@ const voteBattle = async (req, res) => {
         });
     } catch (error) {
         console.log("Vote battle error:", error);
+
         res.status(500).json({
             success: false,
             message: "Server error while voting",
@@ -211,7 +207,34 @@ const voteBattle = async (req, res) => {
     }
 };
 
+const getBattleHistory = async (req, res) => {
+    try {
+        const today = getTodayDate();
+
+        const battles = await Battle.find({
+            battleDate: { $ne: today },
+        }).sort({ battleDate: -1, createdAt: -1 });
+
+        const formattedHistory = battles.map((battle) =>
+            formatBattle(battle, req.user.id)
+        );
+
+        res.status(200).json({
+            success: true,
+            history: formattedHistory,
+        });
+    } catch (error) {
+        console.log("Get battle history error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server error while fetching battle history",
+        });
+    }
+};
+
 module.exports = {
     getTodayBattles,
     voteBattle,
+    getBattleHistory,
 };
