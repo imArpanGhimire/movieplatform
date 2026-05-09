@@ -6,13 +6,11 @@ const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
 function BattleHistoryPanel({ onClose }) {
   const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        setLoading(true);
-
         const data = await getBattleHistory();
 
         setHistory(data.history || []);
