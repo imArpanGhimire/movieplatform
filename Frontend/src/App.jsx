@@ -19,7 +19,6 @@ import SavedMoviesPage from "./components/SavedMoviesPage";
 import LandingPage from "./components/LandingPage";
 import ProfilePage from "./components/ProfilePage";
 import ScrollToTop from "./components/ScrollToTop";
-
 import PersonalizedHome from "./components/PersonalizedHome";
 
 const AUTH_ROUTES = ["/login", "/register"];
@@ -45,8 +44,9 @@ const AppContent = () => {
         }}
       />
       <Routes>
-        {/* Public */}
-        <Route path="/" element={<LandingPage />} />
+        {/* key={location.key} forces LandingPage to remount on every visit
+            so useEffect re-runs and the marquee animation always plays */}
+        <Route path="/" element={<LandingPage key={location.key} />} />
 
         {/* Guest only */}
         <Route
@@ -99,7 +99,6 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/home"
           element={
