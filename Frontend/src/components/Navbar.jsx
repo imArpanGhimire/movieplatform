@@ -1,9 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { sileo } from "sileo";
 import ThemeToggleButton from "./ThemeToggleButton";
-import { Bookmark, LogOut, User, Sparkles, X, Check } from "lucide-react";
+import {
+  Bookmark,
+  Check,
+  Film,
+  LogOut,
+  Swords,
+  Sparkles,
+  User,
+  X,
+} from "lucide-react";
 
 const GENRES = [
   { id: 28, name: "Action" },
@@ -26,21 +35,19 @@ const GENRES = [
   { id: 37, name: "Western" },
 ];
 
-/* ── Genre Picker Modal ─────────────────────────────────── */
 function GenreModal({ onClose, onConfirm }) {
   const [selected, setSelected] = useState([]);
   const overlayRef = useRef(null);
 
-  // close on overlay click
   function handleOverlayClick(e) {
     if (e.target === overlayRef.current) onClose();
   }
 
-  // close on Escape
   useEffect(() => {
     function onKey(e) {
       if (e.key === "Escape") onClose();
     }
+
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
@@ -60,240 +67,79 @@ function GenreModal({ onClose, onConfirm }) {
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 200,
-        background: "rgba(0,0,0,.7)",
-        backdropFilter: "blur(6px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-        animation: "fv-fade .2s ease",
-      }}
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-6 backdrop-blur-md"
     >
-      <div
-        style={{
-          background: "var(--color-bg-page)",
-          border: "1px solid var(--color-border)",
-          borderRadius: 20,
-          padding: "32px 28px 28px",
-          width: "100%",
-          maxWidth: 520,
-          boxShadow: "0 32px 80px rgba(0,0,0,.5)",
-          animation: "fv-up .25s ease",
-        }}
-      >
-        {/* header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: 6,
-          }}
-        >
+      <div className="w-full max-w-[520px] rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-bg-page)] p-7 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+        <div className="mb-2 flex items-start justify-between gap-4">
           <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 4,
-              }}
-            >
-              <div
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: "var(--color-brand)",
-                }}
-              />
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  letterSpacing: "0.25em",
-                  textTransform: "uppercase",
-                  color: "var(--color-brand)",
-                }}
-              >
+            <div className="mb-2 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand)]" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--color-brand)]">
                 Personalized For You
               </span>
             </div>
-            <h2
-              style={{
-                fontSize: 20,
-                fontWeight: 700,
-                color: "var(--color-text-primary)",
-                letterSpacing: "-.3px",
-              }}
-            >
+
+            <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
               What do you like to watch?
             </h2>
-            <p
-              style={{
-                marginTop: 4,
-                fontSize: 12,
-                color: "var(--color-text-muted)",
-                lineHeight: 1.5,
-              }}
-            >
-              Pick your favorite genres and we'll curate your personal feed.
+
+            <p className="mt-1 text-xs leading-5 text-[var(--color-text-muted)]">
+              Pick your favorite genres and we’ll curate your personal feed.
             </p>
           </div>
+
           <button
             onClick={onClose}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              flexShrink: 0,
-              background: "var(--color-bg-card)",
-              border: "1px solid var(--color-border)",
-              color: "var(--color-text-muted)",
-              cursor: "pointer",
-              transition: "all .15s",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = "var(--color-bg-elevated)";
-              e.currentTarget.style.color = "var(--color-text-primary)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = "var(--color-bg-card)";
-              e.currentTarget.style.color = "var(--color-text-muted)";
-            }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-muted)] transition hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
           >
             <X size={14} />
           </button>
         </div>
 
-        {/* genre chips */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 8,
-            margin: "20px 0 24px",
-          }}
-        >
-          {GENRES.map((g) => {
-            const active = selected.includes(g.id);
+        <div className="my-6 flex flex-wrap gap-2">
+          {GENRES.map((genre) => {
+            const active = selected.includes(genre.id);
+
             return (
               <button
-                key={g.id}
-                onClick={() => toggle(g.id)}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 5,
-                  padding: "6px 13px",
-                  borderRadius: 100,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all .15s",
-                  background: active
-                    ? "var(--color-brand)"
-                    : "var(--color-bg-card)",
-                  border: active
-                    ? "1px solid var(--color-brand)"
-                    : "1px solid var(--color-border)",
-                  color: active ? "#09090b" : "var(--color-text-secondary)",
-                  transform: active ? "scale(1.04)" : "scale(1)",
-                }}
-                onMouseOver={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.borderColor =
-                      "var(--color-brand-border)";
-                    e.currentTarget.style.color = "var(--color-text-primary)";
-                  }
-                }}
-                onMouseOut={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.borderColor = "var(--color-border)";
-                    e.currentTarget.style.color = "var(--color-text-secondary)";
-                  }
-                }}
+                key={genre.id}
+                onClick={() => toggle(genre.id)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+                  active
+                    ? "scale-[1.04] border-[var(--color-brand)] bg-[var(--color-brand)] text-black"
+                    : "border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:border-[var(--color-brand-border)] hover:text-[var(--color-text-primary)]"
+                }`}
               >
                 {active && <Check size={10} strokeWidth={3} />}
-                {g.name}
+                {genre.name}
               </button>
             );
           })}
         </div>
 
-        {/* footer */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-          }}
-        >
-          <span style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[11px] text-[var(--color-text-muted)]">
             {selected.length === 0
               ? "Select at least one genre"
               : `${selected.length} genre${selected.length > 1 ? "s" : ""} selected`}
           </span>
-          <div style={{ display: "flex", gap: 8 }}>
+
+          <div className="flex gap-2">
             <button
               onClick={onClose}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 8,
-                fontSize: 12,
-                fontWeight: 600,
-                background: "var(--color-bg-card)",
-                border: "1px solid var(--color-border)",
-                color: "var(--color-text-secondary)",
-                cursor: "pointer",
-                transition: "all .15s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "var(--color-bg-elevated)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.background = "var(--color-bg-card)")
-              }
+              className="rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-4 py-2 text-xs font-semibold text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-elevated)]"
             >
               Cancel
             </button>
+
             <button
               onClick={handleConfirm}
               disabled={selected.length === 0}
-              style={{
-                padding: "8px 20px",
-                borderRadius: 8,
-                fontSize: 12,
-                fontWeight: 700,
-                background:
-                  selected.length > 0
-                    ? "var(--color-brand)"
-                    : "var(--color-bg-elevated)",
-                border: "1px solid transparent",
-                color:
-                  selected.length > 0 ? "#09090b" : "var(--color-text-muted)",
-                cursor: selected.length > 0 ? "pointer" : "not-allowed",
-                transition: "all .15s",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-              }}
-              onMouseOver={(e) => {
-                if (selected.length > 0)
-                  e.currentTarget.style.background = "var(--color-brand-hover)";
-              }}
-              onMouseOut={(e) => {
-                if (selected.length > 0)
-                  e.currentTarget.style.background = "var(--color-brand)";
-              }}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-5 py-2 text-xs font-bold transition ${
+                selected.length > 0
+                  ? "bg-[var(--color-brand)] text-black hover:bg-[var(--color-brand-hover)]"
+                  : "cursor-not-allowed bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]"
+              }`}
             >
               <Sparkles size={12} />
               Show My Feed
@@ -301,16 +147,10 @@ function GenreModal({ onClose, onConfirm }) {
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes fv-fade { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes fv-up { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: translateY(0) } }
-      `}</style>
     </div>
   );
 }
 
-/* ── Navbar ─────────────────────────────────────────────── */
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -325,6 +165,7 @@ const Navbar = () => {
     function handleScroll() {
       setScrolled(window.scrollY > 10);
     }
+
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -335,14 +176,17 @@ const Navbar = () => {
   async function handleLogout() {
     try {
       await api.post("/auth/logout");
+
       sileo.success({
         title: "Logged out",
         description: "You have been logged out successfully",
         position: "top-center",
       });
+
       navigate("/login");
     } catch (e) {
       console.log(e);
+
       sileo.error({
         title: "Logout failed",
         description: e.response?.data?.message || "Something went wrong",
@@ -352,24 +196,32 @@ const Navbar = () => {
   }
 
   function handleGenreConfirm(genreIds) {
-    // Save to localStorage so PersonalizedHome can read preferred genres
     localStorage.setItem("preferredGenres", JSON.stringify(genreIds));
     setShowGenreModal(false);
     navigate("/home");
   }
 
   const navItems = [
-    { label: "Movies", path: "/movies" },
-    { label: "Saved", path: "/saved" },
-    { label: "Profile", path: "/profile" },
+    { label: "Movies", path: "/movies", icon: Film },
+    { label: "For You", path: "/home", icon: Sparkles },
+    { label: "Saved", path: "/saved", icon: Bookmark },
+    { label: "Battle", path: "/battle", icon: Swords },
+    { label: "Profile", path: "/profile", icon: User },
   ];
 
-  const isActive = (path) =>
-    path === "/movies"
-      ? location.pathname === "/" || location.pathname.startsWith("/movies")
-      : location.pathname.startsWith(path);
+  function handleNavClick(path) {
+    if (path === "/home") {
+      setShowGenreModal(true);
+      return;
+    }
 
-  const isForYouActive = location.pathname === "/home";
+    navigate(path);
+  }
+
+  function isActive(path) {
+    if (path === "/movies") return location.pathname.startsWith("/movies");
+    return location.pathname === path;
+  }
 
   return (
     <>
@@ -381,7 +233,6 @@ const Navbar = () => {
         }`}
       >
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          {/* Brand */}
           <button
             onClick={() => navigate("/movies")}
             className="flex items-center gap-2 transition hover:opacity-80"
@@ -389,92 +240,69 @@ const Navbar = () => {
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--color-text-primary)] text-[var(--color-bg-base)]">
               <span className="text-sm font-bold">F</span>
             </div>
+
             <span className="text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
               FilmVault
             </span>
           </button>
 
-          {/* Center nav */}
           <div className="hidden items-center gap-1 md:flex">
-            {navItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`relative rounded-md px-3 py-1.5 text-sm font-medium transition ${
-                  isActive(item.path)
-                    ? "text-[var(--color-text-primary)]"
-                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-                }`}
-              >
-                {item.label}
-                {isActive(item.path) && (
-                  <span className="absolute inset-x-3 -bottom-[18px] h-px bg-[var(--color-text-primary)]" />
-                )}
-              </button>
-            ))}
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.path);
+              const isSpecial = item.path === "/battle";
 
-            {/* For You button */}
-            <button
-              onClick={() => setShowGenreModal(true)}
-              className="relative ml-1 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition"
-              style={{
-                color: isForYouActive
-                  ? "var(--color-brand)"
-                  : "var(--color-text-secondary)",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.color = "var(--color-brand)")
-              }
-              onMouseOut={(e) => {
-                if (!isForYouActive)
-                  e.currentTarget.style.color = "var(--color-text-secondary)";
-              }}
-            >
-              <Sparkles size={13} />
-              For You
-              {isForYouActive && (
-                <span
-                  className="absolute inset-x-3 -bottom-[18px] h-px"
-                  style={{ background: "var(--color-brand)" }}
-                />
-              )}
-            </button>
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavClick(item.path)}
+                  className={`relative inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                    active
+                      ? "text-[var(--color-brand)]"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                  } ${
+                    isSpecial
+                      ? active
+                        ? "rounded-full border border-[var(--color-brand)] bg-[var(--color-brand)]/15 text-[var(--color-brand)]"
+                        : "rounded-full border border-[var(--color-brand)]/30 bg-[var(--color-brand)]/10 text-[var(--color-brand)] hover:bg-[var(--color-brand)] hover:text-black"
+                      : ""
+                  }`}
+                >
+                  {(item.path === "/home" || item.path === "/battle") && (
+                    <Icon size={13} />
+                  )}
+
+                  {item.label}
+
+                  {active && !isSpecial && (
+                    <span className="absolute inset-x-3 -bottom-[18px] h-px bg-[var(--color-brand)]" />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => navigate("/saved")}
-              className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)] md:hidden"
-              title="Saved"
-              aria-label="Saved"
-            >
-              <Bookmark size={17} />
-            </button>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.path);
 
-            <button
-              onClick={() => navigate("/profile")}
-              className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)] md:hidden"
-              title="Profile"
-              aria-label="Profile"
-            >
-              <User size={17} />
-            </button>
-
-            {/* For You on mobile */}
-            <button
-              onClick={() => setShowGenreModal(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-md transition hover:bg-[var(--color-bg-card)] md:hidden"
-              style={{
-                color: isForYouActive
-                  ? "var(--color-brand)"
-                  : "var(--color-text-secondary)",
-              }}
-              title="For You"
-              aria-label="For You"
-            >
-              <Sparkles size={17} />
-            </button>
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavClick(item.path)}
+                  className={`flex h-9 w-9 items-center justify-center rounded-md transition md:hidden ${
+                    active
+                      ? "bg-[var(--color-brand)]/15 text-[var(--color-brand)]"
+                      : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)]"
+                  }`}
+                  title={item.label}
+                  aria-label={item.label}
+                >
+                  <Icon size={17} />
+                </button>
+              );
+            })}
 
             <div className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)]">
               <ThemeToggleButton />
@@ -493,7 +321,6 @@ const Navbar = () => {
         </nav>
       </header>
 
-      {/* Genre picker modal */}
       {showGenreModal && (
         <GenreModal
           onClose={() => setShowGenreModal(false)}
