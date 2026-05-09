@@ -2,7 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MovieCard from "./MovieCard";
 import api from "../api/axios";
-import { Search, X, Film, User, Star, Layers, Sparkles } from "lucide-react";
+import {
+  Search,
+  X,
+  Film,
+  User,
+  Star,
+  Layers,
+  Sparkles,
+  Flame,
+  ArrowRight,
+  Swords,
+} from "lucide-react";
 
 const TRIVIA = [
   "The Godfather was rejected 5 times before Paramount greenlit it.",
@@ -269,6 +280,160 @@ const MovieListingPage = () => {
               </div>
             </section>
           )}
+
+          {/* battle movie  */}
+          {/* ── Movie Battle CTA ── */}
+          {/* ── Battle CTA Section ── */}
+          <section className="relative z-10 px-6 pb-24">
+            <div className="mx-auto max-w-6xl">
+              <div className="group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[var(--color-bg-card)] transition duration-500 hover:border-white/[0.12]">
+                {/* Ambient glow */}
+                <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-teal-500/[0.06] blur-3xl transition duration-700 group-hover:bg-teal-500/[0.12]" />
+
+                <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-teal-500/[0.05] blur-3xl" />
+
+                {/* Grid texture */}
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-[0.015]"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+                    backgroundSize: "32px 32px",
+                  }}
+                />
+
+                <div className="relative grid items-center gap-14 p-10 lg:grid-cols-[1fr_480px] lg:p-14">
+                  {/* LEFT */}
+                  <div>
+                    <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">
+                      <Swords size={12} strokeWidth={2.5} />
+                      Daily Feature
+                    </div>
+
+                    <h2 className="max-w-xl text-4xl font-semibold leading-[1.02] tracking-tight md:text-5xl">
+                      Two films enter.
+                      <br />
+                      <span className="text-[var(--color-text-secondary)]">
+                        One stays with you.
+                      </span>
+                    </h2>
+
+                    <p className="mt-5 max-w-md text-sm leading-relaxed text-[var(--color-text-muted)]">
+                      Three handpicked matchups every day. Pick your winner,
+                      compare with the community, and discover where your taste
+                      lands.
+                    </p>
+
+                    {/* stats */}
+                    <div className="mt-8 flex items-center gap-8 border-y border-white/[0.06] py-5">
+                      <div>
+                        <p className="text-2xl font-semibold tracking-tight">
+                          3
+                        </p>
+                        <p className="mt-0.5 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                          Daily Battles
+                        </p>
+                      </div>
+
+                      <div className="h-8 w-px bg-white/[0.06]" />
+
+                      <div>
+                        <p className="text-2xl font-semibold tracking-tight">
+                          24h
+                        </p>
+                        <p className="mt-0.5 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                          To Vote
+                        </p>
+                      </div>
+
+                      <div className="h-8 w-px bg-white/[0.06]" />
+
+                      <div>
+                        <p className="text-2xl font-semibold tracking-tight">
+                          ∞
+                        </p>
+                        <p className="mt-0.5 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                          Debates
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => navigate("/battle")}
+                      className="group/btn mt-8 inline-flex items-center gap-2 rounded-full bg-teal-400 px-6 py-3 text-sm font-semibold text-black transition duration-300 hover:-translate-y-1 hover:bg-teal-300"
+                    >
+                      Enter today's battles
+                      <ArrowRight
+                        size={15}
+                        className="transition duration-300 group-hover/btn:translate-x-1"
+                      />
+                    </button>
+                  </div>
+
+                  {/* RIGHT VISUAL */}
+                  {/* RIGHT VISUAL */}
+                  <div className="relative hidden h-[390px] lg:block">
+                    {/* Django */}
+                    <div className="absolute left-3 top-1/2 z-10 w-[210px] -translate-y-1/2 rotate-[-7deg] transition-all duration-500 hover:z-40 hover:-translate-x-3 hover:-translate-y-[58%] hover:rotate-[-11deg]">
+                      <div className="overflow-hidden rounded-[1.7rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+                        <img
+                          src="https://image.tmdb.org/t/p/w500/7oWY8VDWW7thTzWh3OKYRkWUlD5.jpg"
+                          alt="Django Unchained"
+                          className="h-[320px] w-full object-cover transition duration-700 hover:scale-105"
+                        />
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+
+                        <div className="absolute inset-x-0 bottom-0 p-5">
+                          <p className="text-[10px] uppercase tracking-wider text-white/60">
+                            2012 · Western
+                          </p>
+
+                          <p className="mt-1 text-lg font-semibold leading-tight text-white">
+                            Django Unchained
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* No Country For Old Men */}
+                    <div className="absolute right-3 top-1/2 z-10 w-[210px] -translate-y-1/2 rotate-[7deg] transition-all duration-500 hover:z-40 hover:translate-x-3 hover:-translate-y-[58%] hover:rotate-[11deg]">
+                      <div className="overflow-hidden rounded-[1.7rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+                        <img
+                          src="https://image.tmdb.org/t/p/w500/bj1v6YKF8yHqA489VFfnQvOJpnc.jpg"
+                          alt="No Country for Old Men"
+                          className="h-[320px] w-full object-cover transition duration-700 hover:scale-105"
+                        />
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+
+                        <div className="absolute inset-x-0 bottom-0 p-5">
+                          <p className="text-[10px] uppercase tracking-wider text-white/60">
+                            2007 · Thriller
+                          </p>
+
+                          <p className="mt-1 text-lg font-semibold leading-tight text-white">
+                            No Country for Old Men
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* VS BADGE */}
+                    <div className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
+                      <div className="relative">
+                        <div className="absolute  inset-0 rounded-full bg-teal-400/25 blur-2xl" />
+
+                        <div className="relative grid h-20 w-20 place-items-center rounded-full border  border-white/10 bg-[var(--color-bg-base)]/90 text-[11px] font-bold tracking-[0.25em] text-teal-500 shadow-2xl backdrop-blur-xl">
+                          VS
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           <Divider />
 
