@@ -9,6 +9,7 @@ const replyRoutes = require("./routes/reply.routes");
 const tmdbRoutes = require("./routes/tmdb.routes");
 const savedRoutes = require("./routes/saved.routes");
 const personalizedRoutes = require("./routes/personalized.routes");
+const battleRoutes = require("./routes/battle.routes");
 
 const app = express();
 
@@ -29,5 +30,7 @@ app.use("/api/reply", replyRoutes);
 app.use("/api/tmdb", tmdbRoutes);
 app.use("/api/saved", savedRoutes);
 app.use("/api/personalized", personalizedRoutes);
+
+app.use("/api/battle", battleRoutes);
 
 module.exports = app;
