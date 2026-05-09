@@ -19,6 +19,8 @@ const LandingPage = () => {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
+    // Reset movies first so marquee always re-animates from scratch
+    setMovies([]);
     async function fetchTopRated() {
       try {
         const res = await api.get("/tmdb/toprated");
@@ -107,8 +109,12 @@ const LandingPage = () => {
             </div>
           </div>
 
-          {/* Posters marquee */}
-          <div className="relative hidden h-[640px] gap-5 overflow-hidden lg:flex">
+          {/* Posters marquee — key={movies.length} forces full remount
+              when data arrives, restarting CSS animations from frame 0 */}
+          <div
+            key={movies.length}
+            className="relative hidden h-[640px] gap-5 overflow-hidden lg:flex"
+          >
             <MarqueeColumn movies={col1Movies} direction="up" />
             <MarqueeColumn
               movies={col2Movies}
@@ -256,7 +262,6 @@ const LandingPage = () => {
       </section>
 
       {/* ── CTA ── */}
-      {/* ── CTA ── */}
       <section className="relative z-10 px-6 pb-24">
         <div className="mx-auto max-w-6xl">
           <div className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)]">
@@ -364,33 +369,6 @@ const BENEFITS = [
   "Track what you've watched in your own Watch Journal",
   "Browse public collections and discover niche interests",
   "Build private lists or collaborate with friends",
-];
-
-const COLLECTIONS = [
-  {
-    title: "Female Directors",
-    count: "11,795 titles",
-    rated: "302 rated",
-    by: "djross",
-    gradient: "from-rose-700 to-purple-800",
-    accent: "bg-rose-500",
-  },
-  {
-    title: "Existential Films",
-    count: "111 titles",
-    rated: "14 rated",
-    by: "frederic_g54",
-    gradient: "from-slate-700 to-teal-700",
-    accent: "bg-teal-500",
-  },
-  {
-    title: "Time Travel",
-    count: "340 titles",
-    rated: "7 rated",
-    by: "mpowell",
-    gradient: "from-indigo-700 to-blue-800",
-    accent: "bg-indigo-500",
-  },
 ];
 
 const THEME_CARDS = [
