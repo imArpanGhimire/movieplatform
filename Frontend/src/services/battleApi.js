@@ -12,3 +12,8 @@ export const voteBattle = async (battleId, selectedMovie) => {
 
     return response.data;
 };
+
+export const getBattleHistory = async () => {
+    const response = await api.get("/battle/history");
+    return response.data;
+};
