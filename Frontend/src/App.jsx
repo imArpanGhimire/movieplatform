@@ -108,7 +108,14 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/battle" element={<MovieBattle />} />
+        <Route
+          path="/battle"
+          element={
+            <ProtectedRoute>
+              <MovieBattle />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       {!hideFooter && <Footer />}
     </>
