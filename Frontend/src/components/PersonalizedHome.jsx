@@ -390,7 +390,7 @@ export default function PersonalizedHome() {
         {featured && <Hero movie={featured} />}
 
         {!hasSavedRecommendations && (
-          <section className="mx-10 mt-8 rounded-2xl border border-[var(--color-brand)]/20 bg-[var(--color-bg-card)] p-6">
+          <section className="mx-10 mt-20 rounded-2xl border border-[var(--color-brand)]/20 bg-[var(--color-bg-card)] p-6">
             <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[var(--color-brand)]">
               New here?
             </p>
