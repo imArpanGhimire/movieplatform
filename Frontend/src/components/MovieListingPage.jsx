@@ -16,13 +16,31 @@ import {
 } from "lucide-react";
 
 const TRIVIA = [
-  "The Godfather was rejected 5 times before Paramount greenlit it.",
   "Parasite is the only non-English film to win Best Picture at the Oscars.",
-  "Stanley Kubrick reportedly shot the same scene 127 times for The Shining.",
-  "The Dark Knight's Joker makeup took 2 hours to apply every single day.",
-  "Spirited Away grossed more than Titanic at Japan's box office.",
-  "Schindler's List was shot almost entirely in black and white — by choice.",
-  "Over 500 takes were filmed for a single scene in Eyes Wide Shut.",
+  "Leonardo DiCaprio actually cut his hand accidentally during Django Unchained and kept acting.",
+  "Interstellar's black hole visualization was so accurate it contributed to real scientific research.",
+  "The Matrix popularized the famous 'bullet time' camera effect.",
+  "The famous scream in many movies is actually a reused sound effect called the Wilhelm Scream.",
+  "The Lord of the Rings trilogy was filmed all at once over 438 straight days.",
+  "Heath Ledger stayed isolated in a hotel room for weeks to prepare for Joker.",
+  "Inception's hallway fight scene used a rotating practical set instead of CGI.",
+  "The iconic roar of the T-Rex in Jurassic Park was made using dogs, penguins, and elephants.",
+  "The famous chestburster scene in Alien shocked the cast because they didn't know how intense it would be.",
+  "The lightsaber sound in Star Wars was created using old projector and TV noises.",
+  "Tom Cruise performed many of his own stunts in Mission: Impossible — including hanging off a real plane.",
+  "The shower scene in Psycho has over 70 camera angles and 50 cuts.",
+  "Toy Story was the first fully computer-animated feature film ever made.",
+  "Christopher Nolan prefers practical effects over CGI whenever possible.",
+  "Joker became the first R-rated movie to gross over $1 billion worldwide.",
+  "The Dark Knight's hospital explosion scene mostly used a real building demolition.",
+  "James Cameron drew Jack's sketches himself in Titanic.",
+  "The original Jurassic Park CGI was so revolutionary it changed filmmaking forever.",
+  "Christian Bale lost over 60 pounds for his role in The Machinist.",
+  "The opening battle of Saving Private Ryan was inspired by real D-Day survivor accounts.",
+  "Robert Downey Jr. hid snacks around the Avengers set because he was constantly hungry.",
+  "The Blair Witch Project was made on a tiny budget but became one of the most profitable films ever.",
+  "Keanu Reeves trained intensely in martial arts and tactical shooting for John Wick.",
+  "The original Star Wars movie was considered a huge risk before becoming a global phenomenon.",
 ];
 
 const HOW_IT_WORKS = [
@@ -80,15 +98,17 @@ const MovieListingPage = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const timeout = setTimeout(() => {
       setTriviaVisible(false);
+
       setTimeout(() => {
         setTriviaIndex((i) => (i + 1) % TRIVIA.length);
         setTriviaVisible(true);
       }, 300);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, [triviaIndex]);
 
   useEffect(() => {
     const t = setTimeout(() => setdebouncedTitle(title.trim()), 700);
@@ -590,25 +610,32 @@ const TriviaTicker = ({
           {TRIVIA[triviaIndex]}
         </p>
 
-        <div className="ml-auto hidden shrink-0 items-center gap-1.5 sm:flex">
-          {TRIVIA.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                setTriviaVisible(false);
-                setTimeout(() => {
-                  setTriviaIndex(i);
-                  setTriviaVisible(true);
-                }, 300);
-              }}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === triviaIndex
-                  ? "w-4 bg-teal-500"
-                  : "w-1.5 bg-[color:var(--color-border-strong)] hover:bg-[var(--color-text-muted)]"
-              }`}
-              aria-label={`Go to trivia ${i + 1}`}
-            />
-          ))}
+        <div className="ml-auto hidden shrink-0 items-center gap-2 sm:flex">
+          {[0, 1, 2, 3, 4].map((dot) => {
+            const activeDot = triviaIndex % 5;
+
+            return (
+              <button
+                key={dot}
+                onClick={() => {
+                  const nextIndex = Math.floor(triviaIndex / 5) * 5 + dot;
+
+                  setTriviaVisible(false);
+
+                  setTimeout(() => {
+                    setTriviaIndex(nextIndex % TRIVIA.length);
+                    setTriviaVisible(true);
+                  }, 300);
+                }}
+                className={`rounded-full transition-all duration-500 ${
+                  dot === activeDot
+                    ? "h-2 w-6 bg-teal-500"
+                    : "h-2 w-2 bg-[color:var(--color-border-strong)] hover:bg-[var(--color-text-muted)]"
+                }`}
+                aria-label={`Go to trivia ${dot + 1}`}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
