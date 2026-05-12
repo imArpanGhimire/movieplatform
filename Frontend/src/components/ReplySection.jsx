@@ -1,6 +1,16 @@
-import React, { useEffect, useState } from "react";
-import api from "../api/axios";
+import { useEffect, useState } from "react";
 import { sileo } from "sileo";
+
+import api from "../api/axios";
+
+const showToast = ({ type = "success", title, description }) => {
+  sileo[type]({
+    title,
+    description,
+    position: "top-center",
+    duration: 2000,
+  });
+};
 
 const ReplyItem = ({
   reply,
@@ -14,12 +24,13 @@ const ReplyItem = ({
 }) => {
   const [text, setText] = useState("");
   const isReplying = activeReplyId === reply._id;
+  const isOwner = currentuser?._id?.toString() === reply.user?._id?.toString();
 
-  async function handleSubmit() {
+  const handleSubmit = async () => {
     if (!text.trim()) return;
 
     try {
-      const res = await api.post("/reply", {
+      await api.post("/reply", {
         reviewId,
         text,
         parentReply: reply._id,
@@ -29,31 +40,24 @@ const ReplyItem = ({
       setText("");
       setActiveReplyId(null);
 
-      sileo.success({
+      showToast({
         title: "Reply Added",
         description: "Your reply was posted successfully",
-        position: "top-center",
-        duration: 2000,
       });
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   return (
-    <div
-      className="mt-3"
-      style={{
-        marginLeft: depth > 0 ? "18px" : "0px",
-      }}
-    >
+    <div className="mt-3" style={{ marginLeft: depth > 0 ? "18px" : "0px" }}>
       <div className="rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-page)] p-3">
         <div className="mb-1 flex items-center justify-between">
           <p className="text-sm font-semibold text-[var(--color-text-primary)]">
             {reply.user?.username || "User"}
           </p>
 
-          {currentuser?._id?.toString() === reply.user?._id?.toString() && (
+          {isOwner && (
             <button
               onClick={() => onDeleteReply(reply._id)}
               className="text-xs text-red-500 hover:underline"
@@ -75,21 +79,12 @@ const ReplyItem = ({
         </button>
 
         {isReplying && (
-          <div className="mt-3 flex gap-2">
-            <input
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder={`Reply to ${reply.user?.username || "user"}...`}
-              className="flex-1 rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-input)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-teal-500"
-            />
-
-            <button
-              onClick={handleSubmit}
-              className="rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-teal-400"
-            >
-              Send
-            </button>
-          </div>
+          <ReplyInput
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={`Reply to ${reply.user?.username || "user"}...`}
+            onSubmit={handleSubmit}
+          />
         )}
       </div>
 
@@ -119,20 +114,22 @@ const ReplySection = ({ reviewId, currentuser }) => {
   const [mainReplyText, setMainReplyText] = useState("");
   const [activeReplyId, setActiveReplyId] = useState(null);
 
-  async function fetchReplies() {
+  const fetchReplies = async () => {
     try {
       const res = await api.get(`/reply/${reviewId}`);
       setReplies(res.data || []);
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   useEffect(() => {
-    if (reviewId) fetchReplies();
+    if (reviewId) {
+      fetchReplies();
+    }
   }, [reviewId]);
 
-  async function handleAddMainReply() {
+  const handleAddMainReply = async () => {
     if (!mainReplyText.trim()) return;
 
     try {
@@ -145,49 +142,40 @@ const ReplySection = ({ reviewId, currentuser }) => {
       setMainReplyText("");
       fetchReplies();
 
-      sileo.success({
+      showToast({
         title: "Reply Added",
         description: "Your reply was posted successfully",
-        position: "top-center",
-        duration: 2000,
       });
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
-  async function handleDeleteReply(replyId) {
+  const handleDeleteReply = async (replyId) => {
     try {
       await api.delete(`/reply/${replyId}`);
+
       fetchReplies();
 
-      sileo.success({
+      showToast({
         title: "Reply Deleted",
         description: "Reply deleted successfully",
-        position: "top-center",
-        duration: 2000,
       });
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   return (
     <div className="border-t border-[color:var(--color-border)] bg-[var(--color-bg-input)]/30 px-5 py-4">
-      <div className="mb-4 flex gap-2">
-        <input
+      <div className="mb-4">
+        <ReplyInput
           value={mainReplyText}
           onChange={(e) => setMainReplyText(e.target.value)}
           placeholder="Reply to this review..."
-          className="flex-1 rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-page)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-placeholder)] outline-none focus:border-teal-500"
+          onSubmit={handleAddMainReply}
+          buttonLabel="Reply"
         />
-
-        <button
-          onClick={handleAddMainReply}
-          className="rounded-xl bg-teal-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-teal-400"
-        >
-          Reply
-        </button>
       </div>
 
       {replies.length > 0 && (
@@ -206,6 +194,32 @@ const ReplySection = ({ reviewId, currentuser }) => {
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+const ReplyInput = ({
+  value,
+  onChange,
+  placeholder,
+  onSubmit,
+  buttonLabel = "Send",
+}) => {
+  return (
+    <div className="mt-3 flex gap-2">
+      <input
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="flex-1 rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-input)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-teal-500"
+      />
+
+      <button
+        onClick={onSubmit}
+        className="rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-teal-400"
+      >
+        {buttonLabel}
+      </button>
     </div>
   );
 };
