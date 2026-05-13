@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import MovieCard from "./MovieCard";
 import api from "../api/axios";
 import {
@@ -10,7 +11,6 @@ import {
   Star,
   Layers,
   Sparkles,
-  Flame,
   ArrowRight,
   Swords,
 } from "lucide-react";
@@ -64,36 +64,40 @@ const HOW_IT_WORKS = [
   },
 ];
 
+const fetchTopRatedMovies = async () => {
+  const res = await api.get("/tmdb/toprated");
+  return res.data.movies || [];
+};
+
+const searchMovies = async ({ queryKey }) => {
+  const [, { title, director }] = queryKey;
+
+  const res = director
+    ? await api.get(`/tmdb/director?name=${encodeURIComponent(director)}`)
+    : await api.get(`/tmdb/search?query=${encodeURIComponent(title)}`);
+
+  return res.data.movies || [];
+};
+
 const MovieListingPage = () => {
   const navigate = useNavigate();
 
-  const [loading, setloading] = useState(false);
-  const [error, seterror] = useState("");
-  const [allmovies, setallmovies] = useState([]);
   const [title, settitle] = useState("");
   const [director, setdirector] = useState("");
   const [debouncedTitle, setdebouncedTitle] = useState("");
   const [debouncedDirector, setdebouncedDirector] = useState("");
   const [hasRestored, setHasRestored] = useState(false);
-  const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [triviaIndex, setTriviaIndex] = useState(0);
   const [triviaVisible, setTriviaVisible] = useState(true);
 
   useEffect(() => {
     const savedTitle = sessionStorage.getItem("filmvault_title") || "";
     const savedDirector = sessionStorage.getItem("filmvault_director") || "";
-    const savedMovies = sessionStorage.getItem("filmvault_movies");
+
     settitle(savedTitle);
     setdirector(savedDirector);
     setdebouncedTitle(savedTitle);
     setdebouncedDirector(savedDirector);
-    if (savedMovies) {
-      try {
-        setallmovies(JSON.parse(savedMovies));
-      } catch {
-        setallmovies([]);
-      }
-    }
     setHasRestored(true);
   }, []);
 
@@ -120,76 +124,59 @@ const MovieListingPage = () => {
     return () => clearTimeout(t);
   }, [director]);
 
-  const searchquery = debouncedTitle || debouncedDirector;
-  const hasSearch = debouncedTitle || debouncedDirector;
-
   useEffect(() => {
     if (!hasRestored) return;
-    async function searchmovies() {
-      if (!searchquery) {
-        setallmovies([]);
-        return;
-      }
-      try {
-        setloading(true);
-        seterror("");
-        const res = debouncedDirector
-          ? await api.get(
-              `/tmdb/director?name=${encodeURIComponent(debouncedDirector)}`,
-            )
-          : await api.get(
-              `/tmdb/search?query=${encodeURIComponent(debouncedTitle)}`,
-            );
-        setallmovies(res.data.movies || []);
-      } catch (e) {
-        seterror(e.response?.data?.message || "Failed to search movies");
-        setallmovies([]);
-      } finally {
-        setloading(false);
-      }
-    }
-    searchmovies();
-  }, [debouncedTitle, debouncedDirector, hasRestored, searchquery]);
 
-  useEffect(() => {
-    if (!hasRestored) return;
     sessionStorage.setItem("filmvault_title", title);
     sessionStorage.setItem("filmvault_director", director);
-    sessionStorage.setItem("filmvault_movies", JSON.stringify(allmovies));
-  }, [title, director, allmovies, hasRestored]);
+  }, [title, director, hasRestored]);
 
-  useEffect(() => {
-    async function fetchTopRated() {
-      try {
-        const res = await api.get("/tmdb/toprated");
-        setTopRatedMovies(res.data.movies || []);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    fetchTopRated();
-  }, []);
+  const hasSearch = Boolean(debouncedTitle || debouncedDirector);
+
+  const { data: topRatedMovies = [], isLoading: topRatedLoading } = useQuery({
+    queryKey: ["top-rated-movies"],
+    queryFn: fetchTopRatedMovies,
+    staleTime: 1000 * 60 * 15,
+  });
+
+  const {
+    data: allmovies = [],
+    isLoading: searchLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      "search-movies",
+      {
+        title: debouncedTitle,
+        director: debouncedDirector,
+      },
+    ],
+    queryFn: searchMovies,
+    enabled: hasRestored && hasSearch,
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const loading = searchLoading;
+  const errorMessage =
+    isError && (error?.response?.data?.message || "Failed to search movies");
 
   function clearall() {
     settitle("");
     setdirector("");
     setdebouncedTitle("");
     setdebouncedDirector("");
-    setallmovies([]);
     sessionStorage.removeItem("filmvault_title");
     sessionStorage.removeItem("filmvault_director");
-    sessionStorage.removeItem("filmvault_movies");
   }
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
-      {/* Subtle backdrop ambience */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-teal-500/[0.04] blur-3xl" />
         <div className="absolute -right-32 top-40 h-[400px] w-[400px] rounded-full bg-teal-500/[0.03] blur-3xl" />
       </div>
 
-      {/* ── Search hero ── */}
       <section className="relative z-10 px-6 pb-12 pt-32">
         <div className="mx-auto max-w-3xl">
           <div className="mb-8">
@@ -275,10 +262,17 @@ const MovieListingPage = () => {
         </div>
       </section>
 
-      {/* ── Default view (no search) ── */}
       {!hasSearch && !loading && (
         <>
-          {topRatedMovies.length > 0 && (
+          {topRatedLoading && (
+            <div className="relative z-10 flex justify-center px-6 pb-16">
+              <p className="text-sm text-[var(--color-text-muted)]">
+                Loading top rated movies...
+              </p>
+            </div>
+          )}
+
+          {!topRatedLoading && topRatedMovies.length > 0 && (
             <section className="relative z-10 px-6 pb-16">
               <div className="mx-auto max-w-6xl">
                 <SectionHeader
@@ -301,18 +295,12 @@ const MovieListingPage = () => {
             </section>
           )}
 
-          {/* battle movie  */}
-          {/* ── Movie Battle CTA ── */}
-          {/* ── Battle CTA Section ── */}
           <section className="relative z-10 px-6 pb-24">
             <div className="mx-auto max-w-6xl">
               <div className="group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[var(--color-bg-card)] transition duration-500 hover:border-white/[0.12]">
-                {/* Ambient glow */}
                 <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-teal-500/[0.06] blur-3xl transition duration-700 group-hover:bg-teal-500/[0.12]" />
-
                 <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-teal-500/[0.05] blur-3xl" />
 
-                {/* Grid texture */}
                 <div
                   className="pointer-events-none absolute inset-0 opacity-[0.015]"
                   style={{
@@ -323,7 +311,6 @@ const MovieListingPage = () => {
                 />
 
                 <div className="relative grid items-center gap-14 p-10 lg:grid-cols-[1fr_480px] lg:p-14">
-                  {/* LEFT */}
                   <div>
                     <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">
                       <Swords size={12} strokeWidth={2.5} />
@@ -344,7 +331,6 @@ const MovieListingPage = () => {
                       lands.
                     </p>
 
-                    {/* stats */}
                     <div className="mt-8 flex items-center gap-8 border-y border-white/[0.06] py-5">
                       <div>
                         <p className="text-2xl font-semibold tracking-tight">
@@ -390,10 +376,7 @@ const MovieListingPage = () => {
                     </button>
                   </div>
 
-                  {/* RIGHT VISUAL */}
-                  {/* RIGHT VISUAL */}
                   <div className="relative hidden h-[390px] lg:block">
-                    {/* Django */}
                     <div className="absolute left-3 top-1/2 z-10 w-[210px] -translate-y-1/2 rotate-[-7deg] transition-all duration-500 hover:z-40 hover:-translate-x-3 hover:-translate-y-[58%] hover:rotate-[-11deg]">
                       <div className="overflow-hidden rounded-[1.7rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
                         <img
@@ -401,14 +384,11 @@ const MovieListingPage = () => {
                           alt="Django Unchained"
                           className="h-[320px] w-full object-cover transition duration-700 hover:scale-105"
                         />
-
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
                         <div className="absolute inset-x-0 bottom-0 p-5">
                           <p className="text-[10px] uppercase tracking-wider text-white/60">
                             2012 · Western
                           </p>
-
                           <p className="mt-1 text-lg font-semibold leading-tight text-white">
                             Django Unchained
                           </p>
@@ -416,7 +396,6 @@ const MovieListingPage = () => {
                       </div>
                     </div>
 
-                    {/* No Country For Old Men */}
                     <div className="absolute right-3 top-1/2 z-10 w-[210px] -translate-y-1/2 rotate-[7deg] transition-all duration-500 hover:z-40 hover:translate-x-3 hover:-translate-y-[58%] hover:rotate-[11deg]">
                       <div className="overflow-hidden rounded-[1.7rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
                         <img
@@ -424,14 +403,11 @@ const MovieListingPage = () => {
                           alt="No Country for Old Men"
                           className="h-[320px] w-full object-cover transition duration-700 hover:scale-105"
                         />
-
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
                         <div className="absolute inset-x-0 bottom-0 p-5">
                           <p className="text-[10px] uppercase tracking-wider text-white/60">
                             2007 · Thriller
                           </p>
-
                           <p className="mt-1 text-lg font-semibold leading-tight text-white">
                             No Country for Old Men
                           </p>
@@ -439,12 +415,10 @@ const MovieListingPage = () => {
                       </div>
                     </div>
 
-                    {/* VS BADGE */}
                     <div className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
                       <div className="relative">
-                        <div className="absolute  inset-0 rounded-full bg-teal-400/25 blur-2xl" />
-
-                        <div className="relative grid h-20 w-20 place-items-center rounded-full border  border-white/10 bg-[var(--color-bg-base)]/90 text-[11px] font-bold tracking-[0.25em] text-teal-500 shadow-2xl backdrop-blur-xl">
+                        <div className="absolute inset-0 rounded-full bg-teal-400/25 blur-2xl" />
+                        <div className="relative grid h-20 w-20 place-items-center rounded-full border border-white/10 bg-[var(--color-bg-base)]/90 text-[11px] font-bold tracking-[0.25em] text-teal-500 shadow-2xl backdrop-blur-xl">
                           VS
                         </div>
                       </div>
@@ -470,7 +444,6 @@ const MovieListingPage = () => {
         </>
       )}
 
-      {/* ── Results ── */}
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24">
         {loading && (
           <div className="flex flex-col items-center justify-center gap-3 py-24">
@@ -484,13 +457,13 @@ const MovieListingPage = () => {
           </div>
         )}
 
-        {error && (
+        {errorMessage && (
           <div className="mx-auto mt-4 max-w-md rounded-lg border border-red-500/25 bg-red-500/10 p-3 text-center text-sm text-red-400">
-            {error}
+            {errorMessage}
           </div>
         )}
 
-        {!loading && !error && hasSearch && (
+        {!loading && !errorMessage && hasSearch && (
           <>
             <SectionHeader
               eyebrow="Search Results"
@@ -553,8 +526,6 @@ const MovieListingPage = () => {
     </div>
   );
 };
-
-/* ─── Helpers ─────────────────────────────────────────────── */
 
 const SectionHeader = ({ eyebrow, title, description, meta }) => (
   <div className="mb-6 flex items-end justify-between gap-4 border-b border-[color:var(--color-border)] pb-4">
@@ -654,17 +625,16 @@ const HowItWorks = () => (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {HOW_IT_WORKS.map((item) => {
           const Icon = item.icon;
+
           return (
             <div
               key={item.step}
               className="group relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-6 transition hover:border-teal-500/30"
             >
-              {/* Faint step number */}
               <span className="pointer-events-none absolute right-5 top-3 select-none text-5xl font-bold leading-none text-[var(--color-text-primary)]/[0.04]">
                 {item.step}
               </span>
 
-              {/* Subtle glow on hover */}
               <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-500/0 blur-2xl transition group-hover:bg-teal-500/[0.06]" />
 
               <div className="relative">
