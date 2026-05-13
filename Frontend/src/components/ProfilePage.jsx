@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import api from "../api/axios";
 import MovieCard from "./MovieCard";
 import {
@@ -13,26 +14,25 @@ import {
   Sparkles,
 } from "lucide-react";
 
+const fetchProfile = async () => {
+  const res = await api.get("/auth/profile");
+  return res.data;
+};
+
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await api.get("/auth/profile");
-        setProfile(res.data);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProfile();
-  }, []);
+  const {
+    data: profile,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["profile"],
+    queryFn: fetchProfile,
+    staleTime: 1000 * 60 * 10,
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-[var(--color-bg-base)] px-6 pb-20 pt-28 text-[var(--color-text-primary)]">
         <div className="mx-auto max-w-6xl animate-pulse space-y-6">
@@ -55,7 +55,7 @@ const ProfilePage = () => {
     );
   }
 
-  if (!profile) {
+  if (isError || !profile) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-base)] px-6 text-[var(--color-text-primary)]">
         <p className="text-sm text-[var(--color-text-muted)]">
@@ -66,8 +66,13 @@ const ProfilePage = () => {
   }
 
   const { user, reviews, stats } = profile;
+
+  const likedMovies = user.likedMovies || [];
+  const userReviews = reviews || {};
+
   const activityScore =
     (stats.totalReviews || 0) + (stats.totalLikedMovies || 0);
+
   const memberSince = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", {
         month: "long",
@@ -77,27 +82,23 @@ const ProfilePage = () => {
 
   return (
     <div className="relative min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
-      {/* Ambience */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute -left-32 top-0 h-[500px] w-[500px] rounded-full bg-teal-500/[0.04] blur-3xl" />
         <div className="absolute -right-32 top-1/3 h-[400px] w-[400px] rounded-full bg-teal-500/[0.03] blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-28">
-        {/* Page eyebrow */}
         <p className="mb-6 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-teal-500">
           <Sparkles size={11} />
           Your Profile
         </p>
 
-        {/* Header card */}
         <section className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)]">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.08),transparent_50%)]" />
           <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-teal-500/5 blur-3xl" />
 
           <div className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
             <div className="flex items-center gap-5">
-              {/* Avatar */}
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-teal-500/40 to-teal-500/10 blur-md" />
                 <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-teal-600 text-2xl font-semibold uppercase text-white shadow-lg ring-4 ring-[var(--color-bg-card)] md:h-24 md:w-24 md:text-3xl">
@@ -140,7 +141,6 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Stats */}
         <section className="mt-6 grid gap-4 sm:grid-cols-3">
           <StatCard
             icon={MessageCircle}
@@ -165,18 +165,18 @@ const ProfilePage = () => {
           />
         </section>
 
-        {/* Main content */}
         <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_340px]">
-          {/* Liked movies */}
           <section>
             <SectionHeader
               eyebrow="Collection"
               title="Liked movies"
               description="Movies you've added to your favorites"
-              meta={`${user.likedMovies.length} ${user.likedMovies.length === 1 ? "movie" : "movies"}`}
+              meta={`${likedMovies.length} ${
+                likedMovies.length === 1 ? "movie" : "movies"
+              }`}
             />
 
-            {user.likedMovies.length === 0 ? (
+            {likedMovies.length === 0 ? (
               <EmptyState
                 icon={Heart}
                 title="No liked movies yet"
@@ -186,7 +186,7 @@ const ProfilePage = () => {
               />
             ) : (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-                {user.likedMovies.map((movie) => (
+                {likedMovies.map((movie) => (
                   <div
                     key={movie.tmdbId}
                     onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
@@ -199,7 +199,6 @@ const ProfilePage = () => {
             )}
           </section>
 
-          {/* Reviews sidebar */}
           <aside>
             <SectionHeader
               eyebrow="Activity"
@@ -208,7 +207,7 @@ const ProfilePage = () => {
               icon={Film}
             />
 
-            {reviews.length === 0 ? (
+            {userReviews.length === 0 ? (
               <EmptyState
                 icon={MessageCircle}
                 title="No reviews yet"
@@ -217,7 +216,7 @@ const ProfilePage = () => {
               />
             ) : (
               <div className="space-y-3">
-                {reviews.slice(0, 5).map((review) => (
+                {userReviews.slice(0, 5).map((review) => (
                   <article
                     key={review._id}
                     className="group relative overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-4 transition hover:border-[color:var(--color-border-strong)]"
@@ -253,12 +252,6 @@ const ProfilePage = () => {
                     </p>
                   </article>
                 ))}
-
-                {reviews.length > 5 && (
-                  <button className="w-full rounded-lg border border-dashed border-[color:var(--color-border)] py-2.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:border-[color:var(--color-border-strong)] hover:text-[var(--color-text-primary)]">
-                    View all {reviews.length} reviews
-                  </button>
-                )}
               </div>
             )}
           </aside>
@@ -267,8 +260,6 @@ const ProfilePage = () => {
     </div>
   );
 };
-
-/* ─── Sub-components ─────────────────────────────────── */
 
 const toneStyles = {
   teal: {
@@ -293,6 +284,7 @@ const toneStyles = {
 
 const StatCard = ({ icon: Icon, label, value, hint, tone = "teal" }) => {
   const t = toneStyles[tone];
+
   return (
     <div
       className={`group relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-5 transition ${t.border}`}
@@ -357,7 +349,9 @@ const EmptyState = ({
   compact = false,
 }) => (
   <div
-    className={`relative overflow-hidden rounded-xl border border-dashed border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-center ${compact ? "p-8" : "p-12"}`}
+    className={`relative overflow-hidden rounded-xl border border-dashed border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-center ${
+      compact ? "p-8" : "p-12"
+    }`}
   >
     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.05),transparent_60%)]" />
     <div className="relative">
