@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import {
   ArrowLeft,
@@ -33,77 +34,62 @@ const showErrorToast = (description) => {
   });
 };
 
+const fetchMovieDetail = async (tmdbId) => {
+  const movieRes = await api.post("/tmdb/save", {
+    tmdbId: Number(tmdbId),
+  });
+
+  const movie = movieRes.data.movie;
+
+  const [ratingRes, savedRes, profileRes] = await Promise.all([
+    api.get(`/movie/getaveragerating/${movie._id}`),
+    api.get("/saved"),
+    api.get("/auth/profile"),
+  ]);
+
+  const savedMovies = savedRes.data.movies || [];
+  const likedMovies = profileRes.data.user.likedMovies || [];
+
+  const saved = savedMovies.some(
+    (item) => String(item.tmdbId) === String(movie.tmdbId),
+  );
+
+  const liked = likedMovies.some(
+    (item) => String(item.tmdbId) === String(movie.tmdbId),
+  );
+
+  return {
+    movie,
+    averageRating: ratingRes.data.averageRating,
+    saved,
+    liked,
+  };
+};
+
 const MovieDetailPage = () => {
   const { tmdbId } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [movie, setMovie] = useState(null);
-  const [averageRating, setAverageRating] = useState(null);
-  const [saved, setSaved] = useState(false);
-  const [liked, setLiked] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
-  useEffect(() => {
-    const loadMovie = async () => {
-      try {
-        setLoading(true);
-        setError("");
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["movie-detail", tmdbId],
+    queryFn: () => fetchMovieDetail(tmdbId),
+    enabled: Boolean(tmdbId),
+    staleTime: 1000 * 60 * 10,
+  });
 
-        const res = await api.post("/tmdb/save", {
-          tmdbId: Number(tmdbId),
-        });
+  const movie = data?.movie;
+  const averageRating = data?.averageRating;
+  const saved = data?.saved || false;
+  const liked = data?.liked || false;
 
-        const savedMovie = res.data.movie;
-        setMovie(savedMovie);
-
-        const ratingRes = await api.get(
-          `/movie/getaveragerating/${savedMovie._id}`,
-        );
-
-        setAverageRating(ratingRes.data.averageRating);
-
-        const [savedRes, profileRes] = await Promise.all([
-          api.get("/saved"),
-          api.get("/auth/profile"),
-        ]);
-
-        const savedMovies = savedRes.data.movies || [];
-        const likedMovies = profileRes.data.user.likedMovies || [];
-
-        const isAlreadySaved = savedMovies.some(
-          (item) => String(item.tmdbId) === String(savedMovie.tmdbId),
-        );
-
-        const isAlreadyLiked = likedMovies.some(
-          (item) => String(item.tmdbId) === String(savedMovie.tmdbId),
-        );
-
-        setSaved(isAlreadySaved);
-        setLiked(isAlreadyLiked);
-      } catch (e) {
-        console.log(e);
-        setError(e.response?.data?.message || "Failed to load movie");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (tmdbId) {
-      loadMovie();
-    }
-  }, [tmdbId]);
-
-  const handleToggleSave = async () => {
-    try {
+  const toggleSaveMutation = useMutation({
+    mutationFn: async () => {
       if (saved) {
         await api.delete(`/saved/${movie.tmdbId}`);
-
-        setSaved(false);
-
-        showSuccessToast("Removed", "Movie removed from saved list");
-        return;
+        return false;
       }
 
       await api.post("/saved", {
@@ -112,17 +98,33 @@ const MovieDetailPage = () => {
         poster: movie.poster,
       });
 
-      setSaved(true);
+      return true;
+    },
+    onSuccess: (isSaved) => {
+      queryClient.setQueryData(["movie-detail", tmdbId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          saved: isSaved,
+        };
+      });
 
-      showSuccessToast("Saved", "Movie added to your list");
-    } catch (e) {
+      queryClient.invalidateQueries({ queryKey: ["saved-movies"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+
+      showSuccessToast(
+        isSaved ? "Saved" : "Removed",
+        isSaved ? "Movie added to your list" : "Movie removed from saved list",
+      );
+    },
+    onError: (e) => {
       console.log(e);
       showErrorToast(e.response?.data?.message || "Something went wrong");
-    }
-  };
+    },
+  });
 
-  const handleToggleLike = async () => {
-    try {
+  const toggleLikeMutation = useMutation({
+    mutationFn: async () => {
       const res = await api.post("/saved/like", {
         tmdbId: movie.tmdbId,
         title: movie.title,
@@ -131,9 +133,18 @@ const MovieDetailPage = () => {
         rating: movie.rating || averageRating,
       });
 
-      const isLiked = res.data.liked;
+      return res.data.liked;
+    },
+    onSuccess: (isLiked) => {
+      queryClient.setQueryData(["movie-detail", tmdbId], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          liked: isLiked,
+        };
+      });
 
-      setLiked(isLiked);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
 
       showSuccessToast(
         isLiked ? "Liked" : "Removed",
@@ -141,30 +152,51 @@ const MovieDetailPage = () => {
           ? "Movie added to liked movies"
           : "Movie removed from liked movies",
       );
-    } catch (e) {
+    },
+    onError: (e) => {
       console.log(e);
       showErrorToast(e.response?.data?.message || "Failed to update like");
-    }
-  };
+    },
+  });
 
-  const handleWatchTrailer = async () => {
-    try {
+  const trailerMutation = useMutation({
+    mutationFn: async () => {
       const res = await api.get(`/tmdb/trailer/${tmdbId}`);
-
-      window.open(res.data.youtubeUrl, "_blank");
-    } catch (e) {
+      return res.data.youtubeUrl;
+    },
+    onSuccess: (youtubeUrl) => {
+      window.open(youtubeUrl, "_blank");
+    },
+    onError: (e) => {
       console.log(e);
       showErrorToast("Trailer not available");
-    }
+    },
+  });
+
+  const handleToggleSave = () => {
+    if (!movie) return;
+    toggleSaveMutation.mutate();
   };
 
-  if (loading) {
+  const handleToggleLike = () => {
+    if (!movie) return;
+    toggleLikeMutation.mutate();
+  };
+
+  const handleWatchTrailer = () => {
+    trailerMutation.mutate();
+  };
+
+  if (isLoading) {
     return <MovieDetailSkeleton />;
   }
 
-  if (error) {
+  if (isError) {
     return (
-      <MovieDetailError error={error} onBack={() => navigate("/movies")} />
+      <MovieDetailError
+        error={error?.response?.data?.message || "Failed to load movie"}
+        onBack={() => navigate("/movies")}
+      />
     );
   }
 
@@ -255,15 +287,17 @@ const MovieDetailPage = () => {
             <div className="mt-8 flex flex-wrap gap-2.5">
               <button
                 onClick={handleWatchTrailer}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-500"
+                disabled={trailerMutation.isPending}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Play size={15} fill="currentColor" />
-                Watch Trailer
+                {trailerMutation.isPending ? "Loading..." : "Watch Trailer"}
               </button>
 
               <button
                 onClick={handleToggleSave}
-                className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition ${
+                disabled={toggleSaveMutation.isPending}
+                className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
                   saved
                     ? "border-teal-500/30 bg-teal-500/10 text-teal-500"
                     : "border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]"
@@ -279,7 +313,8 @@ const MovieDetailPage = () => {
 
               <button
                 onClick={handleToggleLike}
-                className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition ${
+                disabled={toggleLikeMutation.isPending}
+                className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
                   liked
                     ? "border-pink-500/30 bg-pink-500/10 text-pink-500"
                     : "border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)]"
