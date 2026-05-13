@@ -5,6 +5,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { Toaster } from "sileo";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { ThemeProvider } from "./context/ThemeContext";
 
@@ -24,6 +25,17 @@ import MovieBattle from "./components/MovieBattle";
 
 import ProtectedRoute from "./protection/ProtectedRoute";
 import GuestRoute from "./protection/GuestRoute";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes fresh
+      gcTime: 1000 * 60 * 30, // keep cached for 30 minutes
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const AUTH_ROUTES = ["/login", "/register"];
 
@@ -94,11 +106,13 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <ThemeProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 
