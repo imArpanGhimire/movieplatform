@@ -1,32 +1,36 @@
 const MovieCard = ({ movie }) => {
   const firstLetter = movie.title?.charAt(0) || "?";
 
+  const posterSrc =
+    movie.poster ||
+    (movie.poster_path
+      ? movie.poster_path.startsWith("http")
+        ? movie.poster_path
+        : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : null);
+
   return (
     <div className="group relative cursor-pointer overflow-hidden rounded-2xl bg-zinc-900 transition-all duration-300">
       <div className="relative h-72 overflow-hidden">
-        {movie.poster ? (
+        {posterSrc ? (
           <img
-            src={movie.poster}
+            src={posterSrc}
             alt={movie.title}
             className="h-full w-full object-cover transition-transform duration-500"
           />
         ) : (
           <PosterFallback firstLetter={firstLetter} />
         )}
-
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
-
       <div className="bg-[var(--color-bg-card)] px-4 py-3">
         <p className="truncate text-sm font-semibold text-[var(--color-text-primary)]">
           {movie.title}
         </p>
-
         <div className="mt-1 flex items-center justify-between">
           <span className="text-xs text-[var(--color-text-muted)]">
             {movie.releaseYear || "—"}
           </span>
-
           {movie.genre && (
             <span className="rounded-full bg-teal-500/10 px-2 py-0.5 text-xs font-medium text-teal-500">
               {movie.genre}
