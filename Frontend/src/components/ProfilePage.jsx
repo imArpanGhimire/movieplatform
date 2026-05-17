@@ -82,10 +82,7 @@ const ProfilePage = () => {
 
   return (
     <div className="relative min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -left-32 top-0 h-[500px] w-[500px] rounded-full bg-teal-500/[0.04] blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-[400px] w-[400px] rounded-full bg-teal-500/[0.03] blur-3xl" />
-      </div>
+      <div className="pointer-events-none fixed inset-0 z-0 bg-grid-pattern opacity-[0.03]" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-28">
         <p className="mb-6 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-teal-500">
@@ -94,20 +91,16 @@ const ProfilePage = () => {
         </p>
 
         <section className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,0.08),transparent_50%)]" />
-          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-teal-500/5 blur-3xl" />
-
           <div className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
             <div className="flex items-center gap-5">
               <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-teal-500/40 to-teal-500/10 blur-md" />
                 <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-teal-600 text-2xl font-semibold uppercase text-white shadow-lg ring-4 ring-[var(--color-bg-card)] md:h-24 md:w-24 md:text-3xl">
                   {user.username?.charAt(0)}
                 </div>
               </div>
 
               <div>
-                <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-teal-500/20 bg-teal-500/10 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wider text-teal-500">
+                <div className="mb-2 inline-flex items-center gap-1.5 rounded border border-teal-500/20 bg-teal-500/10 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wider text-teal-500">
                   <Sparkles size={10} />
                   {user.role}
                 </div>
@@ -266,19 +259,16 @@ const toneStyles = {
     bg: "bg-teal-500/10",
     text: "text-teal-500",
     border: "group-hover:border-teal-500/30",
-    glow: "bg-teal-500/5",
   },
   pink: {
     bg: "bg-pink-500/10",
     text: "text-pink-500",
     border: "group-hover:border-pink-500/30",
-    glow: "bg-pink-500/5",
   },
   amber: {
     bg: "bg-amber-500/10",
     text: "text-amber-500",
     border: "group-hover:border-amber-500/30",
-    glow: "bg-amber-500/5",
   },
 };
 
@@ -289,9 +279,6 @@ const StatCard = ({ icon: Icon, label, value, hint, tone = "teal" }) => {
     <div
       className={`group relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-5 transition ${t.border}`}
     >
-      <div
-        className={`pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full ${t.glow} blur-2xl`}
-      />
       <div className="relative flex items-start justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
@@ -353,7 +340,6 @@ const EmptyState = ({
       compact ? "p-8" : "p-12"
     }`}
   >
-    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.05),transparent_60%)]" />
     <div className="relative">
       <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-500/10 text-teal-500">
         <Icon size={20} />
