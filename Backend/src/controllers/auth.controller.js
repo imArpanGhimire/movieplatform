@@ -2,6 +2,13 @@ const usermodel = require("../models/user.model")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+}
+
 async function registeruser(req, res) {
     try {
         const username = req.body.username?.trim().toLowerCase()
@@ -32,13 +39,9 @@ async function registeruser(req, res) {
         const token = jwt.sign({
             id: user._id,
             role: user.role
-        }, process.env.JWT_SECRET)
+        }, process.env.JWT_SECRET, { expiresIn: "7d" })
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: false
-        })
+        res.cookie("token", token, cookieOptions)
 
         res.status(201).json({
             message: "user created.",
@@ -60,9 +63,6 @@ async function loginuser(req, res) {
         const username = req.body.username?.trim().toLowerCase()
         const { password } = req.body
 
-        // console.log("req.body:", req.body)
-        // console.log("normalized username:", username)
-
         if (!username || !password) {
             return res.status(400).json({
                 message: "username and password are required"
@@ -70,11 +70,10 @@ async function loginuser(req, res) {
         }
 
         const user = await usermodel.findOne({ username })
-        // console.log("user found in db:", user)
 
         if (!user) {
             return res.status(401).json({
-                message: "user doesn't exists with that details"
+                message: "invalid credentials"
             })
         }
 
@@ -82,20 +81,16 @@ async function loginuser(req, res) {
 
         if (!pswcheck) {
             return res.status(401).json({
-                message: "password didnt match"
+                message: "invalid credentials"
             })
         }
 
         const token = jwt.sign({
             id: user._id,
             role: user.role
-        }, process.env.JWT_SECRET)
+        }, process.env.JWT_SECRET, { expiresIn: "7d" })
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: false
-        })
+        res.cookie("token", token, cookieOptions)
 
         return res.status(200).json({
             message: "user logged in successfully",
@@ -114,11 +109,7 @@ async function loginuser(req, res) {
 }
 
 function logoutuser(req, res) {
-    res.clearCookie("token", {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false
-    })
+    res.clearCookie("token", cookieOptions)
 
     return res.status(200).json({
         message: "logged out successfully"
@@ -166,7 +157,6 @@ async function me(req, res) {
         })
     }
 }
-
 
 const reviewmodel = require("../models/review.model");
 
