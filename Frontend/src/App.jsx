@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,13 +7,10 @@ import {
 } from "react-router-dom";
 import { Toaster } from "sileo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import { ThemeProvider } from "./context/ThemeContext";
-
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
@@ -22,15 +20,15 @@ import SavedMoviesPage from "./components/SavedMoviesPage";
 import ProfilePage from "./components/ProfilePage";
 import PersonalizedHome from "./components/PersonalizedHome";
 import MovieBattle from "./components/MovieBattle";
-
 import ProtectedRoute from "./protection/ProtectedRoute";
 import GuestRoute from "./protection/GuestRoute";
+import { fetchTopRatedMovies } from "./api/queries";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes fresh
-      gcTime: 1000 * 60 * 30, // keep cached for 30 minutes
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
       refetchOnWindowFocus: false,
       retry: 1,
     },
@@ -62,16 +60,21 @@ const AppContent = () => {
   const location = useLocation();
   const hideFooter = AUTH_ROUTES.includes(location.pathname);
 
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["top-rated-movies"],
+      queryFn: fetchTopRatedMovies,
+      staleTime: 1000 * 60 * 15,
+    });
+  }, []);
+
   return (
     <>
       <ScrollToTop />
       <Navbar />
-
       <Toaster position="top-center" options={TOASTER_OPTIONS} />
-
       <Routes>
         <Route path="/" element={<LandingPage key={location.key} />} />
-
         <Route
           path="/login"
           element={
@@ -80,7 +83,6 @@ const AppContent = () => {
             </GuestRoute>
           }
         />
-
         <Route
           path="/register"
           element={
@@ -89,7 +91,6 @@ const AppContent = () => {
             </GuestRoute>
           }
         />
-
         {protectedRoutes.map((route) => (
           <Route
             key={route.path}
@@ -98,7 +99,6 @@ const AppContent = () => {
           />
         ))}
       </Routes>
-
       {!hideFooter && <Footer />}
     </>
   );
