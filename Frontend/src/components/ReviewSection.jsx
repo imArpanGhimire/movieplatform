@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/axios";
-import { sileo } from "sileo";
 import { Pencil, Star, ThumbsUp, Trash2 } from "lucide-react";
+
+import api from "../api/axios";
+import { toast } from "../utils/toast";
 import ReplySection from "./ReplySection";
 
 const ReviewSection = ({ movieId, showAllReviews = false }) => {
@@ -71,12 +72,7 @@ const ReviewSection = ({ movieId, showAllReviews = false }) => {
       setReviews((prev) => [res.data.review, ...prev]);
       setComment("");
       setRating("");
-      sileo.success({
-        title: "Review posted",
-        description: "Your review was posted successfully",
-        position: "top-center",
-        duration: 2000,
-      });
+      toast.success("Review posted", "Your review was posted successfully");
     } catch (e) {
       console.log(e);
       setError(e.response?.data?.message || "Failed to add review");
@@ -115,11 +111,7 @@ const ReviewSection = ({ movieId, showAllReviews = false }) => {
         prev.map((r) => (r._id === id ? res.data.review : r)),
       );
       cancelEdit();
-      sileo.success({
-        title: "Review updated",
-        description: "Your review was updated successfully",
-        position: "top-center",
-      });
+      toast.success("Review updated", "Your review was updated successfully");
     } catch (e) {
       console.log(e);
       setError(e.response?.data?.message || "Failed to update review");
@@ -132,11 +124,7 @@ const ReviewSection = ({ movieId, showAllReviews = false }) => {
     try {
       await api.delete(`/movie/review/${reviewid}`);
       setReviews((prev) => prev.filter((r) => r._id !== reviewid));
-      sileo.success({
-        title: "Review deleted",
-        description: "Your review was deleted successfully",
-        position: "top-center",
-      });
+      toast.success("Review deleted", "Your review was deleted successfully");
     } catch (e) {
       console.log(e);
       setError(e.response?.data?.message || "Failed to delete review");
