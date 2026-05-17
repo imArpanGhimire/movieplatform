@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 5 * 60 * 1000,
     max: 20,
     message: { message: "Too many attempts, try again later" }
 });
