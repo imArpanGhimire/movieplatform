@@ -26,13 +26,14 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-const authLimiter = rateLimit({
-    windowMs: 5 * 60 * 1000,
-    max: 20,
-    message: { message: "Too many attempts, try again later" }
-});
+// const authLimiter = rateLimit({
+//     windowMs: 5 * 60 * 1000,
+//     max: 20,
+//     message: { message: "Too many attempts, try again later" }
+// });
 
-app.use("/api/auth", authLimiter, authroutes);
+// app.use("/api/auth", authLimiter, authroutes);
+app.use("/api/auth", authroutes);
 app.use("/api/movie", movieroutes);
 app.use("/api/toggle", likesroutes);
 app.use("/api/reply", replyRoutes);
