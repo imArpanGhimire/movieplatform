@@ -1,6 +1,5 @@
 const MovieCard = ({ movie }) => {
   const firstLetter = movie.title?.charAt(0) || "?";
-
   const posterSrc =
     movie.poster ||
     (movie.poster_path
@@ -10,20 +9,23 @@ const MovieCard = ({ movie }) => {
       : null);
 
   return (
-    <div className="group relative cursor-pointer overflow-hidden rounded-2xl bg-zinc-900 transition-all duration-300">
+    <div className="group relative cursor-pointer overflow-hidden rounded-2xl bg-[var(--color-bg-card)] transition-all duration-300">
+      {/* Poster */}
       <div className="relative h-72 overflow-hidden">
         {posterSrc ? (
           <img
             src={posterSrc}
             alt={movie.title}
-            className="h-full w-full object-cover transition-transform duration-500"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <PosterFallback firstLetter={firstLetter} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
-      <div className="bg-[var(--color-bg-card)] px-4 py-3">
+
+      {/* Info — no separate bg, inherits card bg */}
+      <div className="px-4 py-3">
         <p className="truncate text-sm font-semibold text-[var(--color-text-primary)]">
           {movie.title}
         </p>
