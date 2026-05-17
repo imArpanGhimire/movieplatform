@@ -94,38 +94,28 @@ const generateTodayBattlesIfNeeded = async () => {
     const existingBattles = await Battle.find({
         battleDate: today,
         isActive: true,
-    });
+    }).sort({ createdAt: 1 }); // oldest first, consistent order
 
-    if (existingBattles.length > 0) {
-        return existingBattles;
+    // if exactly 3 exist, return them
+    if (existingBattles.length >= 3) {
+        return existingBattles.slice(0, 3);
     }
 
-    const movies = await fetchRandomMoviesFromTMDB();
+    // delete any partial battles for today to start fresh
+    await Battle.deleteMany({ battleDate: today });
 
+    const movies = await fetchRandomMoviesFromTMDB();
     if (movies.length < 6) {
         throw new Error("Not enough movies received from TMDB");
     }
 
     const battlesToCreate = [
-        {
-            movieA: movies[0],
-            movieB: movies[1],
-            battleDate: today,
-        },
-        {
-            movieA: movies[2],
-            movieB: movies[3],
-            battleDate: today,
-        },
-        {
-            movieA: movies[4],
-            movieB: movies[5],
-            battleDate: today,
-        },
+        { movieA: movies[0], movieB: movies[1], battleDate: today },
+        { movieA: movies[2], movieB: movies[3], battleDate: today },
+        { movieA: movies[4], movieB: movies[5], battleDate: today },
     ];
 
     const createdBattles = await Battle.insertMany(battlesToCreate);
-
     return createdBattles;
 };
 
