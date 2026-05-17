@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { sileo } from "sileo";
 import {
   ArrowLeft,
   Bookmark,
@@ -17,22 +16,7 @@ import {
 
 import api from "../api/axios";
 import ReviewSection from "../components/ReviewSection";
-
-const showSuccessToast = (title, description) => {
-  sileo.success({
-    title,
-    description,
-    position: "top-center",
-  });
-};
-
-const showErrorToast = (description) => {
-  sileo.error({
-    title: "Error",
-    description,
-    position: "top-center",
-  });
-};
+import { toast } from "../utils/toast";
 
 const fetchMovieDetail = async (tmdbId) => {
   const movieRes = await api.post("/tmdb/save", {
@@ -91,35 +75,28 @@ const MovieDetailPage = () => {
         await api.delete(`/saved/${movie.tmdbId}`);
         return false;
       }
-
       await api.post("/saved", {
         tmdbId: movie.tmdbId,
         title: movie.title,
         poster: movie.poster,
       });
-
       return true;
     },
     onSuccess: (isSaved) => {
       queryClient.setQueryData(["movie-detail", tmdbId], (oldData) => {
         if (!oldData) return oldData;
-        return {
-          ...oldData,
-          saved: isSaved,
-        };
+        return { ...oldData, saved: isSaved };
       });
-
       queryClient.invalidateQueries({ queryKey: ["saved-movies"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-
-      showSuccessToast(
+      toast.success(
         isSaved ? "Saved" : "Removed",
         isSaved ? "Movie added to your list" : "Movie removed from saved list",
       );
     },
     onError: (e) => {
       console.log(e);
-      showErrorToast(e.response?.data?.message || "Something went wrong");
+      toast.error("Failed to save", e.response?.data?.message);
     },
   });
 
@@ -132,21 +109,15 @@ const MovieDetailPage = () => {
         releaseDate: movie.releaseYear,
         rating: movie.rating || averageRating,
       });
-
       return res.data.liked;
     },
     onSuccess: (isLiked) => {
       queryClient.setQueryData(["movie-detail", tmdbId], (oldData) => {
         if (!oldData) return oldData;
-        return {
-          ...oldData,
-          liked: isLiked,
-        };
+        return { ...oldData, liked: isLiked };
       });
-
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-
-      showSuccessToast(
+      toast.success(
         isLiked ? "Liked" : "Removed",
         isLiked
           ? "Movie added to liked movies"
@@ -155,7 +126,7 @@ const MovieDetailPage = () => {
     },
     onError: (e) => {
       console.log(e);
-      showErrorToast(e.response?.data?.message || "Failed to update like");
+      toast.error("Failed to update like", e.response?.data?.message);
     },
   });
 
@@ -169,7 +140,7 @@ const MovieDetailPage = () => {
     },
     onError: (e) => {
       console.log(e);
-      showErrorToast("Trailer not available");
+      toast.error("Trailer not available", "No trailer found for this movie.");
     },
   });
 
@@ -187,9 +158,7 @@ const MovieDetailPage = () => {
     trailerMutation.mutate();
   };
 
-  if (isLoading) {
-    return <MovieDetailSkeleton />;
-  }
+  if (isLoading) return <MovieDetailSkeleton />;
 
   if (isError) {
     return (
@@ -358,7 +327,6 @@ const MovieDetailPage = () => {
                   Latest thoughts from the community
                 </p>
               </div>
-
               <button
                 onClick={() => setShowAllReviews((prev) => !prev)}
                 className="hidden text-sm font-medium text-[var(--color-text-secondary)] transition hover:text-[var(--color-text-primary)] sm:block"
@@ -385,7 +353,6 @@ const MovieDetailPage = () => {
               <h3 className="mb-4 text-xs font-medium uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
                 Gallery
               </h3>
-
               <div className="grid grid-cols-2 gap-2">
                 {[movie.backdrop, movie.poster]
                   .filter(Boolean)
@@ -404,7 +371,6 @@ const MovieDetailPage = () => {
               <h3 className="mb-4 text-xs font-medium uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
                 Information
               </h3>
-
               <dl className="space-y-3 text-sm">
                 <InfoRow label="Director" value={movie.director} />
                 <InfoRow label="Genre" value={movie.genre} capitalize />
@@ -426,87 +392,68 @@ const MovieDetailPage = () => {
   );
 };
 
-const MovieDetailSkeleton = () => {
-  return (
-    <div className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
-      <div className="mx-auto max-w-6xl animate-pulse px-6 py-10">
-        <div className="mb-10 h-4 w-24 rounded bg-[var(--color-bg-card)]" />
-
-        <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
-          <div className="aspect-[2/3] rounded-xl bg-[var(--color-bg-card)]" />
-
-          <div className="space-y-5">
-            <div className="h-4 w-32 rounded bg-[var(--color-bg-card)]" />
-            <div className="h-12 w-3/4 rounded bg-[var(--color-bg-card)]" />
-            <div className="h-4 w-1/2 rounded bg-[var(--color-bg-card)]" />
-
-            <div className="space-y-2 pt-4">
-              <div className="h-3 w-full rounded bg-[var(--color-bg-card)]" />
-              <div className="h-3 w-5/6 rounded bg-[var(--color-bg-card)]" />
-              <div className="h-3 w-4/6 rounded bg-[var(--color-bg-card)]" />
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <div className="h-11 w-32 rounded-lg bg-[var(--color-bg-card)]" />
-              <div className="h-11 w-32 rounded-lg bg-[var(--color-bg-card)]" />
-            </div>
+const MovieDetailSkeleton = () => (
+  <div className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
+    <div className="mx-auto max-w-6xl animate-pulse px-6 py-10">
+      <div className="mb-10 h-4 w-24 rounded bg-[var(--color-bg-card)]" />
+      <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
+        <div className="aspect-[2/3] rounded-xl bg-[var(--color-bg-card)]" />
+        <div className="space-y-5">
+          <div className="h-4 w-32 rounded bg-[var(--color-bg-card)]" />
+          <div className="h-12 w-3/4 rounded bg-[var(--color-bg-card)]" />
+          <div className="h-4 w-1/2 rounded bg-[var(--color-bg-card)]" />
+          <div className="space-y-2 pt-4">
+            <div className="h-3 w-full rounded bg-[var(--color-bg-card)]" />
+            <div className="h-3 w-5/6 rounded bg-[var(--color-bg-card)]" />
+            <div className="h-3 w-4/6 rounded bg-[var(--color-bg-card)]" />
+          </div>
+          <div className="flex gap-3 pt-4">
+            <div className="h-11 w-32 rounded-lg bg-[var(--color-bg-card)]" />
+            <div className="h-11 w-32 rounded-lg bg-[var(--color-bg-card)]" />
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
-const MovieDetailError = ({ error, onBack }) => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-base)] px-6 text-[var(--color-text-primary)]">
-      <div className="w-full max-w-sm rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-8 text-center">
-        <p className="text-base font-medium text-red-400">{error}</p>
-
-        <button
-          onClick={onBack}
-          className="mt-6 rounded-lg bg-[var(--color-text-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90"
-        >
-          Go Back
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const DetailCell = ({ icon: Icon, label, value, capitalize }) => {
-  return (
-    <div className="px-5 py-5">
-      <div className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
-        <Icon size={12} />
-        {label}
-      </div>
-
-      <p
-        className={`truncate text-sm font-medium text-[var(--color-text-primary)] ${
-          capitalize ? "capitalize" : ""
-        }`}
+const MovieDetailError = ({ error, onBack }) => (
+  <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-base)] px-6 text-[var(--color-text-primary)]">
+    <div className="w-full max-w-sm rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-8 text-center">
+      <p className="text-base font-medium text-red-400">{error}</p>
+      <button
+        onClick={onBack}
+        className="mt-6 rounded-lg bg-[var(--color-text-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90"
       >
-        {value || "—"}
-      </p>
+        Go Back
+      </button>
     </div>
-  );
-};
+  </div>
+);
 
-const InfoRow = ({ label, value, capitalize }) => {
-  return (
-    <div className="flex items-center justify-between gap-4 border-b border-[color:var(--color-border)] pb-3 last:border-0 last:pb-0">
-      <dt className="text-[var(--color-text-muted)]">{label}</dt>
-
-      <dd
-        className={`text-right font-medium text-[var(--color-text-primary)] ${
-          capitalize ? "capitalize" : ""
-        }`}
-      >
-        {value || "—"}
-      </dd>
+const DetailCell = ({ icon: Icon, label, value, capitalize }) => (
+  <div className="px-5 py-5">
+    <div className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+      <Icon size={12} />
+      {label}
     </div>
-  );
-};
+    <p
+      className={`truncate text-sm font-medium text-[var(--color-text-primary)] ${capitalize ? "capitalize" : ""}`}
+    >
+      {value || "—"}
+    </p>
+  </div>
+);
+
+const InfoRow = ({ label, value, capitalize }) => (
+  <div className="flex items-center justify-between gap-4 border-b border-[color:var(--color-border)] pb-3 last:border-0 last:pb-0">
+    <dt className="text-[var(--color-text-muted)]">{label}</dt>
+    <dd
+      className={`text-right font-medium text-[var(--color-text-primary)] ${capitalize ? "capitalize" : ""}`}
+    >
+      {value || "—"}
+    </dd>
+  </div>
+);
 
 export default MovieDetailPage;
