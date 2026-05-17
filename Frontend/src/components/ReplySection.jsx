@@ -1,16 +1,7 @@
 import { useEffect, useState } from "react";
-import { sileo } from "sileo";
 
 import api from "../api/axios";
-
-const showToast = ({ type = "success", title, description }) => {
-  sileo[type]({
-    title,
-    description,
-    position: "top-center",
-    duration: 2000,
-  });
-};
+import { toast } from "../utils/toast";
 
 const ReplyItem = ({
   reply,
@@ -39,13 +30,10 @@ const ReplyItem = ({
       onReplyAdded();
       setText("");
       setActiveReplyId(null);
-
-      showToast({
-        title: "Reply Added",
-        description: "Your reply was posted successfully",
-      });
+      toast.success("Reply Added", "Your reply was posted successfully");
     } catch (e) {
       console.log(e);
+      toast.error("Failed to post reply", e.response?.data?.message);
     }
   };
 
@@ -124,9 +112,7 @@ const ReplySection = ({ reviewId, currentuser }) => {
   };
 
   useEffect(() => {
-    if (reviewId) {
-      fetchReplies();
-    }
+    if (reviewId) fetchReplies();
   }, [reviewId]);
 
   const handleAddMainReply = async () => {
@@ -141,28 +127,21 @@ const ReplySection = ({ reviewId, currentuser }) => {
 
       setMainReplyText("");
       fetchReplies();
-
-      showToast({
-        title: "Reply Added",
-        description: "Your reply was posted successfully",
-      });
+      toast.success("Reply Added", "Your reply was posted successfully");
     } catch (e) {
       console.log(e);
+      toast.error("Failed to post reply", e.response?.data?.message);
     }
   };
 
   const handleDeleteReply = async (replyId) => {
     try {
       await api.delete(`/reply/${replyId}`);
-
       fetchReplies();
-
-      showToast({
-        title: "Reply Deleted",
-        description: "Reply deleted successfully",
-      });
+      toast.success("Reply Deleted", "Reply deleted successfully");
     } catch (e) {
       console.log(e);
+      toast.error("Failed to delete reply", e.response?.data?.message);
     }
   };
 
@@ -204,24 +183,21 @@ const ReplyInput = ({
   placeholder,
   onSubmit,
   buttonLabel = "Send",
-}) => {
-  return (
-    <div className="mt-3 flex gap-2">
-      <input
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="flex-1 rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-input)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-teal-500"
-      />
-
-      <button
-        onClick={onSubmit}
-        className="rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-teal-400"
-      >
-        {buttonLabel}
-      </button>
-    </div>
-  );
-};
+}) => (
+  <div className="mt-3 flex gap-2">
+    <input
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="flex-1 rounded-xl border border-[color:var(--color-border-input)] bg-[var(--color-bg-input)] px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-teal-500"
+    />
+    <button
+      onClick={onSubmit}
+      className="rounded-xl bg-teal-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-teal-400"
+    >
+      {buttonLabel}
+    </button>
+  </div>
+);
 
 export default ReplySection;
