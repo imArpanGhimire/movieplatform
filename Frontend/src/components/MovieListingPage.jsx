@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import MovieCard from "./MovieCard";
 import api from "../api/axios";
+import { fetchTopRatedMovies } from "../api/queries";
 import {
   Search,
   X,
@@ -13,6 +14,8 @@ import {
   Sparkles,
   ArrowRight,
   Swords,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const TRIVIA = [
@@ -64,10 +67,7 @@ const HOW_IT_WORKS = [
   },
 ];
 
-const fetchTopRatedMovies = async () => {
-  const res = await api.get("/tmdb/toprated");
-  return res.data.movies || [];
-};
+const PAGE_SIZE = 16;
 
 const searchMovies = async ({ queryKey }) => {
   const [, { title, director }] = queryKey;
@@ -89,6 +89,8 @@ const MovieListingPage = () => {
   const [hasRestored, setHasRestored] = useState(false);
   const [triviaIndex, setTriviaIndex] = useState(0);
   const [triviaVisible, setTriviaVisible] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [topRatedPage, setTopRatedPage] = useState(1);
 
   useEffect(() => {
     const savedTitle = sessionStorage.getItem("filmvault_title") || "";
@@ -126,10 +128,13 @@ const MovieListingPage = () => {
 
   useEffect(() => {
     if (!hasRestored) return;
-
     sessionStorage.setItem("filmvault_title", title);
     sessionStorage.setItem("filmvault_director", director);
   }, [title, director, hasRestored]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedTitle, debouncedDirector]);
 
   const hasSearch = Boolean(debouncedTitle || debouncedDirector);
 
@@ -157,6 +162,18 @@ const MovieListingPage = () => {
     staleTime: 1000 * 60 * 10,
   });
 
+  const topRatedTotalPages = Math.ceil(topRatedMovies.length / PAGE_SIZE);
+  const paginatedTopRated = topRatedMovies.slice(
+    (topRatedPage - 1) * PAGE_SIZE,
+    topRatedPage * PAGE_SIZE,
+  );
+
+  const totalPages = Math.ceil(allmovies.length / PAGE_SIZE);
+  const paginatedMovies = allmovies.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
   const loading = searchLoading;
   const errorMessage =
     isError && (error?.response?.data?.message || "Failed to search movies");
@@ -168,6 +185,11 @@ const MovieListingPage = () => {
     setdebouncedDirector("");
     sessionStorage.removeItem("filmvault_title");
     sessionStorage.removeItem("filmvault_director");
+  }
+
+  function handlePageChange(page) {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
@@ -274,20 +296,32 @@ const MovieListingPage = () => {
               <div className="mx-auto max-w-6xl">
                 <SectionHeader
                   eyebrow="Top Rated"
-                  title="Greatest of all time"
+                  title="People love these"
                   description="Critically acclaimed films loved across generations"
                 />
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                  {topRatedMovies.map((movie) => (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                  {paginatedTopRated.map((movie) => (
                     <div
                       key={movie.tmdbId}
                       onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
-                      className="group cursor-pointer overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-lg hover:shadow-teal-500/5"
+                      className="group cursor-pointer overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-teal-500/5"
                     >
                       <MovieCard movie={movie} />
                     </div>
                   ))}
                 </div>
+                {topRatedMovies.length > 0 && (
+                  <Pagination
+                    currentPage={topRatedPage}
+                    totalPages={Math.max(topRatedTotalPages, 1)}
+                    totalResults={topRatedMovies.length}
+                    pageSize={PAGE_SIZE}
+                    onPageChange={(page) => {
+                      setTopRatedPage(page);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  />
+                )}
               </div>
             </section>
           )}
@@ -325,9 +359,7 @@ const MovieListingPage = () => {
                           Daily Battles
                         </p>
                       </div>
-
                       <div className="h-8 w-px bg-white/[0.06]" />
-
                       <div>
                         <p className="text-2xl font-semibold tracking-tight">
                           24h
@@ -336,9 +368,7 @@ const MovieListingPage = () => {
                           To Vote
                         </p>
                       </div>
-
                       <div className="h-8 w-px bg-white/[0.06]" />
-
                       <div>
                         <p className="text-2xl font-semibold tracking-tight">
                           ∞
@@ -415,16 +445,13 @@ const MovieListingPage = () => {
           </section>
 
           <Divider />
-
           <TriviaTicker
             triviaIndex={triviaIndex}
             triviaVisible={triviaVisible}
             setTriviaIndex={setTriviaIndex}
             setTriviaVisible={setTriviaVisible}
           />
-
           <Divider />
-
           <HowItWorks />
         </>
       )}
@@ -455,17 +482,15 @@ const MovieListingPage = () => {
               title="Movies found"
               meta={
                 allmovies.length > 0
-                  ? `${allmovies.length} ${
-                      allmovies.length === 1 ? "result" : "results"
-                    }`
+                  ? `${allmovies.length} ${allmovies.length === 1 ? "result" : "results"}`
                   : null
               }
             />
 
             {allmovies.length > 0 ? (
               <>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                  {allmovies.map((movie, index) => (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                  {paginatedMovies.map((movie, index) => (
                     <div
                       key={movie.tmdbId}
                       onClick={() => navigate(`/movie/tmdb/${movie.tmdbId}`)}
@@ -476,6 +501,16 @@ const MovieListingPage = () => {
                     </div>
                   ))}
                 </div>
+
+                {allmovies.length > 0 && (
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.max(totalPages, 1)}
+                    totalResults={allmovies.length}
+                    pageSize={PAGE_SIZE}
+                    onPageChange={handlePageChange}
+                  />
+                )}
 
                 <div className="mt-20 space-y-0">
                   <Divider />
@@ -511,6 +546,120 @@ const MovieListingPage = () => {
     </div>
   );
 };
+
+// ─── Pagination ──────────────────────────────────────────────────────────────
+
+const Pagination = ({
+  currentPage,
+  totalPages,
+  totalResults,
+  pageSize,
+  onPageChange,
+}) => {
+  const startResult = (currentPage - 1) * pageSize + 1;
+  const endResult = Math.min(currentPage * pageSize, totalResults);
+
+  const getPageNumbers = () => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const pages = [];
+
+    if (currentPage <= 4) {
+      pages.push(1, 2, 3, 4, 5, "...", totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      pages.push(
+        1,
+        "...",
+        totalPages - 4,
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      );
+    } else {
+      pages.push(
+        1,
+        "...",
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        "...",
+        totalPages,
+      );
+    }
+
+    return pages;
+  };
+
+  const pages = getPageNumbers();
+
+  return (
+    <div className="mt-10 flex flex-col items-center gap-4">
+      <p className="text-xs text-[var(--color-text-muted)]">
+        Showing{" "}
+        <span className="font-medium text-[var(--color-text-secondary)]">
+          {startResult}–{endResult}
+        </span>{" "}
+        of{" "}
+        <span className="font-medium text-[var(--color-text-secondary)]">
+          {totalResults}
+        </span>{" "}
+        results
+      </p>
+
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] transition-all duration-200 hover:border-teal-500/40 hover:bg-[var(--color-bg-elevated)] hover:text-teal-400 disabled:pointer-events-none disabled:opacity-30"
+          aria-label="Previous page"
+        >
+          <ChevronLeft size={15} />
+        </button>
+
+        <div className="flex items-center gap-1">
+          {pages.map((page, i) =>
+            page === "..." ? (
+              <span
+                key={`ellipsis-${i}`}
+                className="flex h-9 w-9 items-center justify-center text-xs text-[var(--color-text-muted)]"
+              >
+                ···
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => onPageChange(page)}
+                className={`relative flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
+                  page === currentPage
+                    ? "bg-teal-500 text-black shadow-[0_0_16px_rgba(20,184,166,0.35)]"
+                    : "border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:border-teal-500/40 hover:bg-[var(--color-bg-elevated)] hover:text-teal-400"
+                }`}
+                aria-label={`Go to page ${page}`}
+                aria-current={page === currentPage ? "page" : undefined}
+              >
+                {page}
+              </button>
+            ),
+          )}
+        </div>
+
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] transition-all duration-200 hover:border-teal-500/40 hover:bg-[var(--color-bg-elevated)] hover:text-teal-400 disabled:pointer-events-none disabled:opacity-30"
+          aria-label="Next page"
+        >
+          <ChevronRight size={15} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ─── Shared sub-components ───────────────────────────────────────────────────
 
 const SectionHeader = ({ eyebrow, title, description, meta }) => (
   <div className="mb-6 flex items-end justify-between gap-4 border-b border-[color:var(--color-border)] pb-4">
@@ -569,15 +718,12 @@ const TriviaTicker = ({
         <div className="ml-auto hidden shrink-0 items-center gap-2 sm:flex">
           {[0, 1, 2, 3, 4].map((dot) => {
             const activeDot = triviaIndex % 5;
-
             return (
               <button
                 key={dot}
                 onClick={() => {
                   const nextIndex = Math.floor(triviaIndex / 5) * 5 + dot;
-
                   setTriviaVisible(false);
-
                   setTimeout(() => {
                     setTriviaIndex(nextIndex % TRIVIA.length);
                     setTriviaVisible(true);
@@ -610,7 +756,6 @@ const HowItWorks = () => (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {HOW_IT_WORKS.map((item) => {
           const Icon = item.icon;
-
           return (
             <div
               key={item.step}
