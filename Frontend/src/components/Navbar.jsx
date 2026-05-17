@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { sileo } from "sileo";
+import { toast } from "../utils/toast";
 import ThemeToggleButton from "./ThemeToggleButton";
 import {
   Bookmark,
@@ -12,6 +12,7 @@ import {
   Sparkles,
   User,
   X,
+  Menu,
 } from "lucide-react";
 
 const GENRES = [
@@ -47,7 +48,6 @@ function GenreModal({ onClose, onConfirm }) {
     function onKey(e) {
       if (e.key === "Escape") onClose();
     }
-
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
@@ -78,16 +78,13 @@ function GenreModal({ onClose, onConfirm }) {
                 Personalized For You
               </span>
             </div>
-
             <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
               What do you like to watch?
             </h2>
-
             <p className="mt-1 text-xs leading-5 text-[var(--color-text-muted)]">
-              Pick your favorite genres and we’ll curate your personal feed.
+              Pick your favorite genres and we'll curate your personal feed.
             </p>
           </div>
-
           <button
             onClick={onClose}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-muted)] transition hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
@@ -99,7 +96,6 @@ function GenreModal({ onClose, onConfirm }) {
         <div className="my-6 flex flex-wrap gap-2">
           {GENRES.map((genre) => {
             const active = selected.includes(genre.id);
-
             return (
               <button
                 key={genre.id}
@@ -123,7 +119,6 @@ function GenreModal({ onClose, onConfirm }) {
               ? "Select at least one genre"
               : `${selected.length} genre${selected.length > 1 ? "s" : ""} selected`}
           </span>
-
           <div className="flex gap-2">
             <button
               onClick={onClose}
@@ -131,7 +126,6 @@ function GenreModal({ onClose, onConfirm }) {
             >
               Cancel
             </button>
-
             <button
               onClick={handleConfirm}
               disabled={selected.length === 0}
@@ -151,12 +145,146 @@ function GenreModal({ onClose, onConfirm }) {
   );
 }
 
+// ─── Mobile drawer ────────────────────────────────────────────────────────────
+
+function MobileDrawer({
+  open,
+  onClose,
+  navItems,
+  onNavClick,
+  isActive,
+  onLogout,
+}) {
+  const drawerRef = useRef(null);
+
+  // Close on outside click
+  function handleOverlayClick(e) {
+    if (e.target === drawerRef.current) onClose();
+  }
+
+  // Close on Escape
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === "Escape") onClose();
+    }
+    if (open) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  // Lock body scroll when open
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        ref={drawerRef}
+        onClick={handleOverlayClick}
+        className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+      />
+
+      {/* Drawer panel — slides in from right */}
+      <div
+        className={`fixed right-0 top-0 z-[110] flex h-full w-72 flex-col bg-[var(--color-bg-base)] border-l border-[color:var(--color-border)] shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+          open ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Header */}
+        <div className="flex h-16 items-center justify-between border-b border-[color:var(--color-border)] px-5">
+          <span className="text-sm font-semibold text-[var(--color-text-primary)]">
+            Menu
+          </span>
+          <button
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-muted)] transition hover:text-[var(--color-text-primary)]"
+          >
+            <X size={15} />
+          </button>
+        </div>
+
+        {/* Nav links */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+            Navigate
+          </p>
+          <div className="flex flex-col gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.path);
+              const isSpecial = item.path === "/battle";
+
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => {
+                    onNavClick(item.path);
+                    onClose();
+                  }}
+                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                    active
+                      ? isSpecial
+                        ? "bg-[var(--color-brand)]/15 text-[var(--color-brand)]"
+                        : "bg-[var(--color-brand)]/10 text-[var(--color-brand)]"
+                      : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)]"
+                  } ${isSpecial && !active ? "border border-[var(--color-brand)]/30 text-[var(--color-brand)]" : ""}`}
+                >
+                  <span
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                      active
+                        ? "bg-[var(--color-brand)]/20"
+                        : "bg-[var(--color-bg-card)]"
+                    }`}
+                  >
+                    <Icon size={15} />
+                  </span>
+                  {item.label}
+                  {active && (
+                    <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--color-brand)]" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* Logout at bottom */}
+        <div className="border-t border-[color:var(--color-border)] p-4">
+          <button
+            onClick={() => {
+              onLogout();
+              onClose();
+            }}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition hover:bg-red-500/10 hover:text-red-400"
+          >
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-bg-card)]">
+              <LogOut size={15} />
+            </span>
+            Logout
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
+
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [scrolled, setScrolled] = useState(false);
   const [showGenreModal, setShowGenreModal] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const hideNavbar =
     location.pathname === "/login" || location.pathname === "/register";
@@ -165,33 +293,26 @@ const Navbar = () => {
     function handleScroll() {
       setScrolled(window.scrollY > 10);
     }
-
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close drawer on route change
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [location.pathname]);
 
   if (hideNavbar) return null;
 
   async function handleLogout() {
     try {
       await api.post("/auth/logout");
-
-      sileo.success({
-        title: "Logged out",
-        description: "You have been logged out successfully",
-        position: "top-center",
-      });
-
+      toast.success("Logged out", "You have been logged out successfully");
       navigate("/login");
     } catch (e) {
       console.log(e);
-
-      sileo.error({
-        title: "Logout failed",
-        description: e.response?.data?.message || "Something went wrong",
-        position: "top-center",
-      });
+      toast.error("Logout failed", e.response?.data?.message);
     }
   }
 
@@ -214,7 +335,6 @@ const Navbar = () => {
       setShowGenreModal(true);
       return;
     }
-
     navigate(path);
   }
 
@@ -233,6 +353,7 @@ const Navbar = () => {
         }`}
       >
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          {/* Logo */}
           <button
             onClick={() => navigate("/movies")}
             className="flex items-center gap-2 transition hover:opacity-80"
@@ -240,12 +361,12 @@ const Navbar = () => {
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--color-text-primary)] text-[var(--color-bg-base)]">
               <span className="text-sm font-bold">F</span>
             </div>
-
             <span className="text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
               FilmVault
             </span>
           </button>
 
+          {/* Desktop nav */}
           <div className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -271,9 +392,7 @@ const Navbar = () => {
                   {(item.path === "/home" || item.path === "/battle") && (
                     <Icon size={13} />
                   )}
-
                   {item.label}
-
                   {active && !isSpecial && (
                     <span className="absolute inset-x-3 -bottom-[18px] h-px bg-[var(--color-brand)]" />
                   )}
@@ -282,44 +401,46 @@ const Navbar = () => {
             })}
           </div>
 
-          <div className="flex items-center gap-1.5">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.path);
-
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => handleNavClick(item.path)}
-                  className={`flex h-9 w-9 items-center justify-center rounded-md transition md:hidden ${
-                    active
-                      ? "bg-[var(--color-brand)]/15 text-[var(--color-brand)]"
-                      : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)]"
-                  }`}
-                  title={item.label}
-                  aria-label={item.label}
-                >
-                  <Icon size={17} />
-                </button>
-              );
-            })}
-
+          {/* Desktop right side */}
+          <div className="hidden items-center gap-1.5 md:flex">
             <div className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)] hover:text-[var(--color-text-primary)]">
               <ThemeToggleButton />
             </div>
-
-            <div className="mx-1 hidden h-5 w-px bg-[color:var(--color-border)] md:block" />
-
+            <div className="mx-1 h-5 w-px bg-[color:var(--color-border)]" />
             <button
               onClick={handleLogout}
               className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--color-border)] bg-[var(--color-bg-card)] px-3 py-1.5 text-sm font-medium text-[var(--color-text-primary)] transition hover:bg-[var(--color-bg-elevated)]"
             >
               <LogOut size={14} />
-              <span className="hidden sm:inline">Logout</span>
+              Logout
+            </button>
+          </div>
+
+          {/* Mobile right side — theme + hamburger only */}
+          <div className="flex items-center gap-2 md:hidden">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-card)]">
+              <ThemeToggleButton />
+            </div>
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="flex h-9 w-9 items-center justify-center rounded-md border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] transition hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
+              aria-label="Open menu"
+            >
+              <Menu size={17} />
             </button>
           </div>
         </nav>
       </header>
+
+      {/* Mobile drawer */}
+      <MobileDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        navItems={navItems}
+        onNavClick={handleNavClick}
+        isActive={isActive}
+        onLogout={handleLogout}
+      />
 
       {showGenreModal && (
         <GenreModal
