@@ -20,7 +20,6 @@ const LandingPage = () => {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    // Reset movies first so marquee always re-animates from scratch
     setMovies([]);
     async function fetchTopRated() {
       try {
@@ -39,18 +38,15 @@ const LandingPage = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
-      {/* Subtle ambience */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -left-32 top-0 h-[600px] w-[600px] rounded-full bg-teal-500/[0.05] blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-[500px] w-[500px] rounded-full bg-teal-500/[0.04] blur-3xl" />
-      </div>
+      {/* Dot grid background */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-grid-pattern opacity-[0.03]" />
 
       {/* ── Hero ── */}
       <section className="relative z-10 px-6 pt-32">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
           <div className="relative">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-teal-500">
-              <Sparkles size={11} />
+            <p className="mb-4 inline-flex items-center gap-2 rounded border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-teal-500">
+              {/* <Sparkles size={11} /> */}
               Built for cinephiles
             </p>
 
@@ -110,8 +106,7 @@ const LandingPage = () => {
             </div>
           </div>
 
-          {/* Posters marquee — key={movies.length} forces full remount
-              when data arrives, restarting CSS animations from frame 0 */}
+          {/* Posters marquee */}
           <div
             key={movies.length}
             className="relative hidden h-[640px] gap-5 overflow-hidden lg:flex"
@@ -132,40 +127,47 @@ const LandingPage = () => {
       </section>
 
       {/* ── Features ── */}
+      {/* ── Features ── */}
       <section className="relative z-10 px-6 pt-32">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-10 max-w-xl">
-            <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-teal-500">
-              Features
-            </p>
-            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              Everything you need, nothing you don't
-            </h2>
-            <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          <div className="mb-0 flex items-end justify-between border-b border-[color:var(--color-border)] pb-8">
+            <div>
+              <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.18em] text-teal-500">
+                Features
+              </p>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Everything you need,{" "}
+                <span className="text-[var(--color-text-muted)]">
+                  nothing you don't
+                </span>
+              </h2>
+            </div>
+            <p className="hidden max-w-xs text-right text-sm text-[var(--color-text-muted)] md:block">
               A focused toolkit for tracking, rating, and discovering films.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {FEATURES.map((feat) => {
+          <div className="grid grid-cols-1 gap-px bg-[var(--color-border)] sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((feat, i) => {
               const Icon = feat.icon;
               return (
                 <div
                   key={feat.title}
-                  className="group relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-6 transition hover:border-teal-500/30"
+                  className="group relative bg-[var(--color-bg-base)] p-6 transition duration-300 hover:bg-[var(--color-bg-card)]/70"
                 >
-                  <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-500/0 blur-2xl transition group-hover:bg-teal-500/[0.06]" />
-                  <div className="relative">
-                    <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-teal-500/10 text-teal-500 transition group-hover:bg-teal-500/15">
-                      <Icon size={16} />
-                    </div>
-                    <h3 className="mb-1.5 text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
-                      {feat.title}
-                    </h3>
-                    <p className="text-sm leading-relaxed text-[var(--color-text-muted)]">
-                      {feat.desc}
-                    </p>
+                  <span className="mb-3 block text-[11px] font-medium tabular-nums text-[var(--color-text-muted)]">
+                    0{i + 1}
+                  </span>
+                  <div className="mb-5 text-teal-500">
+                    <Icon size={20} />
                   </div>
+                  <h3 className="mb-2 text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
+                    {feat.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-[var(--color-text-muted)]">
+                    {feat.desc}
+                  </p>
+                  <div className="mt-6 h-px w-0 bg-teal-500/40 transition-all duration-500 group-hover:w-full" />
                 </div>
               );
             })}
@@ -227,7 +229,6 @@ const LandingPage = () => {
                     transformOrigin: "left center",
                   }}
                 >
-                  {/* Poster collage background */}
                   <div className="absolute inset-0 flex">
                     {cardMovies.map((movie, j) => (
                       <img
@@ -239,11 +240,9 @@ const LandingPage = () => {
                     ))}
                   </div>
 
-                  {/* Overlays */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
 
-                  {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-5">
                     <div
                       className={`mb-1.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${card.badgeClass}`}
@@ -262,15 +261,11 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* battle mode advertisement  */}
-
       {/* ── Battle CTA ── */}
       <section className="relative z-10 px-6 pb-28">
         <div className="mx-auto max-w-6xl">
           <div className="group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[var(--color-bg-card)] transition duration-500 hover:border-white/[0.12]">
-            {/* Ambient glow */}
             <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-teal-500/[0.06] blur-3xl transition duration-700 group-hover:bg-teal-500/[0.12]" />
-
             <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-teal-500/[0.05] blur-3xl" />
 
             <div className="relative grid items-center gap-14 p-10 lg:grid-cols-[1fr_480px] lg:p-14">
@@ -294,7 +289,6 @@ const LandingPage = () => {
                   with the community, and discover where your taste lands.
                 </p>
 
-                {/* stats */}
                 <div className="mt-8 flex items-center gap-8 border-y border-white/[0.06] py-5">
                   <div>
                     <p className="text-2xl font-semibold tracking-tight">3</p>
@@ -336,7 +330,6 @@ const LandingPage = () => {
 
               {/* RIGHT VISUAL */}
               <div className="relative hidden h-[390px] lg:block">
-                {/* Django */}
                 <div className="absolute left-3 top-1/2 z-10 w-[210px] -translate-y-1/2 rotate-[-7deg] transition-all duration-500 hover:z-40 hover:-translate-x-3 hover:-translate-y-[58%] hover:rotate-[-11deg]">
                   <div className="overflow-hidden rounded-[1.7rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
                     <img
@@ -344,14 +337,11 @@ const LandingPage = () => {
                       alt="Django Unchained"
                       className="h-[320px] w-full object-cover transition duration-700 hover:scale-105"
                     />
-
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
                     <div className="absolute inset-x-0 bottom-0 p-5">
                       <p className="text-[10px] uppercase tracking-wider text-white/60">
                         2012 · Western
                       </p>
-
                       <p className="mt-1 text-lg font-semibold leading-tight text-white">
                         Django Unchained
                       </p>
@@ -359,7 +349,6 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* No Country */}
                 <div className="absolute right-3 top-1/2 z-10 w-[210px] -translate-y-1/2 rotate-[7deg] transition-all duration-500 hover:z-40 hover:translate-x-3 hover:-translate-y-[58%] hover:rotate-[11deg]">
                   <div className="overflow-hidden rounded-[1.7rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
                     <img
@@ -367,14 +356,11 @@ const LandingPage = () => {
                       alt="No Country for Old Men"
                       className="h-[320px] w-full object-cover transition duration-700 hover:scale-105"
                     />
-
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
                     <div className="absolute inset-x-0 bottom-0 p-5">
                       <p className="text-[10px] uppercase tracking-wider text-white/60">
                         2007 · Thriller
                       </p>
-
                       <p className="mt-1 text-lg font-semibold leading-tight text-white">
                         No Country for Old Men
                       </p>
@@ -382,11 +368,9 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* VS */}
                 <div className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full bg-teal-400/25 blur-2xl" />
-
                     <div className="relative grid h-20 w-20 place-items-center rounded-full border border-white/10 bg-[var(--color-bg-base)]/90 text-[11px] font-bold tracking-[0.25em] text-teal-500 shadow-2xl backdrop-blur-xl">
                       VS
                     </div>
@@ -397,18 +381,16 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
       {/* ── CTA ── */}
       <section className="relative z-10 px-6 pb-24">
         <div className="mx-auto max-w-6xl">
           <div className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)]">
-            {/* Movie collage background */}
             <img
               src={ctaBg}
               alt=""
               className="absolute inset-0 h-full w-full object-cover opacity-70 blur-xs scale-105"
             />
-
-            {/* Overlays */}
             <div className="absolute inset-0 bg-[var(--color-bg-base)]/60" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.12),transparent_20%)]" />
             <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[var(--color-bg-base)]/80 to-transparent" />
@@ -416,7 +398,6 @@ const LandingPage = () => {
             <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[var(--color-bg-base)]/80 to-transparent" />
             <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[var(--color-bg-base)]/80 to-transparent" />
 
-            {/* Content */}
             <div className="relative px-8 py-16 text-center md:px-16 md:py-20">
               <div className="relative mx-auto max-w-xl">
                 <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
