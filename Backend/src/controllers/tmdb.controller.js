@@ -135,24 +135,18 @@ async function savemovie(req, res) {
 
 async function topRatedMovies(req, res) {
     try {
-        // Fetch 3 pages in parallel
-        const [res1, res2, res3] = await Promise.all([
-            fetch(`${TMDB_BASE}/movie/top_rated?language=en-US&page=1`, { headers }),
-            fetch(`${TMDB_BASE}/movie/top_rated?language=en-US&page=2`, { headers }),
-            fetch(`${TMDB_BASE}/movie/top_rated?language=en-US&page=3`, { headers }),
-        ]);
+        // Fetch 10 pages in parallel = 200 movies
+        const pageNumbers = Array.from({ length: 10 }, (_, i) => i + 1);
 
-        const [data1, data2, data3] = await Promise.all([
-            res1.json(),
-            res2.json(),
-            res3.json(),
-        ]);
+        const responses = await Promise.all(
+            pageNumbers.map((page) =>
+                fetch(`${TMDB_BASE}/movie/top_rated?language=en-US&page=${page}`, { headers })
+            )
+        );
 
-        const allResults = [
-            ...data1.results,
-            ...data2.results,
-            ...data3.results,
-        ];
+        const dataArr = await Promise.all(responses.map((r) => r.json()));
+
+        const allResults = dataArr.flatMap((d) => d.results);
 
         const movies = allResults.map((m) => ({
             tmdbId: m.id,
