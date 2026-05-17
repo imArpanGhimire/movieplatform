@@ -172,10 +172,7 @@ const MovieListingPage = () => {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-teal-500/[0.04] blur-3xl" />
-        <div className="absolute -right-32 top-40 h-[400px] w-[400px] rounded-full bg-teal-500/[0.03] blur-3xl" />
-      </div>
+      <div className="pointer-events-none fixed inset-0 z-0 bg-grid-pattern opacity-[0.03]" />
 
       <section className="relative z-10 px-6 pb-12 pt-32">
         <div className="mx-auto max-w-3xl">
@@ -298,21 +295,9 @@ const MovieListingPage = () => {
           <section className="relative z-10 px-6 pb-24">
             <div className="mx-auto max-w-6xl">
               <div className="group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[var(--color-bg-card)] transition duration-500 hover:border-white/[0.12]">
-                <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-teal-500/[0.06] blur-3xl transition duration-700 group-hover:bg-teal-500/[0.12]" />
-                <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-teal-500/[0.05] blur-3xl" />
-
-                <div
-                  className="pointer-events-none absolute inset-0 opacity-[0.015]"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
-                    backgroundSize: "32px 32px",
-                  }}
-                />
-
                 <div className="relative grid items-center gap-14 p-10 lg:grid-cols-[1fr_480px] lg:p-14">
                   <div>
-                    <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">
+                    <div className="mb-5 inline-flex items-center gap-2 rounded border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">
                       <Swords size={12} strokeWidth={2.5} />
                       Daily Feature
                     </div>
@@ -366,7 +351,7 @@ const MovieListingPage = () => {
 
                     <button
                       onClick={() => navigate("/battle")}
-                      className="group/btn mt-8 inline-flex items-center gap-2 rounded-full bg-teal-400 px-6 py-3 text-sm font-semibold text-black transition duration-300 hover:-translate-y-1 hover:bg-teal-300"
+                      className="group/btn mt-8 inline-flex items-center gap-2 rounded bg-teal-400 px-6 py-3 text-sm font-semibold text-black transition duration-300 hover:-translate-y-1 hover:bg-teal-300"
                     >
                       Enter today's battles
                       <ArrowRight
@@ -634,8 +619,6 @@ const HowItWorks = () => (
               <span className="pointer-events-none absolute right-5 top-3 select-none text-5xl font-bold leading-none text-[var(--color-text-primary)]/[0.04]">
                 {item.step}
               </span>
-
-              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-teal-500/0 blur-2xl transition group-hover:bg-teal-500/[0.06]" />
 
               <div className="relative">
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-500 transition group-hover:bg-teal-500/15">
