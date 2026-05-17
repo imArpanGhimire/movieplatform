@@ -194,7 +194,7 @@ const LandingPage = () => {
             <ul className="mt-8 space-y-3">
               {BENEFITS.map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-teal-500/15 text-teal-500">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-teal-500/15 text-teal-500">
                     <Check size={12} strokeWidth={2.5} />
                   </span>
                   <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
@@ -245,7 +245,7 @@ const LandingPage = () => {
 
                   <div className="absolute bottom-0 left-0 right-0 p-5">
                     <div
-                      className={`mb-1.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${card.badgeClass}`}
+                      className={`mb-1.5 inline-flex items-center gap-1.5 rounded-lg px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${card.badgeClass}`}
                     >
                       {card.badge}
                     </div>
@@ -265,13 +265,13 @@ const LandingPage = () => {
       <section className="relative z-10 px-6 pb-28">
         <div className="mx-auto max-w-6xl">
           <div className="group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[var(--color-bg-card)] transition duration-500 hover:border-white/[0.12]">
-            <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-teal-500/[0.06] blur-3xl transition duration-700 group-hover:bg-teal-500/[0.12]" />
-            <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-teal-500/[0.05] blur-3xl" />
+            <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-lg bg-teal-500/[0.06] blur-3xl transition duration-700 group-hover:bg-teal-500/[0.12]" />
+            <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-lg bg-teal-500/[0.05] blur-3xl" />
 
             <div className="relative grid items-center gap-14 p-10 lg:grid-cols-[1fr_480px] lg:p-14">
               {/* LEFT */}
               <div>
-                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">
+                <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">
                   <Swords size={12} strokeWidth={2.5} />
                   Daily Feature
                 </div>
@@ -318,7 +318,7 @@ const LandingPage = () => {
 
                 <button
                   onClick={() => navigate("/battle")}
-                  className="group/btn mt-8 inline-flex items-center gap-2 rounded-full bg-teal-400 px-6 py-3 text-sm font-semibold text-black transition duration-300 hover:-translate-y-1 hover:bg-teal-300"
+                  className="group/btn mt-8 inline-flex items-center gap-2 rounded-lg bg-teal-400 px-6 py-3 text-sm font-semibold text-black transition duration-300 hover:-translate-y-1 hover:bg-teal-300"
                 >
                   Enter today's battles
                   <ArrowRight
@@ -370,8 +370,8 @@ const LandingPage = () => {
 
                 <div className="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
                   <div className="relative">
-                    <div className="absolute inset-0 rounded-full bg-teal-400/25 blur-2xl" />
-                    <div className="relative grid h-20 w-20 place-items-center rounded-full border border-white/10 bg-[var(--color-bg-base)]/90 text-[11px] font-bold tracking-[0.25em] text-teal-500 shadow-2xl backdrop-blur-xl">
+                    <div className="absolute inset-0 rounded-lg bg-teal-400/25 blur-2xl" />
+                    <div className="relative grid h-20 w-20 place-items-center rounded-lg border border-white/10 bg-[var(--color-bg-base)]/90 text-[11px] font-bold tracking-[0.25em] text-teal-500 shadow-2xl backdrop-blur-xl">
                       VS
                     </div>
                   </div>
@@ -436,7 +436,7 @@ const Poster = ({ movie }) => (
       className="h-[210px] w-full object-cover"
     />
     {movie.rating && (
-      <span className="absolute right-2 top-2 inline-flex items-center gap-0.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
+      <span className="absolute right-2 top-2 inline-flex items-center gap-0.5 rounded-lg bg-black/70 px-1.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
         <Star size={9} className="text-amber-400" fill="currentColor" />
         {movie.rating.toFixed(1)}
       </span>
