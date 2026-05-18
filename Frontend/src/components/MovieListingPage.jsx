@@ -48,22 +48,25 @@ const TRIVIA = [
 
 const HOW_IT_WORKS = [
   {
-    icon: Search,
     step: "01",
+    label: "Discover",
     title: "Discover",
     desc: "Search any title or director. Explore top-rated cinema from every era and country.",
+    tag: "Start browsing",
   },
   {
-    icon: Star,
     step: "02",
+    label: "Rate & Review",
     title: "Rate & Review",
     desc: "Score every film you watch and write reviews. Build a taste profile that's uniquely yours.",
+    tag: "Build your taste",
   },
   {
-    icon: Layers,
     step: "03",
+    label: "Collect",
     title: "Build Collections",
     desc: "Curate private watchlists or share themed collections with friends.",
+    tag: "Start a list",
   },
 ];
 
@@ -71,11 +74,9 @@ const PAGE_SIZE = 16;
 
 const searchMovies = async ({ queryKey }) => {
   const [, { title, director }] = queryKey;
-
   const res = director
     ? await api.get(`/tmdb/director?name=${encodeURIComponent(director)}`)
     : await api.get(`/tmdb/search?query=${encodeURIComponent(title)}`);
-
   return res.data.movies || [];
 };
 
@@ -95,7 +96,6 @@ const MovieListingPage = () => {
   useEffect(() => {
     const savedTitle = sessionStorage.getItem("filmvault_title") || "";
     const savedDirector = sessionStorage.getItem("filmvault_director") || "";
-
     settitle(savedTitle);
     setdirector(savedDirector);
     setdebouncedTitle(savedTitle);
@@ -106,13 +106,11 @@ const MovieListingPage = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setTriviaVisible(false);
-
       setTimeout(() => {
         setTriviaIndex((i) => (i + 1) % TRIVIA.length);
         setTriviaVisible(true);
       }, 300);
     }, 10000);
-
     return () => clearTimeout(timeout);
   }, [triviaIndex]);
 
@@ -152,10 +150,7 @@ const MovieListingPage = () => {
   } = useQuery({
     queryKey: [
       "search-movies",
-      {
-        title: debouncedTitle,
-        director: debouncedDirector,
-      },
+      { title: debouncedTitle, director: debouncedDirector },
     ],
     queryFn: searchMovies,
     enabled: hasRestored && hasSearch,
@@ -196,6 +191,7 @@ const MovieListingPage = () => {
     <div className="relative min-h-screen overflow-x-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
       <div className="pointer-events-none fixed inset-0 z-0 bg-grid-pattern opacity-[0.03]" />
 
+      {/* ── Search ── */}
       <section className="relative z-10 px-6 pb-12 pt-32">
         <div className="mx-auto max-w-3xl">
           <div className="mb-8">
@@ -281,6 +277,7 @@ const MovieListingPage = () => {
         </div>
       </section>
 
+      {/* ── No search state ── */}
       {!hasSearch && !loading && (
         <>
           {topRatedLoading && (
@@ -456,6 +453,7 @@ const MovieListingPage = () => {
         </>
       )}
 
+      {/* ── Search results ── */}
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24">
         {loading && (
           <div className="flex flex-col items-center justify-center gap-3 py-24">
@@ -502,15 +500,13 @@ const MovieListingPage = () => {
                   ))}
                 </div>
 
-                {allmovies.length > 0 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={Math.max(totalPages, 1)}
-                    totalResults={allmovies.length}
-                    pageSize={PAGE_SIZE}
-                    onPageChange={handlePageChange}
-                  />
-                )}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.max(totalPages, 1)}
+                  totalResults={allmovies.length}
+                  pageSize={PAGE_SIZE}
+                  onPageChange={handlePageChange}
+                />
 
                 <div className="mt-20 space-y-0">
                   <Divider />
@@ -547,7 +543,7 @@ const MovieListingPage = () => {
   );
 };
 
-// ─── Pagination ──────────────────────────────────────────────────────────────
+// ─── Pagination ───────────────────────────────────────────────────────────────
 
 const Pagination = ({
   currentPage,
@@ -560,12 +556,9 @@ const Pagination = ({
   const endResult = Math.min(currentPage * pageSize, totalResults);
 
   const getPageNumbers = () => {
-    if (totalPages <= 7) {
+    if (totalPages <= 7)
       return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
     const pages = [];
-
     if (currentPage <= 4) {
       pages.push(1, 2, 3, 4, 5, "...", totalPages);
     } else if (currentPage >= totalPages - 3) {
@@ -589,11 +582,8 @@ const Pagination = ({
         totalPages,
       );
     }
-
     return pages;
   };
-
-  const pages = getPageNumbers();
 
   return (
     <div className="mt-10 flex flex-col items-center gap-4">
@@ -620,7 +610,7 @@ const Pagination = ({
         </button>
 
         <div className="flex items-center gap-1">
-          {pages.map((page, i) =>
+          {getPageNumbers().map((page, i) =>
             page === "..." ? (
               <span
                 key={`ellipsis-${i}`}
@@ -632,7 +622,7 @@ const Pagination = ({
               <button
                 key={page}
                 onClick={() => onPageChange(page)}
-                className={`relative flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
                   page === currentPage
                     ? "bg-teal-500 text-black shadow-[0_0_16px_rgba(20,184,166,0.35)]"
                     : "border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:border-teal-500/40 hover:bg-[var(--color-bg-elevated)] hover:text-teal-400"
@@ -659,7 +649,7 @@ const Pagination = ({
   );
 };
 
-// ─── Shared sub-components ───────────────────────────────────────────────────
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 const SectionHeader = ({ eyebrow, title, description, meta }) => (
   <div className="mb-6 flex items-end justify-between gap-4 border-b border-[color:var(--color-border)] pb-4">
@@ -704,9 +694,7 @@ const TriviaTicker = ({
         <span className="shrink-0 rounded-md bg-teal-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-teal-500">
           Cinema Fact
         </span>
-
         <div className="hidden h-4 w-px shrink-0 bg-[color:var(--color-border)] sm:block" />
-
         <p
           className={`flex-1 text-sm leading-snug text-[var(--color-text-secondary)] transition-opacity duration-300 ${
             triviaVisible ? "opacity-100" : "opacity-0"
@@ -714,7 +702,6 @@ const TriviaTicker = ({
         >
           {TRIVIA[triviaIndex]}
         </p>
-
         <div className="ml-auto hidden shrink-0 items-center gap-2 sm:flex">
           {[0, 1, 2, 3, 4].map((dot) => {
             const activeDot = triviaIndex % 5;
@@ -745,41 +732,44 @@ const TriviaTicker = ({
 );
 
 const HowItWorks = () => (
-  <section className="relative z-10 px-6 pb-24 pt-10">
-    <div className="mx-auto max-w-6xl">
-      <SectionHeader
-        eyebrow="FilmVault"
-        title="How it works"
-        description="Three simple steps to make this your home for cinema"
-      />
+  <section className="relative z-10 px-6 pb-24 pt-16">
+    <div className="mx-auto max-w-5xl">
+      <p className="mb-4 text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+        FilmVault
+      </p>
+      <h2 className="mb-3  text-[38px] font-normal leading-[1.15] text-[var(--color-text-primary)]">
+        How it <em className="italic text-[var(--color-text-muted)]">works</em>
+      </h2>
+      <p className="mb-14 max-w-sm text-sm font-light leading-relaxed text-[var(--color-text-muted)]">
+        Three simple steps to make this your home for cinema.
+      </p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {HOW_IT_WORKS.map((item) => {
-          const Icon = item.icon;
-          return (
-            <div
-              key={item.step}
-              className="group relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-6 transition hover:border-teal-500/30"
-            >
-              <span className="pointer-events-none absolute right-5 top-3 select-none text-5xl font-bold leading-none text-[var(--color-text-primary)]/[0.04]">
-                {item.step}
+      <div className="flex flex-col">
+        {HOW_IT_WORKS.map((item) => (
+          <div
+            key={item.step}
+            className="group grid grid-cols-[80px_1fr] gap-x-8 border-t border-[var(--color-border)] py-8 last:border-b"
+          >
+            <span className="-mt-1.5 select-none  text-[56px] font-normal leading-none text-[var(--color-border)] transition-colors duration-300 group-hover:text-[var(--color-text-muted)]">
+              {item.step}
+            </span>
+            <div className="pt-1.5">
+              <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+                {item.label}
+                <span className="inline-block h-px w-5 bg-[var(--color-border)]" />
+              </p>
+              <h3 className="mb-2 text-[20px] font-normal leading-snug text-[var(--color-text-primary)]">
+                {item.title}
+              </h3>
+              <p className="max-w-[440px] text-[13.5px] font-light leading-[1.7] text-[var(--color-text-muted)]">
+                {item.desc}
+              </p>
+              <span className="mt-3.5 inline-block rounded-sm border border-[var(--color-border)] px-2.5 py-0.5 text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+                {item.tag}
               </span>
-
-              <div className="relative">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10 text-teal-500 transition group-hover:bg-teal-500/15">
-                  <Icon size={17} />
-                </div>
-
-                <h3 className="mb-1.5 text-base font-semibold tracking-tight text-[var(--color-text-primary)]">
-                  {item.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-[var(--color-text-muted)]">
-                  {item.desc}
-                </p>
-              </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   </section>
