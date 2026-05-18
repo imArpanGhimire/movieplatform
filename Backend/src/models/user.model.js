@@ -7,38 +7,34 @@ const userSchema = new mongoose.Schema(
             required: true,
             unique: true,
             lowercase: true,
+            trim: true,
+            minlength: 3,
+            maxlength: 20,
         },
-
         password: {
             type: String,
             required: true,
         },
-
-        role: {
+        secretKeyHash: {
             type: String,
-            enum: ["user", "maker"],
-            default: "user",
+            default: null,
         },
-
+        hasSecretKey: {
+            type: Boolean,
+            default: false,
+        },
         savedMovies: [
             {
-                tmdbId: {
-                    type: String,
-                    required: true,
-                },
+                tmdbId: { type: String, required: true },
                 title: String,
                 poster: String,
                 releaseDate: String,
                 rating: Number,
             },
         ],
-
         likedMovies: [
             {
-                tmdbId: {
-                    type: String,
-                    required: true,
-                },
+                tmdbId: { type: String, required: true },
                 title: String,
                 poster: String,
                 releaseDate: String,
