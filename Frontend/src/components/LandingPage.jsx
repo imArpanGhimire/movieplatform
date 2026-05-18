@@ -15,6 +15,8 @@ import {
 
 import ctaBg from "../images/cta-bg.jpg";
 
+import SecretKeyModal from "./SecretKeyModal";
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
@@ -32,12 +34,31 @@ const LandingPage = () => {
     fetchTopRated();
   }, []);
 
+  const [showSecretModal, setShowSecretModal] = useState(false);
+
+  useEffect(() => {
+    const checkSecretKey = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        if (!res.data.hasSecretKey) {
+          setShowSecretModal(true);
+        }
+      } catch {
+        // user not logged in, do nothing
+      }
+    };
+    checkSecretKey();
+  }, []);
+
   const col1Movies = movies.filter((_, index) => index % 4 === 0);
   const col2Movies = movies.filter((_, index) => index % 4 === 1);
   const col3Movies = movies.filter((_, index) => index % 4 === 2);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
+      {showSecretModal && (
+        <SecretKeyModal onClose={() => setShowSecretModal(false)} />
+      )}
       {/* Dot grid background */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-grid-pattern opacity-[0.03]" />
 
