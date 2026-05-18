@@ -20,6 +20,7 @@ import SavedMoviesPage from "./components/SavedMoviesPage";
 import ProfilePage from "./components/ProfilePage";
 import PersonalizedHome from "./components/PersonalizedHome";
 import MovieBattle from "./components/MovieBattle";
+import ForgotPasswordPage from "./components/ForgotPasswordPage";
 import ProtectedRoute from "./protection/ProtectedRoute";
 import GuestRoute from "./protection/GuestRoute";
 import { fetchTopRatedMovies } from "./api/queries";
@@ -35,7 +36,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const AUTH_ROUTES = ["/login", "/register"];
+const AUTH_ROUTES = ["/login", "/register", "/forgot-password"];
 
 const TOASTER_OPTIONS = {
   fill: "rgba(14, 51, 93)",
@@ -91,6 +92,7 @@ const AppContent = () => {
             </GuestRoute>
           }
         />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         {protectedRoutes.map((route) => (
           <Route
             key={route.path}
