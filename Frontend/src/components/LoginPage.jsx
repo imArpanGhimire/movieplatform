@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Film, Lock, User } from "lucide-react";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
 
 import api from "../api/axios";
+import moviesBg from "../images/bg1.jpg";
 
-const initialFormData = {
-  username: "",
-  password: "",
-};
+const initialFormData = { username: "", password: "" };
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,29 +17,20 @@ const LoginPage = () => {
 
   const handleChange = ({ target }) => {
     const { name, value } = target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     setError("");
     setLoading(true);
-
     try {
       await api.post("/auth/login", {
         username: formData.username.trim(),
         password: formData.password,
       });
-
       navigate("/movies");
     } catch (err) {
-      console.log("Login failed:", err);
-
       setError(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
@@ -49,187 +38,128 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-bg-base)] px-4 py-12 text-[var(--color-text-primary)]">
-      <BackgroundGlow />
+    <div className="flex h-screen overflow-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
+      {/* LEFT PANEL */}
+      <div className="relative hidden w-[52%] lg:block h-screen">
+        <img
+          src={moviesBg}
+          alt="Movies"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[var(--color-bg-base)]" />
+      </div>
 
-      <div className="relative z-10 w-full max-w-sm">
-        <BrandSection />
+      {/* RIGHT PANEL */}
+      <div className="flex flex-1 items-center justify-center px-6 py-12">
+        <div className="w-full max-w-[360px]">
+          {/* LOGO + TEXT */}
+          <div className="mb-8">
+            <div className="mb-2 flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--color-text-primary)] text-[var(--color-bg-base)]">
+                <span className="text-sm font-bold">F</span>
+              </div>
+              <span className="text-base font-semibold">FilmVault</span>
+            </div>
+            <p className="text-sm text-[var(--color-text-muted)]">
+              Rate, review, and discover films you'll love.
+            </p>
+          </div>
 
-        <div className="rounded-xl border border-[color:var(--color-border)] bg-[var(--color-bg-card)] p-6 shadow-lg shadow-black/5">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <InputField
-              icon={<User size={14} />}
-              label="Username"
-              type="text"
-              name="username"
-              placeholder="yourusername"
-              value={formData.username}
-              onChange={handleChange}
-              autoComplete="username"
-            />
+          {/* TITLE */}
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
+          <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+            Sign in to continue to FilmVault
+          </p>
 
-            <PasswordField
-              value={formData.password}
-              onChange={handleChange}
-              showPassword={showPassword}
-              togglePassword={() => setShowPassword((prev) => !prev)}
-            />
+          {/* FORM */}
+          <form onSubmit={handleLogin} className="mt-8 space-y-4">
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-[var(--color-text-secondary)]">
+                Username
+              </label>
+              <div className="relative">
+                <User
+                  size={14}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+                />
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="h-11 w-full rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] pl-9 pr-3 text-sm"
+                />
+              </div>
+            </div>
 
-            {error && <ErrorMessage message={error} />}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-[var(--color-text-secondary)]">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => navigate("/forgot-password")}
+                  className="text-[10px] text-teal-500 hover:text-teal-400 transition-colors"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              <div className="relative">
+                <Lock
+                  size={14}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+                />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="h-11 w-full rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] pl-9 pr-10 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+
+            {/* ERROR */}
+            {error && <p className="text-xs text-red-500">{error}</p>}
 
             <button
               type="submit"
               disabled={loading}
-              className="h-10 w-full rounded-lg bg-[var(--color-text-primary)] text-sm font-medium text-[var(--color-bg-base)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-11 w-full rounded-lg bg-[var(--color-text-primary)] text-sm font-semibold text-[var(--color-bg-base)]"
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
-          <Divider />
+          {/* DIVIDER */}
+          <div className="mt-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-[var(--color-border)]" />
+            <span className="text-xs text-[var(--color-text-muted)]">
+              New to FilmVault?
+            </span>
+            <div className="h-px flex-1 bg-[var(--color-border)]" />
+          </div>
 
+          {/* CREATE ACCOUNT */}
           <button
-            type="button"
             onClick={() => navigate("/register")}
-            className="h-10 w-full rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-card)] text-sm font-medium text-[var(--color-text-primary)] transition hover:bg-[var(--color-bg-elevated)]"
+            className="mt-4 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] py-3 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
           >
             Create an account
           </button>
         </div>
-
-        <FooterText />
       </div>
     </div>
   );
 };
-
-const BackgroundGlow = () => (
-  <div className="pointer-events-none absolute inset-0">
-    <div className="absolute -left-32 top-1/4 h-[400px] w-[400px] rounded-full bg-teal-500/[0.06] blur-3xl" />
-    <div className="absolute -right-32 bottom-1/4 h-[400px] w-[400px] rounded-full bg-teal-500/[0.04] blur-3xl" />
-  </div>
-);
-
-const BrandSection = () => (
-  <div className="mb-8 flex flex-col items-center text-center">
-    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-text-primary)] text-[var(--color-bg-base)]">
-      <Film size={20} />
-    </div>
-
-    <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-
-    <p className="mt-1.5 text-sm text-[var(--color-text-muted)]">
-      Sign in to continue to FilmVault
-    </p>
-  </div>
-);
-
-const InputField = ({
-  icon,
-  label,
-  type,
-  name,
-  placeholder,
-  value,
-  onChange,
-  autoComplete,
-}) => (
-  <div>
-    <label className="mb-1.5 block text-xs font-medium text-[var(--color-text-secondary)]">
-      {label}
-    </label>
-
-    <div className="relative">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]">
-        {icon}
-      </div>
-
-      <input
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        autoComplete={autoComplete}
-        className="h-10 w-full rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-input)] pl-9 pr-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-placeholder)] outline-none transition focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/15"
-      />
-    </div>
-  </div>
-);
-
-const PasswordField = ({ value, onChange, showPassword, togglePassword }) => (
-  <div>
-    <div className="mb-1.5 flex items-center justify-between">
-      <label className="block text-xs font-medium text-[var(--color-text-secondary)]">
-        Password
-      </label>
-
-      <button
-        type="button"
-        className="text-xs font-medium text-teal-500 transition hover:text-teal-400"
-      >
-        Forgot?
-      </button>
-    </div>
-
-    <div className="relative">
-      <Lock
-        size={14}
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
-      />
-
-      <input
-        type={showPassword ? "text" : "password"}
-        name="password"
-        placeholder="••••••••"
-        value={value}
-        onChange={onChange}
-        autoComplete="current-password"
-        className="h-10 w-full rounded-lg border border-[color:var(--color-border)] bg-[var(--color-bg-input)] pl-9 pr-10 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-placeholder)] outline-none transition focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/15"
-      />
-
-      <button
-        type="button"
-        onClick={togglePassword}
-        className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-[var(--color-text-muted)] transition hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
-        aria-label={showPassword ? "Hide password" : "Show password"}
-      >
-        {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-      </button>
-    </div>
-  </div>
-);
-
-const ErrorMessage = ({ message }) => (
-  <div className="rounded-lg border border-red-500/25 bg-red-500/10 px-3 py-2">
-    <p className="text-xs text-red-400">{message}</p>
-  </div>
-);
-
-const Divider = () => (
-  <div className="my-5 flex items-center gap-3">
-    <div className="h-px flex-1 bg-[color:var(--color-border)]" />
-
-    <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
-      New to FilmVault
-    </span>
-
-    <div className="h-px flex-1 bg-[color:var(--color-border)]" />
-  </div>
-);
-
-const FooterText = () => (
-  <p className="mt-6 text-center text-xs text-[var(--color-text-muted)]">
-    By continuing, you agree to our{" "}
-    <a className="text-[var(--color-text-secondary)] underline-offset-2 hover:underline">
-      Terms
-    </a>{" "}
-    and{" "}
-    <a className="text-[var(--color-text-secondary)] underline-offset-2 hover:underline">
-      Privacy Policy
-    </a>
-    .
-  </p>
-);
 
 export default LoginPage;
