@@ -40,7 +40,7 @@ app.use("/api/tmdb", tmdbRoutes);
 app.use("/api/saved", savedRoutes);
 app.use("/api/personalized", personalizedRoutes);
 app.use("/api/battle", battleRoutes);
-app.use("/recovery", recoveryRoutes);
+app.use("/api/recovery", recoveryRoutes);
 
 
 
