@@ -54,7 +54,7 @@ const SecretKeyModal = ({ onClose }) => {
 
             {/* Body */}
             <p className="mb-4 text-xs leading-relaxed text-[var(--color-text-muted)]">
-              Create a secret phrase only you'd know — like{" "}
+              Create a secret phrase only you'd know, like{" "}
               <span className="italic text-[var(--color-text-secondary)]">
                 "my first pet was a turtle"
               </span>
