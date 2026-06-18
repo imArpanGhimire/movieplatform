@@ -24,17 +24,18 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-const authLimiter = rateLimit({
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 20,                  // 20 attempts per window
-    message: { message: "Too many attempts, please try again later" },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
+// const authLimiter = rateLimit({
+//     windowMs: 5 * 60 * 1000, // 5 minutes
+//     max: 20,                  // 20 attempts per window
+//     message: { message: "Too many attempts, please try again later" },
+//     standardHeaders: true,
+//     legacyHeaders: false,
+// });
 
-app.use("/api/auth", authLimiter, authroutes);
-app.use("/api/movie", movieroutes);
+// app.use("/api/auth", authLimiter, authroutes);      
+app.use("/api/auth", authroutes);
 app.use("/api/toggle", likesroutes);
+app.use("/api/movie", movieroutes);
 app.use("/api/reply", replyRoutes);
 app.use("/api/tmdb", tmdbRoutes);
 app.use("/api/saved", savedRoutes);
